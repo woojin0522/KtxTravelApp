@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">KTX 여행</string>
+    <string name="map_button">KTX지도</string>
+    <string name="tema_button">테마여행</string>
+    <string name="plan_button">여행계획</string>
+    <string name="ticket_button">티켓구매</string>
+</resources>

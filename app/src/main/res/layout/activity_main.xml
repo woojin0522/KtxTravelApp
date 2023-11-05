@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <!--이미지 뷰 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="150dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+            android:id="@+id/mainImageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/main_image" />
+    </LinearLayout>
+
+    <!--버튼 뷰-->
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="0dp"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/mainMapButton"
+            style="@style/Widget.AppCompat.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/map_button_color"
+            android:drawableTop="@drawable/map_image"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="25dp"
+            android:text="@string/map_button"
+            android:textSize="20dp" />
+
+        <Button
+            android:id="@+id/mainTemaButton"
+            style="@style/Widget.AppCompat.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/tema_button_color"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="25dp"
+            android:text="@string/tema_button"
+            android:drawableTop="@drawable/tema_image"
+            android:textSize="20dp" />
+
+        <Button
+            android:id="@+id/mainPlanButton"
+            style="@style/Widget.AppCompat.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/plan_button_color"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="25dp"
+            android:text="@string/plan_button"
+            android:drawableTop="@drawable/plan_image"
+            android:textSize="20dp" />
+
+        <Button
+            android:id="@+id/mainTicketButton"
+            style="@style/Widget.AppCompat.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/ticket_button_color"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="25dp"
+            android:text="@string/ticket_button"
+            android:drawableTop="@drawable/ticket_image"
+            android:textSize="20dp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

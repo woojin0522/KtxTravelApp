@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="map_button_color">#7A94CC</color>
+    <color name="tema_button_color">#BCBCBC</color>
+    <color name="plan_button_color">#80AED6</color>
+    <color name="ticket_button_color">#DD988B</color>
+</resources>
