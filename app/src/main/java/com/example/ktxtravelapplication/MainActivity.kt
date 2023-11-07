@@ -20,32 +20,35 @@ class MainActivity : AppCompatActivity() {
     lateinit var viewPager_mainImages: ViewPager2
     var currentPosition = 0
 
+    // 자동 슬라이드를 위한 핸들러 선언
     val handler= Handler(Looper.getMainLooper()) {
         setPage()
         true
     }
+
+    // 메인 뷰 생성
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val mainActivityBinding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(mainActivityBinding.root)
+        val mainActivityBinding = ActivityMainBinding.inflate(layoutInflater) // 뷰 바인딩 생성
+        setContentView(mainActivityBinding.root) // 메인 뷰를 띄움
 
-        viewPager_mainImages = findViewById(R.id.mainViewPager)
-        viewPager_mainImages.adapter = MainImageViewPagerAdapter(getMainImages())
-        viewPager_mainImages.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+        viewPager_mainImages = findViewById(R.id.mainViewPager) // 뷰 페이저가 적용될 뷰에 id값
+        viewPager_mainImages.adapter = MainImageViewPagerAdapter(getMainImages()) // 뷰 페이저에 어댑터 적용
+        viewPager_mainImages.orientation = ViewPager2.ORIENTATION_HORIZONTAL // 뷰 페이저의 방향을 횡단으로 설정
 
-        //뷰페이저 쓰레드
+        // 자동 슬라이드를 위한 뷰페이저 쓰레드
         val thread=Thread(PagerRunnable())
         thread.start()
     }
 
-    //페이지 변경하기
+    //자동 슬라이드를 위한 페이지 변경하기
     fun setPage(){
         if(currentPosition==4) currentPosition=0
         viewPager_mainImages.setCurrentItem(currentPosition,true)
         currentPosition+=1
-    }
+        }
 
-    //3초마다 페이지 넘기기
+    //자동 슬라이드 : 3초마다 페이지 넘기기
     inner class PagerRunnable:Runnable{
         override fun run() {
             while(true){
@@ -55,7 +58,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // 이미지 배열리스트
+    // 뷰 페이저에 적용할 이미지 배열리스트
     private fun getMainImages(): ArrayList<Int> {
         return arrayListOf<Int>(
             R.drawable.mainimage1,
@@ -66,9 +69,10 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-// 뷰 어댑터
+// 뷰 어댑터 선언, 매개변수: 적용할 이미지 배열리스트
 class MainImageViewPagerAdapter(var mainImages: ArrayList<Int>) :
-    RecyclerView.Adapter<MainImageViewPagerAdapter.PagerViewHolder>() {
+    RecyclerView.Adapter<MainImageViewPagerAdapter.PagerViewHolder>() { //리사이클러뷰 어댑터를 적용.
+    //뷰 홀더 선언부
     inner class PagerViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder
         (LayoutInflater.from(parent.context).inflate(R.layout.main_image_view_pager2, parent, false)) {
         val mainImages = itemView.findViewById<ImageView>(R.id.mainImage)

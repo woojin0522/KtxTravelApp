@@ -23,14 +23,15 @@
             android:adjustViewBounds="true"
             android:layout_weight="1"
             app:srcCompat="@drawable/main_image" />-->
-
+        <!--뷰페이저2. 이곳에 이미지 슬라이드 기능 생성-->
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/mainViewPager"
             android:layout_width="match_parent"
             android:layout_height="600dp" />
     </LinearLayout>
 
-    <!--버튼 뷰-->
+    <!--버튼 뷰
+    LinearLayout을 horizontal로 선언하여 버튼을 한 행에 정렬-->
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
@@ -42,6 +43,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
+        <!-- 버튼선언. weight를 1로 설정하여 정렬-->
         <Button
             android:id="@+id/mainMapButton"
             style="@style/Widget.AppCompat.Button"
