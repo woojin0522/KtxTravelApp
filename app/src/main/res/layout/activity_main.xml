@@ -32,7 +32,7 @@
 
     <!--버튼 뷰
     LinearLayout을 horizontal로 선언하여 버튼을 한 행에 정렬-->
-    <LinearLayout
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,57 +44,57 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <!-- 버튼선언. weight를 1로 설정하여 정렬-->
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/mainMapButton"
             style="@style/Widget.AppCompat.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/map_button_color"
+            android:background="@drawable/main_btn_color"
             android:drawableTop="@drawable/map_image"
             android:paddingHorizontal="14dp"
             android:paddingVertical="25dp"
             android:text="@string/map_button"
             android:textSize="18dp" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/mainTemaButton"
             style="@style/Widget.AppCompat.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/tema_button_color"
+            android:background="@drawable/tema_btn_color"
             android:paddingHorizontal="14dp"
             android:paddingVertical="25dp"
             android:text="@string/tema_button"
             android:drawableTop="@drawable/tema_image"
             android:textSize="18dp" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/mainPlanButton"
             style="@style/Widget.AppCompat.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/plan_button_color"
+            android:background="@drawable/plan_btn_color"
             android:paddingHorizontal="14dp"
             android:paddingVertical="25dp"
             android:text="@string/plan_button"
             android:drawableTop="@drawable/plan_image"
             android:textSize="18dp" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/mainTicketButton"
             style="@style/Widget.AppCompat.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/ticket_button_color"
+            android:background="@drawable/ticket_btn_color"
             android:paddingHorizontal="14dp"
             android:paddingVertical="25dp"
             android:text="@string/ticket_button"
             android:drawableTop="@drawable/ticket_image"
             android:textSize="18dp" />
-    </LinearLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

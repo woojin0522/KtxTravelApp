@@ -1,6 +1,7 @@
 package com.example.ktxtravelapplication
 
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -11,6 +12,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.ktxtravelapplication.databinding.ActivityMainBinding
@@ -29,7 +32,7 @@ class MainActivity : AppCompatActivity() {
     // 메인 뷰 생성
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val mainActivityBinding = ActivityMainBinding.inflate(layoutInflater) // 뷰 바인딩 생성
+        val mainActivityBinding = ActivityMainBinding.inflate(layoutInflater) // 메인 뷰 바인딩 생성
         setContentView(mainActivityBinding.root) // 메인 뷰를 띄움
 
         viewPager_mainImages = findViewById(R.id.mainViewPager) // 뷰 페이저가 적용될 뷰에 id값
@@ -39,6 +42,13 @@ class MainActivity : AppCompatActivity() {
         // 자동 슬라이드를 위한 뷰페이저 쓰레드
         val thread=Thread(PagerRunnable())
         thread.start()
+
+        // 메인화면 버튼 클릭시 이벤트 리스너
+        mainActivityBinding.mainMapButton.setOnClickListener { }
+        mainActivityBinding.mainTemaButton.setOnClickListener {  }
+        mainActivityBinding.mainPlanButton.setOnClickListener {  }
+        mainActivityBinding.mainTicketButton.setOnClickListener {  }
+
     }
 
     //자동 슬라이드를 위한 페이지 변경하기
