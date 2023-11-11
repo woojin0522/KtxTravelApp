@@ -4,6 +4,8 @@
     <string name="tema_button">테마여행</string>
     <string name="plan_button">여행계획</string>
     <string name="ticket_button">티켓구매</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_map">Map</string>
+    <string name="title_activity_tema">tema</string>
+    <string name="title_activity_plan">plan</string>
+    <string name="title_activity_ticket">ticket</string>
 </resources>

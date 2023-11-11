@@ -44,10 +44,22 @@ class MainActivity : AppCompatActivity() {
         thread.start()
 
         // 메인화면 버튼 클릭시 이벤트 리스너
-        mainActivityBinding.mainMapButton.setOnClickListener { }
-        mainActivityBinding.mainTemaButton.setOnClickListener {  }
-        mainActivityBinding.mainPlanButton.setOnClickListener {  }
-        mainActivityBinding.mainTicketButton.setOnClickListener {  }
+        mainActivityBinding.mainMapButton.setOnClickListener {
+            val intent = Intent(this, MapActivity::class.java)
+            startActivity(intent)
+        }
+        mainActivityBinding.mainTemaButton.setOnClickListener {
+            val intent = Intent(this, TemaActivity::class.java)
+            startActivity(intent)
+        }
+        mainActivityBinding.mainPlanButton.setOnClickListener {
+            val intent = Intent(this, PlanActivity::class.java)
+            startActivity(intent)
+        }
+        mainActivityBinding.mainTicketButton.setOnClickListener {
+            val intent = Intent(this, TicketActivity::class.java)
+            startActivity(intent)
+        }
 
     }
 
