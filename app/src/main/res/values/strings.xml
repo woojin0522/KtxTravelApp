@@ -4,9 +4,9 @@
     <string name="tema_button">테마여행</string>
     <string name="plan_button">여행계획</string>
     <string name="ticket_button">티켓구매</string>
-    <string name="title_activity_map">Map</string>
-    <string name="title_activity_tema">tema</string>
-    <string name="title_activity_plan">plan</string>
+    <string name="title_activity_map">KTX 지도</string>
+    <string name="title_activity_tema">테마여행</string>
+    <string name="title_activity_plan">여행계획</string>
     <string name="title_activity_ticket">티켓 구매</string>
     <string name="map_drawer_open">드로어 오픈</string>
     <string name="map_drawer_close">드로어 클로즈</string>

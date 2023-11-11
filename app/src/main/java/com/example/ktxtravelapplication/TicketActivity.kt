@@ -15,6 +15,9 @@ class TicketActivity : AppCompatActivity() {
         val binding = ActivityTicketBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setSupportActionBar(binding.ticketToolbar)
+        supportActionBar?.setTitle("")
+
         // 뒤로가기 버튼
         binding.ticketBackBtn.setOnClickListener {
             finish()

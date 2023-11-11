@@ -3,7 +3,8 @@
     <style name="Base.Theme.KtxTravelApplication" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-        <item name="colorPrimary">#00668B</item>
+        <item name="colorPrimary">@color/main_app_color</item>
+        <item name="android:statusBarColor">@color/main_app_color</item>
     </style>
 
     <style name="Theme.KtxTravelApplication" parent="Base.Theme.KtxTravelApplication" />

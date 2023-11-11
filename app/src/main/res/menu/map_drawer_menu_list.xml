@@ -2,11 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/menu_item1"
-        android:title="메뉴 아이템1" />
+        android:title="KTX 노선선택" />
     <item
         android:id="@+id/menu_item2"
-        android:title="메뉴 아이템2" />
+        android:title="관광지 표시" />
     <item
         android:id="@+id/menu_item3"
-        android:title="메뉴 아이템3" />
+        android:title="?" />
 </menu>
