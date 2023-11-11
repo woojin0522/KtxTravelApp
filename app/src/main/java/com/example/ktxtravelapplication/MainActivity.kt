@@ -11,6 +11,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
+import android.window.OnBackInvokedDispatcher
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -38,31 +41,47 @@ class MainActivity : AppCompatActivity() {
         viewPager_mainImages = findViewById(R.id.mainViewPager) // 뷰 페이저가 적용될 뷰에 id값
         viewPager_mainImages.adapter = MainImageViewPagerAdapter(getMainImages()) // 뷰 페이저에 어댑터 적용
         viewPager_mainImages.orientation = ViewPager2.ORIENTATION_HORIZONTAL // 뷰 페이저의 방향을 횡단으로 설정
+        viewPager_mainImages.isUserInputEnabled = false // 뷰 페이저 스왑을 제한
 
         // 자동 슬라이드를 위한 뷰페이저 쓰레드
         val thread=Thread(PagerRunnable())
         thread.start()
 
         // 메인화면 버튼 클릭시 이벤트 리스너
-        mainActivityBinding.mainMapButton.setOnClickListener {
+        mainActivityBinding.mainMapButton.setOnClickListener {        // 맵 메뉴로 이동
             val intent = Intent(this, MapActivity::class.java)
             startActivity(intent)
         }
-        mainActivityBinding.mainTemaButton.setOnClickListener {
+        mainActivityBinding.mainTemaButton.setOnClickListener {       // 테마 메뉴로 이동
             val intent = Intent(this, TemaActivity::class.java)
             startActivity(intent)
         }
-        mainActivityBinding.mainPlanButton.setOnClickListener {
+        mainActivityBinding.mainPlanButton.setOnClickListener {       // 여행계획 메뉴로 이동
             val intent = Intent(this, PlanActivity::class.java)
             startActivity(intent)
         }
-        mainActivityBinding.mainTicketButton.setOnClickListener {
+        mainActivityBinding.mainTicketButton.setOnClickListener {     // 티켓예매 메뉴로 이동
             val intent = Intent(this, TicketActivity::class.java)
             startActivity(intent)
         }
 
+        // 뒤로가기 버튼을 눌렀을 때 한번 더 확인
+        var initTime = 0L
+        val toast = Toast.makeText(this, "뒤로가기를 한번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT)
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if(System.currentTimeMillis() - initTime > 3000) { // 만약 처음 5초가 지난 상황일 때 initTime은 0이니까 5000 - 0 > 3000 이므로 토스트 메시지 띄우고
+                    toast.show()                                   // initTime을 현재까지 지난 시간으로 초기화, 만약 뒤로가기 버튼 한번 더 누르면
+                    initTime = System.currentTimeMillis()          // 현재 지난 시간 - initTime은 < 3000 이므로 else문 발동 -> 앱 종료
+                }
+                else {
+                    finish()
+                }
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback = callback)
     }
-
+    
     //자동 슬라이드를 위한 페이지 변경하기
     fun setPage(){
         if(currentPosition==4) currentPosition=0
