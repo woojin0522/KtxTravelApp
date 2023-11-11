@@ -1,10 +1,11 @@
 package com.example.ktxtravelapplication
 
+import android.R
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.appcompat.widget.Toolbar
+import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import com.example.ktxtravelapplication.databinding.ActivityTicketBinding
 
 class TicketActivity : AppCompatActivity() {
@@ -13,7 +14,12 @@ class TicketActivity : AppCompatActivity() {
         // 뷰바인딩 선언부
         val binding = ActivityTicketBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        
+
+        // 뒤로가기 버튼
+        binding.ticketBackBtn.setOnClickListener {
+            finish()
+        }
+
         // 코레일톡 패키지명 변수
         val korailTalk = "com.korail.talk"
         // packageManager.getLaunchIntentForPackage()함수를 통해 코레일톡 앱을 불러옴.
