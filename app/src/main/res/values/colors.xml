@@ -12,4 +12,5 @@
     <color name="plan_button_click_color">#B2CBE1</color>
     <color name="ticket_button_color">#DD988B</color>
     <color name="ticket_button_click_color">#E4BDB5</color>
+    <color name="main_app_color">#00668B</color>
 </resources>

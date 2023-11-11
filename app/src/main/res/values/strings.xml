@@ -8,4 +8,7 @@
     <string name="title_activity_tema">tema</string>
     <string name="title_activity_plan">plan</string>
     <string name="title_activity_ticket">티켓 구매</string>
+    <string name="map_drawer_open">드로어 오픈</string>
+    <string name="map_drawer_close">드로어 클로즈</string>
+    <string name="map_drawer_head">지도설정</string>
 </resources>
