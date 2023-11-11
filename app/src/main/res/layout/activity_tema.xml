@@ -11,6 +11,17 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@color/main_app_color">
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/tema_backBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="←"
+            android:textColor="#ffffff"
+            android:background="#00668B"
+            android:textSize="30dp"
+            android:outlineSpotShadowColor="#00668B"
+            android:paddingRight="50dp"
+            android:layout_gravity="left"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -22,12 +33,15 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:gravity="center">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TemaActivity"
-            android:textSize="24dp" />
+            android:text="모르겠다 시부럴"
+            android:textStyle="bold"
+            android:textSize="50dp"
+            android:textColor="#ff0000"
+            android:layout_gravity="center_horizontal" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

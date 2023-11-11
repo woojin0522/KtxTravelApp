@@ -12,5 +12,9 @@ class PlanActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.planToolbar)
         supportActionBar?.setTitle("")
+
+        binding.planBackBtn.setOnClickListener {
+            finish()
+        }
     }
 }
