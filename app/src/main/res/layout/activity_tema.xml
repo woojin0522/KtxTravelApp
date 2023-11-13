@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".TemaActivity">
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/tema_appbar_layout"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize">
         <androidx.appcompat.widget.Toolbar
@@ -14,7 +15,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:theme="@style/AppTheme">
-
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/tema_backBtn"
                 android:layout_width="wrap_content"
@@ -35,41 +35,40 @@
                 android:textColor="@color/white"
                 android:textSize="25dp" />
         </androidx.appcompat.widget.Toolbar>
-
-        <LinearLayout
+    </com.google.android.material.appbar.AppBarLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/tema_appbar_layout">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            android:text="주변 역"
+            android:textSize="25dp"
+            android:layout_gravity="center"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/black"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="-지역태그-"
+            android:textSize="25dp"
+            android:layout_gravity="center"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/black"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/tema_tag_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@+id/tema_toolbar">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="150dp"
-                android:text="주변 역"
-                android:textSize="25dp"
-                android:layout_gravity="center"/>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/black"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="-지역태그-"
-                android:textSize="25dp"
-                android:layout_gravity="center"/>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/black"/>
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/tema_tag_recyclerview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:listitem="@layout/tema_item_view" />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/black"/>
-        </LinearLayout>
-    </com.google.android.material.appbar.AppBarLayout>
+            tools:listitem="@layout/tema_item_view" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/black"/>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
