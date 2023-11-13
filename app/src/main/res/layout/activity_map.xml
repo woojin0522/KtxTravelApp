@@ -7,14 +7,39 @@
     tools:context=".MapActivity">
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="?attr/actionBarSize">
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/map_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/main_app_color"
-            app:title="@string/title_activity_map"
-            app:titleTextColor="#ffffff" />
+            android:theme="@style/AppTheme">
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/map_back_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="←"
+                android:textSize="30dp"
+                android:textColor="@color/white"
+                android:background="@color/main_app_color"
+                android:outlineSpotShadowColor="@color/main_app_color"
+                android:layout_gravity="left"
+                android:paddingRight="50dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/title_activity_map"
+                android:textSize="25dp"
+                android:textColor="@color/white"/>
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/map_drawer_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginRight="20dp"
+                android:src="@drawable/hambuger_icon"
+                android:background="@color/main_app_color"/>
+        </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/mapDrawer"
@@ -28,7 +53,7 @@
             android:id="@+id/map_nav_view"
             android:layout_width="200dp"
             android:layout_height="match_parent"
-            android:layout_gravity="start"
+            android:layout_gravity="right"
             app:headerLayout="@layout/map_drawer_header"
             app:menu="@menu/map_drawer_menu_list"/>
     </androidx.drawerlayout.widget.DrawerLayout>

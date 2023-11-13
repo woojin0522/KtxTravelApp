@@ -16,23 +16,39 @@ class MapActivity : AppCompatActivity() {
 
         // 액션바를 툴바로 교체
         setSupportActionBar(binding.mapToolbar)
-        // 토글 버튼 추가
+        supportActionBar!!.setTitle("")
+
+        binding.mapBackBtn.setOnClickListener{
+            finish()
+        }
+
+        binding.mapDrawerBtn.setOnClickListener {
+            if(binding.mapNavView.isActivated == false){
+                binding.mapDrawer.openDrawer(binding.mapNavView, true)
+                binding.mapNavView.isActivated = true
+            }
+            else{
+                binding.mapDrawer.closeDrawer(binding.mapNavView, true)
+                binding.mapNavView.isActivated = false
+            }
+        }
+        /*// 토글 버튼 추가
         toggle = ActionBarDrawerToggle(this, binding.mapDrawer, R.string.map_drawer_open,
             R.string.map_drawer_close)
         // 툴바 뒤로가기 버튼 추가
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        // 토글 버튼을 메뉴 모양으로 변경
-        toggle.syncState()
+        // 뒤로가기 버튼을 메뉴 모양으로 변경
+        toggle.syncState()*/
         /*binding.mapNavView.setNavigationItemSelectedListener {
             true
         }*/
     }
 
-    // 토글 버튼 클릭시 작동
+    /*// 토글 버튼 클릭시 작동
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(toggle.onOptionsItemSelected(item)){
             return true
         }
         return super.onOptionsItemSelected(item)
-    }
+    }*/
 }

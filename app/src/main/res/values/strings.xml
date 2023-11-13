@@ -11,4 +11,6 @@
     <string name="map_drawer_open">드로어 오픈</string>
     <string name="map_drawer_close">드로어 클로즈</string>
     <string name="map_drawer_head">지도설정</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
