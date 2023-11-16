@@ -5,6 +5,10 @@
         <package android:name="com.korail.talk"></package>
         <package android:name="kr.co.srail.newapp"></package>
     </queries>
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- 위치정보 사용을 위해 권한을 추가-->
     <application
         android:usesCleartextTraffic="true"
         android:allowBackup="true"

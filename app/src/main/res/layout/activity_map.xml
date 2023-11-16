@@ -41,11 +41,6 @@
                 android:background="@color/main_app_color"/>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/map_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:name="com.naver.maps.map.MapFragment"/>
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/mapDrawer"
         android:layout_width="match_parent"
@@ -62,4 +57,9 @@
             app:headerLayout="@layout/map_drawer_header"
             app:menu="@menu/map_drawer_menu_list"/>
     </androidx.drawerlayout.widget.DrawerLayout>
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/map_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="com.naver.maps.map.MapFragment" />
 </androidx.constraintlayout.widget.ConstraintLayout>
