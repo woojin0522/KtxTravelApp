@@ -41,6 +41,10 @@
                 android:background="@color/main_app_color"/>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
+    <com.naver.maps.map.MapView
+        android:id="@+id/map_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/mapDrawer"
         android:layout_width="match_parent"

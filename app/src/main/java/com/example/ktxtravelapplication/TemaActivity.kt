@@ -1,17 +1,13 @@
 package com.example.ktxtravelapplication
 
-import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.ktxtravelapplication.databinding.ActivityTemaBinding
-import com.example.ktxtravelapplication.databinding.TemaItemViewBinding
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 
 class TemaActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,42 +25,30 @@ class TemaActivity : AppCompatActivity() {
             finish()
         }
 
-        val temaBinding = TemaItemViewBinding.inflate(layoutInflater)
-        val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        binding.temaTagRecyclerview.layoutManager = layoutManager
-        binding.temaTagRecyclerview.adapter = TemaRecyclerAdapter()
+        binding.temaTabViewPager2.adapter = temaViewPagerAdapter(this)
+        
+        //탭 레이아웃에서 탭을 선택할 때 이벤트 리스너
+        TabLayoutMediator(binding.temaTabLayout, binding.temaTabViewPager2) { tab, position ->
+            when(position) {
+                0 -> tab.text = "계절"
+                1 -> tab.text = "테마열차"
+            }
+        }.attach()
     }
 }
 
-class TemaRecyclerAdapter():
-        RecyclerView.Adapter<TemaRecyclerAdapter.TemaRecyclerViewHolder>() {
-    private val itemList = mutableListOf<String>().apply {
-        add("<#서울특별시>")
-        add("<#경기도>")
-        add("<#인천시>")
-        add("<#강원도>")
-        add("<#충청북도>")
-        add("<#충청남도>")
-        add("<#전라북도>")
-        add("<#전라남도>")
-        add("<#경상북도>")
-        add("<#경상남도>")
-    }
-    inner class TemaRecyclerViewHolder(val binding: TemaItemViewBinding): RecyclerView.ViewHolder(binding.root) {
-        fun bind(pos: Int) {
-            binding.temaText.text = itemList[pos]
-        }
+class temaViewPagerAdapter(activity: FragmentActivity): FragmentStateAdapter(activity) {
+    val fragments: List<Fragment>
+    init {
+        fragments = listOf(seasonTabFragment(), temaTrainFragment())
     }
     override fun getItemCount(): Int {
-        return itemList.size
+        return fragments.size
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TemaRecyclerViewHolder {
-        val view = TemaItemViewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return TemaRecyclerViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: TemaRecyclerViewHolder, position: Int) {
-        holder.bind(position)
+    override fun createFragment(position: Int): Fragment {
+        return fragments[position]
     }
 }
+
+

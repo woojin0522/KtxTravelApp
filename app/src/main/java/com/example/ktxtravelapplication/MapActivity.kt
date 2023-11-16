@@ -1,9 +1,8 @@
 package com.example.ktxtravelapplication
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import com.example.ktxtravelapplication.databinding.ActivityMapBinding
 
 class MapActivity : AppCompatActivity() {
@@ -32,6 +31,7 @@ class MapActivity : AppCompatActivity() {
                 binding.mapNavView.isActivated = false
             }
         }
+
         /*// 토글 버튼 추가
         toggle = ActionBarDrawerToggle(this, binding.mapDrawer, R.string.map_drawer_open,
             R.string.map_drawer_close)

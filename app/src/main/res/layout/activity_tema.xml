@@ -36,39 +36,34 @@
                 android:textSize="25dp" />
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
-    <LinearLayout
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tema_tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/tema_appbar_layout">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="150dp"
-            android:text="주변 역"
-            android:textSize="25dp"
-            android:layout_gravity="center"/>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/black"/>
-        <TextView
+        app:layout_constraintTop_toBottomOf="@+id/tema_appbar_layout"
+        app:tabMode="scrollable">
+
+        <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="-지역태그-"
-            android:textSize="25dp"
-            android:layout_gravity="center"/>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/black"/>
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/tema_tag_recyclerview"
-            android:layout_width="match_parent"
+            android:text="계절" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:listitem="@layout/tema_item_view" />
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/black"/>
-    </LinearLayout>
+            android:text="테마열차" />
+    </com.google.android.material.tabs.TabLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/black"
+        app:layout_constraintTop_toBottomOf="@+id/tema_tab_layout"/>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/tema_tab_viewPager2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="105dp"
+        app:layout_constraintTop_toBottomOf="@+id/tema_tab_layout" />
 </androidx.constraintlayout.widget.ConstraintLayout>
