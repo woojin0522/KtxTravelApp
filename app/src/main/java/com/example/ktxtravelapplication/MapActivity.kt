@@ -51,39 +51,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
 
         mapFragment.getMapAsync(this)
-        /*// 토글 버튼 추가
-        toggle = ActionBarDrawerToggle(this, binding.mapDrawer, R.string.map_drawer_open,
-            R.string.map_drawer_close)
-        // 툴바 뒤로가기 버튼 추가
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        // 뒤로가기 버튼을 메뉴 모양으로 변경
-        toggle.syncState()*/
-        /*binding.mapNavView.setNavigationItemSelectedListener {
-            true
-        }*/
     }
 
     @UiThread
     override fun onMapReady(naverMap: NaverMap) {
-        /*val options = NaverMapOptions()
-            .camera(CameraPosition(LatLng(37.566, 126.978),  10.0))  // 카메라 위치 (위도,경도,줌)
-            .mapType(NaverMap.MapType.Basic)    //지도 유형
-            .enabledLayerGroups(NaverMap.LAYER_GROUP_BUILDING)  //빌딩 표시
-
-        MapFragment.newInstance(options)
-
-        val marker = Marker()
-        marker.position = LatLng(37.566, 126.978)
-        marker.map = naverMap*/
         val uiSettings = naverMap.uiSettings
 
         uiSettings.isLocationButtonEnabled = true
+        uiSettings.isCompassEnabled = true
+
     }
-    /*// 토글 버튼 클릭시 작동
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(toggle.onOptionsItemSelected(item)){
-            return true
-        }
-        return super.onOptionsItemSelected(item)
-    }*/
 }
