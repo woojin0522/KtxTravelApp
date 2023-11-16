@@ -1,11 +1,19 @@
 package com.example.ktxtravelapplication
 
 import android.os.Bundle
+import androidx.annotation.UiThread
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.ktxtravelapplication.databinding.ActivityMapBinding
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraPosition
+import com.naver.maps.map.MapFragment
+import com.naver.maps.map.NaverMap
+import com.naver.maps.map.NaverMapOptions
+import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.Marker
 
-class MapActivity : AppCompatActivity() {
+class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var toggle: ActionBarDrawerToggle
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +40,13 @@ class MapActivity : AppCompatActivity() {
             }
         }
 
+        val fm = supportFragmentManager
+        val mapFragment = fm.findFragmentById(R.id.map_fragment) as MapFragment?
+            ?: MapFragment.newInstance().also {
+                fm.beginTransaction().add(R.id.map_fragment, it).commit()
+            }
+
+        mapFragment.getMapAsync(this)
         /*// 토글 버튼 추가
         toggle = ActionBarDrawerToggle(this, binding.mapDrawer, R.string.map_drawer_open,
             R.string.map_drawer_close)
@@ -44,6 +59,19 @@ class MapActivity : AppCompatActivity() {
         }*/
     }
 
+    @UiThread
+    override fun onMapReady(naverMap: NaverMap) {
+        val options = NaverMapOptions()
+            .camera(CameraPosition(LatLng(37.566, 126.978),  10.0))  // 카메라 위치 (위도,경도,줌)
+            .mapType(NaverMap.MapType.Basic)    //지도 유형
+            .enabledLayerGroups(NaverMap.LAYER_GROUP_BUILDING)  //빌딩 표시
+
+        MapFragment.newInstance(options)
+
+        val marker = Marker()
+        marker.position = LatLng(37.566, 126.978)
+        marker.map = naverMap
+    }
     /*// 토글 버튼 클릭시 작동
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(toggle.onOptionsItemSelected(item)){
