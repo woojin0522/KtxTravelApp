@@ -47,7 +47,7 @@
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="계절" />
+            android:text="@string/tema_tab_title1" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"

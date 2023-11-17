@@ -2,11 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/menu_item1"
-        android:title="KTX 노선선택" />
+        android:title="@string/map_drawer_item_title1" />
     <item
         android:id="@+id/menu_item2"
-        android:title="관광지 표시" />
+        android:title="@string/map_drawer_item_title2" />
     <item
         android:id="@+id/menu_item3"
-        android:title="뭐 넣지?" />
+        android:title="" />
 </menu>
