@@ -20,7 +20,7 @@ class TemaActivity : AppCompatActivity() {
         setSupportActionBar(binding.temaToolbar)
         supportActionBar?.setTitle("")
 
-        // 뒤로가기 버튼 눌렀을 때
+        // 상단바 뒤로가기 버튼 눌렀을 때
         binding.temaBackBtn.setOnClickListener {
             finish()
         }
@@ -37,6 +37,7 @@ class TemaActivity : AppCompatActivity() {
     }
 }
 
+// 뷰페이저 어댑터
 class temaViewPagerAdapter(activity: FragmentActivity): FragmentStateAdapter(activity) {
     val fragments: List<Fragment>
     init {

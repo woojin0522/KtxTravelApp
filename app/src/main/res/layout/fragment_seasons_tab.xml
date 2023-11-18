@@ -12,24 +12,28 @@
         android:rowCount="2"
         android:columnCount="2">
         <TextView
+            android:id="@+id/tema_spring_btn"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
             android:text="봄"
             android:textSize="50dp"
             android:background="#66B773D5" />
         <TextView
+            android:id="@+id/tema_summer_btn"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
             android:text="여름"
             android:textSize="50dp"
             android:background="#6697E88E"/>
         <TextView
+            android:id="@+id/tema_fall_btn"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
             android:text="가을"
             android:textSize="50dp"
             android:background="#66D15E2F"/>
         <TextView
+            android:id="@+id/tema_winter_btn"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
             android:text="겨울"

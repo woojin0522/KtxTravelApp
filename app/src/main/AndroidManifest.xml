@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <queries>
-        <package android:name="com.korail.talk"></package>
-        <package android:name="kr.co.srail.newapp"></package>
+        <package android:name="com.korail.talk" />
+        <package android:name="kr.co.srail.newapp" />
     </queries>
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <!-- 위치정보 사용을 위해 권한을 추가-->
+
     <application
-        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -19,11 +19,16 @@
         android:roundIcon="@mipmap/app_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.KtxTravelApplication"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".TravelPlanActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme"/>
         <activity
             android:name=".TicketActivity"
             android:exported="false"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".PlanActivity"
             android:exported="false"

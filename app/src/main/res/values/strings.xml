@@ -29,4 +29,6 @@
     <string name="korail_detail">이미지를 클릭하면 코레일톡 앱으로 연결됩니다.</string>
     <string name="str_detail">이미지를 클릭하면 SRT예매 앱으로 연결됩니다.</string>
     <string name="ticket_explain">(앱이 설치되어 있지 않을 경우 설치화면으로 이동됩니다.)</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
