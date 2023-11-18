@@ -1,17 +1,24 @@
 package com.example.ktxtravelapplication
 
+import android.app.AlertDialog
+import android.app.ProgressDialog.show
+import android.app.TimePickerDialog
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import android.widget.TimePicker
 import androidx.annotation.RequiresApi
-import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ktxtravelapplication.databinding.ActivityTravelPlanBinding
 import com.example.ktxtravelapplication.databinding.PlanDetailItemBinding
+import java.sql.Time
+import java.text.DateFormat
 import java.time.LocalDate
 
 class TravelPlanActivity : AppCompatActivity() {
@@ -26,7 +33,25 @@ class TravelPlanActivity : AppCompatActivity() {
 
         // 상단바 뒤로가기 버튼
         binding.planBackBtn.setOnClickListener {
-            finish()
+            // 화면 종료전 물어보는 창 띄우기
+            AlertDialog.Builder(this).run {
+                val eventHandler = object : DialogInterface.OnClickListener {
+                    override fun onClick(p0: DialogInterface?, p1: Int) {
+                        if(p1 == DialogInterface.BUTTON_POSITIVE) {
+                            finish()
+                        } else {
+                            finish()
+                        }
+                    }
+                }
+
+                setTitle("나가기")
+                setIcon(android.R.drawable.ic_dialog_info)
+                setMessage("나가기 전에 저장하시겠습니까?")
+                setPositiveButton("네", eventHandler)
+                setNegativeButton("아니오", eventHandler)
+                show()
+            }
         }
 
         // 현재 날짜를 초기화. 안드로이드 8 버전 이상부터 사용
@@ -45,7 +70,28 @@ class TravelPlanActivity : AppCompatActivity() {
         // 시간별 계획 추가버튼 클릭시
         binding.planDetailPlusBtn.setOnClickListener {
             datas.add(PlanDetailDatas("오전 12 : 00", "오후 1 : 00"))
-            binding.planDetailRecyclerView.adapter?.notifyDataSetChanged()
+            binding.planDetailRecyclerView.adapter?.notifyItemInserted(datas.size)
+        }
+
+        // 시간별 계획 저장버튼 클릭시
+        binding.planSaveBtn.setOnClickListener {
+            // 저장버튼 클릭시 확인여부창 띄우기
+            AlertDialog.Builder(this).run {
+                val eventHandler = object : DialogInterface.OnClickListener {
+                    override fun onClick(p0: DialogInterface?, p1: Int) {
+                        if(p1 == DialogInterface.BUTTON_POSITIVE) {
+                            finish()
+                        } else {}
+                    }
+                }
+
+                setTitle("저장여부")
+                setIcon(android.R.drawable.ic_dialog_info)
+                setMessage("정말 저장하시겠습니까?")
+                setPositiveButton("네", eventHandler)
+                setNegativeButton("아니오", eventHandler)
+                show()
+            }
         }
 
         // 시간별 계획 리사이클러뷰
@@ -54,6 +100,7 @@ class TravelPlanActivity : AppCompatActivity() {
         binding.planDetailRecyclerView.layoutManager = LinearLayoutManager(this)
     }
 
+    // 화면 전환간 애니메이션 제거
     override fun onPause() {
         super.onPause()
         // 만약 api34일 경우 overrideActivityTransition 사용
@@ -68,16 +115,45 @@ data class PlanDetailDatas(
 )
 
 // 시간별 계획 리사이클러뷰 어댑터
-class TravelPlanRecyclerAdapter(val datas : MutableList<PlanDetailDatas>) : RecyclerView.Adapter<TravelPlanRecyclerAdapter.ViewHolder>() {
-    inner class ViewHolder(val binding: PlanDetailItemBinding) : RecyclerView.ViewHolder(binding.root) {
+class TravelPlanRecyclerAdapter(val datas: MutableList<PlanDetailDatas>) : RecyclerView.Adapter<TravelPlanRecyclerAdapter.ViewHolder>() {
+
+    inner class ViewHolder(val binding : PlanDetailItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(pos: Int){
+            // TimePickerDialog 함수
+            fun timePic(textNum: Int) {
+                TimePickerDialog(itemView.context, object: TimePickerDialog.OnTimeSetListener{
+                    override fun onTimeSet(p0: TimePicker?, p1: Int, p2: Int) {
+                        val amOrPm: String
+                        var hour = p1
+                        val minute = p2
+                        if(p1 >= 12 && p1 <= 24) {
+                            amOrPm = "오후"
+                            if(hour == 12) hour = hour
+                            else hour = hour - 12
+                        }  else{
+                            amOrPm = "오전"
+                        }
+                        if(textNum == 1) binding.planDetailTime.text = "${amOrPm} ${hour.toString()} : ${minute.toString().padStart(2, '0')}"
+                        else binding.planDetailTime2.text = "${amOrPm} ${hour.toString()} : ${minute.toString().padStart(2, '0')}"
+                    }
+                }, 15, 0, false).show()
+            }
+
             binding.planDetailTime.text = datas[pos].startTime
             binding.planDetailTime2.text = datas[pos].endTime
 
             // 삭제하기 버튼 클릭시 리사이클러뷰 항목 삭제
             binding.planDeleteBtn.setOnClickListener {
                 datas.removeAt(pos)
-                notifyDataSetChanged()
+                notifyItemRemoved(pos)
+                notifyItemRangeChanged(pos, datas.size)
+            }
+
+            binding.planDetailTime.setOnClickListener {
+                timePic(1)
+            }
+            binding.planDetailTime2.setOnClickListener {
+                timePic(2)
             }
         }
     }

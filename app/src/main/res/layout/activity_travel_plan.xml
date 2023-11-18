@@ -36,6 +36,16 @@
                 android:text="@string/title_activity_plan"
                 android:textColor="@color/white"
                 android:textSize="25dp" />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/plan_saveBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="저장하기"
+                android:textSize="15dp"
+                android:textColor="@color/white"
+                android:background="#7EABCD"
+                android:layout_gravity="right"
+                android:layout_marginRight="10dp"/>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 

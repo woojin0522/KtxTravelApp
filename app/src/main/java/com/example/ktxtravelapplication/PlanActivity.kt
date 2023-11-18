@@ -19,13 +19,15 @@ class PlanActivity : AppCompatActivity() {
         setSupportActionBar(binding.planToolbar)
         supportActionBar?.setTitle("")
 
+        // 상단바 뒤로가기 버튼을 눌렀을 경우
         binding.planBackBtn.setOnClickListener {
             finish()
         }
 
+        // 상단바 + 버튼을 눌렀을 경우
         binding.planPlusBtn.setOnClickListener {
             val intent = Intent(this, TravelPlanActivity::class.java)
-            // 만약 api34 이상일 경우 overrideActivityTransition 사용
+            // 화면 전환간 애니메이션 제거 만약 api34 이상일 경우 overrideActivityTransition 사용
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             startActivity(intent)
         }
