@@ -1,27 +1,25 @@
 package com.example.ktxtravelapplication
 
 import android.app.AlertDialog
-import android.app.ProgressDialog.show
 import android.app.TimePickerDialog
-import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TimePicker
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ktxtravelapplication.databinding.ActivityTravelPlanBinding
 import com.example.ktxtravelapplication.databinding.PlanDetailItemBinding
-import java.sql.Time
-import java.text.DateFormat
 import java.time.LocalDate
 
 class TravelPlanActivity : AppCompatActivity() {
+    lateinit var planTitle: String
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,9 +29,8 @@ class TravelPlanActivity : AppCompatActivity() {
         setSupportActionBar(binding.planToolbar)
         supportActionBar?.setTitle("")
 
-        // 상단바 뒤로가기 버튼
-        binding.planBackBtn.setOnClickListener {
-            // 화면 종료전 물어보는 창 띄우기
+        // 뒤로가기 기능 함수
+        fun backBtn() {
             AlertDialog.Builder(this).run {
                 val eventHandler = object : DialogInterface.OnClickListener {
                     override fun onClick(p0: DialogInterface?, p1: Int) {
@@ -54,32 +51,14 @@ class TravelPlanActivity : AppCompatActivity() {
             }
         }
 
-        // 현재 날짜를 초기화. 안드로이드 8 버전 이상부터 사용
-        binding.planCalendarDay.text = LocalDate.now().toString()
-
-        // 캘린더뷰에서 선택한 날짜를 불러옴.
-        binding.calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
-            binding.planCalendarDay.text = "$year-${month + 1}-$dayOfMonth"
-        }
-
-        // 여행계획 데이터
-        val datas = mutableListOf<PlanDetailDatas>().apply {
-            add(PlanDetailDatas("오전 12 : 00", "오후 1 : 00"))
-        }
-
-        // 시간별 계획 추가버튼 클릭시
-        binding.planDetailPlusBtn.setOnClickListener {
-            datas.add(PlanDetailDatas("오전 12 : 00", "오후 1 : 00"))
-            binding.planDetailRecyclerView.adapter?.notifyItemInserted(datas.size)
-        }
-
-        // 시간별 계획 저장버튼 클릭시
-        binding.planSaveBtn.setOnClickListener {
-            // 저장버튼 클릭시 확인여부창 띄우기
+        // 저장하기 기능 함수
+        fun saveBtn() {
             AlertDialog.Builder(this).run {
                 val eventHandler = object : DialogInterface.OnClickListener {
                     override fun onClick(p0: DialogInterface?, p1: Int) {
                         if(p1 == DialogInterface.BUTTON_POSITIVE) {
+                            // 제목 값 저장
+                            planTitle = binding.planTitle.text.toString()
                             finish()
                         } else {}
                     }
@@ -94,8 +73,47 @@ class TravelPlanActivity : AppCompatActivity() {
             }
         }
 
+        // 상단바 뒤로가기 버튼
+        binding.planBackBtn.setOnClickListener {
+            // 화면 종료전 물어보는 창 띄우기
+            backBtn()
+        }
+
+        // 뒤로가기 버튼 클릭시
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                backBtn()
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback = callback)
+
+
+        // 현재 날짜를 초기화. 안드로이드 8 버전 이상부터 사용
+        binding.planCalendarDay.text = LocalDate.now().toString()
+
+        // 캘린더뷰에서 선택한 날짜를 불러옴.
+        binding.calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
+            binding.planCalendarDay.text = "$year-${month + 1}-$dayOfMonth"
+        }
+
+        // 여행계획 데이터
+        val datas = mutableListOf<PlanDetailDatas>().apply {
+            add(PlanDetailDatas("오후 12 : 00", "오후 1 : 00", ""))
+        }
+
+        // 시간별 계획 추가버튼 클릭시
+        binding.planDetailPlusBtn.setOnClickListener {
+            datas.add(PlanDetailDatas("오후 12 : 00", "오후 1 : 00", ""))
+            binding.planDetailRecyclerView.adapter?.notifyItemInserted(datas.size)
+        }
+
+        // 시간별 계획 저장버튼 클릭시
+        binding.planSaveBtn.setOnClickListener {
+            // 저장버튼 클릭시 확인여부창 띄우기
+            saveBtn()
+        }
+
         // 시간별 계획 리사이클러뷰
-        val layoutManager = LinearLayoutManager.VERTICAL
         binding.planDetailRecyclerView.adapter = TravelPlanRecyclerAdapter(datas)
         binding.planDetailRecyclerView.layoutManager = LinearLayoutManager(this)
     }
@@ -112,6 +130,7 @@ class TravelPlanActivity : AppCompatActivity() {
 data class PlanDetailDatas(
     val startTime: String,
     val endTime: String,
+    val planDetail: String
 )
 
 // 시간별 계획 리사이클러뷰 어댑터

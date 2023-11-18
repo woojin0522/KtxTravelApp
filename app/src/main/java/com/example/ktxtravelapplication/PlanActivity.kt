@@ -7,10 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ktxtravelapplication.databinding.ActivityPlanBinding
+import com.example.ktxtravelapplication.databinding.PlanItemBinding
 
 class PlanActivity : AppCompatActivity() {
+    lateinit var planTitle: String
+    lateinit var datas: MutableList<String>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityPlanBinding.inflate(layoutInflater)
@@ -31,26 +35,27 @@ class PlanActivity : AppCompatActivity() {
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             startActivity(intent)
         }
+
     }
 }
 
-/*class PlanRecyclerAdapter(): RecyclerView.Adapter<PlanRecyclerAdapter.ViewHolder>() {
+class PlanRecyclerAdapter(val datas: MutableList<String>): RecyclerView.Adapter<PlanRecyclerAdapter.ViewHolder>() {
     override fun getItemCount(): Int {
-
+        return datas.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
+        holder.bind(position)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.plan_item, parent, false)
-        return ViewHolder(view)
+        val binding = PlanItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
-    inner class ViewHolder(val view: View): RecyclerView.ViewHolder(view) {
-        fun bind(position: Int){
-
+    inner class ViewHolder(val binding: PlanItemBinding): RecyclerView.ViewHolder(binding.root) {
+        fun bind(pos: Int){
+            binding.title.text = datas[pos]
         }
     }
-}*/
+}

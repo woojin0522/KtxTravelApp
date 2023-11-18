@@ -59,6 +59,13 @@
             android:id="@+id/calendarView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/plan_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="여행 계획 제목을 적어주세요."
+            android:ems="30"
+            android:inputType="text"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
