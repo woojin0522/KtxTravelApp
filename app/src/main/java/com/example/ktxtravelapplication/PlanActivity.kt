@@ -36,6 +36,15 @@ class PlanActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        datas = mutableListOf(
+            "테스트 1"
+        )
+
+        if(datas.size > 0){
+            binding.planRecyclerView.adapter = PlanRecyclerAdapter(datas)
+            binding.planRecyclerView.layoutManager = LinearLayoutManager(this)
+        } else {}
+
     }
 }
 

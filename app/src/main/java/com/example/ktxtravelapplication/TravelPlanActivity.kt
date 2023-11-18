@@ -59,6 +59,7 @@ class TravelPlanActivity : AppCompatActivity() {
                         if(p1 == DialogInterface.BUTTON_POSITIVE) {
                             // 제목 값 저장
                             planTitle = binding.planTitle.text.toString()
+                            // 이전화면으로 값 넘겨주기
                             finish()
                         } else {}
                     }
