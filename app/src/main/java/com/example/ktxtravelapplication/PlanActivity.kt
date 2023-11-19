@@ -1,6 +1,7 @@
 package com.example.ktxtravelapplication
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -39,9 +40,22 @@ class PlanActivity : AppCompatActivity() {
             ActivityResultContracts.StartActivityForResult()){
             val returnTitle = it.data?.getStringExtra("returnTitle")
             val returnDate = it.data?.getStringExtra("returnDate")
+            val returnState = it.data?.getStringExtra("returnState")
+            val returnIndex = it.data?.getIntExtra("returnIndex", 0)
 
             if(returnTitle != null) {
-                datas.add(planData(returnTitle.toString(), returnDate.toString()))
+                // returnState가 저장(추가)일 때 리사이클러 항목 추가
+                if(returnState == "저장"){
+                    datas.add(planData(returnTitle.toString(), returnDate.toString()))
+                }
+                // returnState가 수정일 때 해당 리사이클러 항목 수정
+                else{
+                    datas[returnIndex!!].planTitle = returnTitle.toString()
+                    datas[returnIndex!!].planDate = returnDate.toString()
+                    Log.d("returnTest", "${datas[returnIndex]}")
+                    binding.planRecyclerView.adapter?.notifyDataSetChanged()
+                }
+
             }
             Log.d("test", "데이터 $datas")
             binding.planRecyclerView.adapter?.notifyItemInserted(datas.size)
@@ -52,7 +66,7 @@ class PlanActivity : AppCompatActivity() {
             val intent = Intent(this, TravelPlanActivity::class.java)
             // 화면 전환간 애니메이션 제거 만약 api34 이상일 경우 overrideActivityTransition 사용
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-            intent.putExtra("state", "새로작성")
+            intent.putExtra("returnState", "저장")
             requestLauncher.launch(intent)
         }
 
@@ -60,7 +74,7 @@ class PlanActivity : AppCompatActivity() {
         datas = mutableListOf()
 
         // 리사이클러뷰 생성
-        binding.planRecyclerView.adapter = PlanRecyclerAdapter(datas)
+        binding.planRecyclerView.adapter = PlanRecyclerAdapter(this, datas, requestLauncher)
         binding.planRecyclerView.layoutManager = LinearLayoutManager(this)
     }
 }
@@ -70,7 +84,7 @@ data class planData(
     var planDate: String
 )
 
-class PlanRecyclerAdapter(val datas: MutableList<planData>): RecyclerView.Adapter<PlanRecyclerAdapter.ViewHolder>() {
+class PlanRecyclerAdapter(val context: Context, val datas: MutableList<planData>, val requestLaun: ActivityResultLauncher<Intent>): RecyclerView.Adapter<PlanRecyclerAdapter.ViewHolder>() {
     override fun getItemCount(): Int {
         return datas.size
     }
@@ -90,11 +104,13 @@ class PlanRecyclerAdapter(val datas: MutableList<planData>): RecyclerView.Adapte
             binding.planDate.text = datas[pos].planDate
 
             itemView.setOnClickListener {
-                val intent = Intent(itemView.context, TravelPlanActivity::class.java)
-                intent.putExtra("Title", binding.title.text)
-                intent.putExtra("Date", binding.planDate.text)
-                intent.putExtra("state", "수정")
-                itemView.context.startActivity(intent)
+                val activity = context as PlanActivity
+                val intent = Intent(activity, TravelPlanActivity::class.java)
+                intent.putExtra("returnTitle", binding.title.text)
+                intent.putExtra("returnDate", binding.planDate.text)
+                intent.putExtra("returnState", "수정")
+                intent.putExtra("returnIndex", pos)
+                requestLaun.launch(intent)
             }
         }
     }

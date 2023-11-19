@@ -38,9 +38,10 @@ class TravelPlanActivity : AppCompatActivity() {
         supportActionBar?.setTitle("")
 
         // 값 전달받기
-        val returnPlanTitle = intent.getStringExtra("Title")
-        val returnPlanDate = intent.getStringExtra("Date")
-        val returnState = intent.getStringExtra("state")
+        val returnPlanTitle = intent.getStringExtra("returnTitle")
+        val returnPlanDate = intent.getStringExtra("returnDate")
+        val returnState = intent.getStringExtra("returnState")
+        val returnIndex = intent.getIntExtra("returnIndex", 0)
         if(returnPlanTitle == null || returnPlanDate == null){}
         else {
             binding.planTitle.setText(returnPlanTitle)
@@ -63,20 +64,21 @@ class TravelPlanActivity : AppCompatActivity() {
             }
         }
         // 값 저장 및 인텐트 값 넘겨주기 함수
-        fun planSave() {
+        fun planSave(state: String) {
             // 제목 날짜 저장
             planDate = binding.planCalendarDay.text.toString()
 
             val returnIntent = Intent()
             returnIntent.putExtra("returnTitle", planTitle)
             returnIntent.putExtra("returnDate", planDate)
+            returnIntent.putExtra("returnState", state)
+            returnIntent.putExtra("returnIndex", returnIndex)
             setResult(Activity.RESULT_OK, returnIntent)
-            Log.d("test", "$planTitle, $planDate")
             // 이전화면으로 값 넘겨주기
             finish()
         }
         // 뒤로가기 버튼 기능 함수
-        fun backBtn() {
+        fun backBtn(state: String) {
             AlertDialog.Builder(this).run {
                 val eventHandler = object : DialogInterface.OnClickListener {
                     override fun onClick(p0: DialogInterface?, p1: Int) {
@@ -86,7 +88,7 @@ class TravelPlanActivity : AppCompatActivity() {
                             // 제목값 비어있을 경우 경고창 표시
                             if(planTitle == "") titleEmpty()
                             // 제목값 있을 경우 저장
-                            else planSave()
+                            else planSave(state)
                         } else {
                             finish()
                         }
@@ -95,26 +97,26 @@ class TravelPlanActivity : AppCompatActivity() {
 
                 setTitle("나가기")
                 setIcon(android.R.drawable.ic_dialog_info)
-                setMessage("나가기 전에 저장하시겠습니까?")
+                setMessage("나가기 전에 ${state}하시겠습니까?")
                 setPositiveButton("네", eventHandler)
                 setNegativeButton("아니오", eventHandler)
                 show()
             }
         }
         // 저장하기 버튼 기능 함수
-        fun saveBtn() {
+        fun saveBtn(state: String) {
             AlertDialog.Builder(this).run {
                 val eventHandler = object : DialogInterface.OnClickListener {
                     override fun onClick(p0: DialogInterface?, p1: Int) {
                         if(p1 == DialogInterface.BUTTON_POSITIVE) {
-                            planSave()
+                            planSave(state)
                         } else {}
                     }
                 }
 
                 setTitle("저장여부")
                 setIcon(android.R.drawable.ic_dialog_info)
-                setMessage("정말 저장하시겠습니까?")
+                setMessage("정말 ${state}하시겠습니까?")
                 setPositiveButton("네", eventHandler)
                 setNegativeButton("아니오", eventHandler)
                 show()
@@ -125,14 +127,23 @@ class TravelPlanActivity : AppCompatActivity() {
         // 뒤로가기 기능 ----------------------------------------------------------
         // 상단바 뒤로가기 버튼
         binding.planBackBtn.setOnClickListener {
-            // 화면 종료전 물어보는 창 띄우기
-            backBtn()
+            if(returnState == "수정"){
+                backBtn("수정")
+            }
+            else {
+                backBtn("저장")
+            }
         }
 
         // 뒤로가기 버튼 클릭시
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                backBtn()
+                if(returnState == "수정"){
+                    backBtn("수정")
+                }
+                else {
+                    backBtn("저장")
+                }
             }
         }
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback = callback)
@@ -163,13 +174,16 @@ class TravelPlanActivity : AppCompatActivity() {
         // 시간별 계획 저장 버튼 클릭시
         binding.planSaveBtn.setOnClickListener {
             if(returnState == "수정"){
-
+                // 수정 버튼 클릭시 확인 여부창 띄우기
+                planTitle = binding.planTitle.text.toString()
+                if(planTitle == "") titleEmpty()
+                else saveBtn("수정")
             }
             else {
                 // 저장 버튼 클릭시 확인 여부창 띄우기
                 planTitle = binding.planTitle.text.toString()
                 if(planTitle == "") titleEmpty()
-                else saveBtn()
+                else saveBtn("저장")
             }
         }
         // -------------------------------------------------------------- 버튼 작동 영역
