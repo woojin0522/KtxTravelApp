@@ -1,8 +1,10 @@
 package com.example.ktxtravelapplication
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.TimePickerDialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -19,23 +21,55 @@ import com.example.ktxtravelapplication.databinding.PlanDetailItemBinding
 import java.time.LocalDate
 
 class TravelPlanActivity : AppCompatActivity() {
+    // 변수 선언 영역 ------------------------
     lateinit var planTitle: String
+    lateinit var planDate: String
+    // ------------------------ 변수 선언 영역
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // 뷰 바인딩
         val binding = ActivityTravelPlanBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // 액션바 대신 툴바 사용 및 타이틀 비워 두기
         setSupportActionBar(binding.planToolbar)
         supportActionBar?.setTitle("")
 
-        // 뒤로가기 기능 함수
+        // 함수 영역 -------------------------------------------------------------
+        // 제목 값이 비어 있을 경우 경고창 표시
+        fun titleEmpty() {
+            AlertDialog.Builder(this).run {
+                setTitle("경고")
+                setMessage("제목을 입력 해주세요.")
+                setPositiveButton("확인", null)
+                show()
+            }
+        }
+        // 값 저장 및 인텐트 값 넘겨주기 함수
+        fun planSave() {
+            // 제목 날짜 저장
+            planDate = binding.planCalendarDay.text.toString()
+
+            val returnIntent = Intent()
+            returnIntent.putExtra("returnTitle", planTitle)
+            returnIntent.putExtra("returnDate", planDate)
+            setResult(Activity.RESULT_OK, returnIntent)
+            // 이전화면으로 값 넘겨주기
+            finish()
+        }
+        // 뒤로가기 버튼 기능 함수
         fun backBtn() {
             AlertDialog.Builder(this).run {
                 val eventHandler = object : DialogInterface.OnClickListener {
                     override fun onClick(p0: DialogInterface?, p1: Int) {
                         if(p1 == DialogInterface.BUTTON_POSITIVE) {
-                            finish()
+                            // 제목값 검사
+                            planTitle = binding.planTitle.text.toString()
+                            // 제목값 비어있을 경우 경고창 표시
+                            if(planTitle == "") titleEmpty()
+                            // 제목값 있을 경우 저장
+                            else planSave()
                         } else {
                             finish()
                         }
@@ -50,17 +84,13 @@ class TravelPlanActivity : AppCompatActivity() {
                 show()
             }
         }
-
-        // 저장하기 기능 함수
+        // 저장하기 버튼 기능 함수
         fun saveBtn() {
             AlertDialog.Builder(this).run {
                 val eventHandler = object : DialogInterface.OnClickListener {
                     override fun onClick(p0: DialogInterface?, p1: Int) {
                         if(p1 == DialogInterface.BUTTON_POSITIVE) {
-                            // 제목 값 저장
-                            planTitle = binding.planTitle.text.toString()
-                            // 이전화면으로 값 넘겨주기
-                            finish()
+                            planSave()
                         } else {}
                     }
                 }
@@ -73,7 +103,10 @@ class TravelPlanActivity : AppCompatActivity() {
                 show()
             }
         }
+        // -------------------------------------------------------------함수 영역
 
+
+        // 뒤로가기 기능 ----------------------------------------------------------
         // 상단바 뒤로가기 버튼
         binding.planBackBtn.setOnClickListener {
             // 화면 종료전 물어보는 창 띄우기
@@ -87,8 +120,9 @@ class TravelPlanActivity : AppCompatActivity() {
             }
         }
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback = callback)
+        // ---------------------------------------------------------- 뒤로가기 기능
 
-
+        // 캘린더 영역 -----------------------------------------------------------
         // 현재 날짜를 초기화. 안드로이드 8 버전 이상부터 사용
         binding.planCalendarDay.text = LocalDate.now().toString()
 
@@ -96,23 +130,28 @@ class TravelPlanActivity : AppCompatActivity() {
         binding.calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
             binding.planCalendarDay.text = "$year-${month + 1}-$dayOfMonth"
         }
+        // ----------------------------------------------------------- 캘린더 영역
 
         // 여행계획 데이터
         val datas = mutableListOf<PlanDetailDatas>().apply {
             add(PlanDetailDatas("오후 12 : 00", "오후 1 : 00", ""))
         }
 
+        // 버튼 작동 영역 --------------------------------------------------------------
         // 시간별 계획 추가버튼 클릭시
         binding.planDetailPlusBtn.setOnClickListener {
             datas.add(PlanDetailDatas("오후 12 : 00", "오후 1 : 00", ""))
             binding.planDetailRecyclerView.adapter?.notifyItemInserted(datas.size)
         }
 
-        // 시간별 계획 저장버튼 클릭시
+        // 시간별 계획 저장 버튼 클릭시
         binding.planSaveBtn.setOnClickListener {
-            // 저장버튼 클릭시 확인여부창 띄우기
-            saveBtn()
+            // 저장 버튼 클릭시 확인 여부창 띄우기
+            planTitle = binding.planTitle.text.toString()
+            if(planTitle == "") titleEmpty()
+            else saveBtn()
         }
+        // -------------------------------------------------------------- 버튼 작동 영역
 
         // 시간별 계획 리사이클러뷰
         binding.planDetailRecyclerView.adapter = TravelPlanRecyclerAdapter(datas)
@@ -122,7 +161,7 @@ class TravelPlanActivity : AppCompatActivity() {
     // 화면 전환간 애니메이션 제거
     override fun onPause() {
         super.onPause()
-        // 만약 api34일 경우 overrideActivityTransition 사용
+        // 만약 api34일 경우 overrideActivityTransition 사용 추가 해야함.
         overridePendingTransition(0,0)
     }
 }
