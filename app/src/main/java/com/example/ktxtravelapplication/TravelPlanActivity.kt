@@ -24,17 +24,33 @@ class TravelPlanActivity : AppCompatActivity() {
     // 변수 선언 영역 ------------------------
     lateinit var planTitle: String
     lateinit var planDate: String
+    lateinit var binding: ActivityTravelPlanBinding
     // ------------------------ 변수 선언 영역
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 뷰 바인딩
-        val binding = ActivityTravelPlanBinding.inflate(layoutInflater)
+        binding = ActivityTravelPlanBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         // 액션바 대신 툴바 사용 및 타이틀 비워 두기
         setSupportActionBar(binding.planToolbar)
         supportActionBar?.setTitle("")
+
+        // 값 전달받기
+        val returnPlanTitle = intent.getStringExtra("Title")
+        val returnPlanDate = intent.getStringExtra("Date")
+        val returnState = intent.getStringExtra("state")
+        if(returnPlanTitle == null || returnPlanDate == null){}
+        else {
+            binding.planTitle.setText(returnPlanTitle)
+            binding.planCalendarDay.text = returnPlanDate
+        }
+
+        // 수정모드 일때 버튼 이름을 수정하기로 바꾸기
+        if(returnState == "수정"){
+            binding.planSaveBtn.text = "수정하기"
+        }
 
         // 함수 영역 -------------------------------------------------------------
         // 제목 값이 비어 있을 경우 경고창 표시
@@ -55,6 +71,7 @@ class TravelPlanActivity : AppCompatActivity() {
             returnIntent.putExtra("returnTitle", planTitle)
             returnIntent.putExtra("returnDate", planDate)
             setResult(Activity.RESULT_OK, returnIntent)
+            Log.d("test", "$planTitle, $planDate")
             // 이전화면으로 값 넘겨주기
             finish()
         }
@@ -105,7 +122,6 @@ class TravelPlanActivity : AppCompatActivity() {
         }
         // -------------------------------------------------------------함수 영역
 
-
         // 뒤로가기 기능 ----------------------------------------------------------
         // 상단바 뒤로가기 버튼
         binding.planBackBtn.setOnClickListener {
@@ -146,10 +162,15 @@ class TravelPlanActivity : AppCompatActivity() {
 
         // 시간별 계획 저장 버튼 클릭시
         binding.planSaveBtn.setOnClickListener {
-            // 저장 버튼 클릭시 확인 여부창 띄우기
-            planTitle = binding.planTitle.text.toString()
-            if(planTitle == "") titleEmpty()
-            else saveBtn()
+            if(returnState == "수정"){
+
+            }
+            else {
+                // 저장 버튼 클릭시 확인 여부창 띄우기
+                planTitle = binding.planTitle.text.toString()
+                if(planTitle == "") titleEmpty()
+                else saveBtn()
+            }
         }
         // -------------------------------------------------------------- 버튼 작동 영역
 

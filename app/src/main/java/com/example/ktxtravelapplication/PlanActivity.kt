@@ -43,7 +43,7 @@ class PlanActivity : AppCompatActivity() {
             if(returnTitle != null) {
                 datas.add(planData(returnTitle.toString(), returnDate.toString()))
             }
-            Log.d("test", "$datas")
+            Log.d("test", "데이터 $datas")
             binding.planRecyclerView.adapter?.notifyItemInserted(datas.size)
         }
 
@@ -52,6 +52,7 @@ class PlanActivity : AppCompatActivity() {
             val intent = Intent(this, TravelPlanActivity::class.java)
             // 화면 전환간 애니메이션 제거 만약 api34 이상일 경우 overrideActivityTransition 사용
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            intent.putExtra("state", "새로작성")
             requestLauncher.launch(intent)
         }
 
@@ -65,8 +66,8 @@ class PlanActivity : AppCompatActivity() {
 }
 
 data class planData(
-    val planTitle: String,
-    val planDate: String
+    var planTitle: String,
+    var planDate: String
 )
 
 class PlanRecyclerAdapter(val datas: MutableList<planData>): RecyclerView.Adapter<PlanRecyclerAdapter.ViewHolder>() {
@@ -90,6 +91,9 @@ class PlanRecyclerAdapter(val datas: MutableList<planData>): RecyclerView.Adapte
 
             itemView.setOnClickListener {
                 val intent = Intent(itemView.context, TravelPlanActivity::class.java)
+                intent.putExtra("Title", binding.title.text)
+                intent.putExtra("Date", binding.planDate.text)
+                intent.putExtra("state", "수정")
                 itemView.context.startActivity(intent)
             }
         }
