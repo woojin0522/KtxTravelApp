@@ -138,7 +138,7 @@ class TravelPlanActivity : AppCompatActivity() {
         }
 
         // 버튼 작동 영역 --------------------------------------------------------------
-        // 시간별 계획 추가버튼 클릭시
+        // 시간별 계획 추가 버튼 클릭시
         binding.planDetailPlusBtn.setOnClickListener {
             datas.add(PlanDetailDatas("오후 12 : 00", "오후 1 : 00", ""))
             binding.planDetailRecyclerView.adapter?.notifyItemInserted(datas.size)
@@ -175,8 +175,9 @@ data class PlanDetailDatas(
 
 // 시간별 계획 리사이클러뷰 어댑터
 class TravelPlanRecyclerAdapter(val datas: MutableList<PlanDetailDatas>) : RecyclerView.Adapter<TravelPlanRecyclerAdapter.ViewHolder>() {
-
+    // 뷰 홀더 선언부
     inner class ViewHolder(val binding : PlanDetailItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        // 각 항목에서 작동하는 기능이나 텍스트값 등을 변경하는 함수
         fun bind(pos: Int){
             // TimePickerDialog 함수
             fun timePic(textNum: Int) {
@@ -192,6 +193,7 @@ class TravelPlanRecyclerAdapter(val datas: MutableList<PlanDetailDatas>) : Recyc
                         }  else{
                             amOrPm = "오전"
                         }
+                        // textNum이 1일 경우 시작 시간을 변경, 2일 경우 끝나는 시간을 변경
                         if(textNum == 1) binding.planDetailTime.text = "${amOrPm} ${hour.toString()} : ${minute.toString().padStart(2, '0')}"
                         else binding.planDetailTime2.text = "${amOrPm} ${hour.toString()} : ${minute.toString().padStart(2, '0')}"
                     }
@@ -208,24 +210,29 @@ class TravelPlanRecyclerAdapter(val datas: MutableList<PlanDetailDatas>) : Recyc
                 notifyItemRangeChanged(pos, datas.size)
             }
 
+            // 여행계획 시작 시간 클릭시 시간 변경창 띄우기
             binding.planDetailTime.setOnClickListener {
                 timePic(1)
             }
+            // 여행계획 끝나는 시간 클릭시 시간 변경창 띄우기
             binding.planDetailTime2.setOnClickListener {
                 timePic(2)
             }
         }
     }
 
+    // 리사이클러뷰 항목 개수를 반환
     override fun getItemCount(): Int {
         return datas.size
     }
 
+    // 뷰 홀더를 생성.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = PlanDetailItemBinding.inflate(LayoutInflater.from(parent.context))
         return ViewHolder(binding)
     }
 
+    // 각 아이템 항목을 뷰 홀더에 맞춰서 출력
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(position)
     }
