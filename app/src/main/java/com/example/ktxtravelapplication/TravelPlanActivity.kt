@@ -37,12 +37,21 @@ class TravelPlanActivity : AppCompatActivity() {
         setSupportActionBar(binding.planToolbar)
         supportActionBar?.setTitle("")
 
+        // 캘린더 영역 -----------------------------------------------------------
+        // 현재 날짜를 초기화. 안드로이드 8 버전 이상부터 사용
+        binding.planCalendarDay.text = LocalDate.now().toString()
+        // 캘린더뷰에서 선택한 날짜를 불러옴.
+        binding.calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
+            binding.planCalendarDay.text = "$year-${month + 1}-$dayOfMonth"
+        }
+        // ----------------------------------------------------------- 캘린더 영역
+
         // 값 전달받기
         val returnPlanTitle = intent.getStringExtra("returnTitle")
         val returnPlanDate = intent.getStringExtra("returnDate")
         val returnState = intent.getStringExtra("returnState")
         val returnIndex = intent.getIntExtra("returnIndex", 0)
-        if(returnPlanTitle == null || returnPlanDate == null){}
+        if(returnPlanTitle == null || returnPlanDate == null){ }
         else {
             binding.planTitle.setText(returnPlanTitle)
             binding.planCalendarDay.text = returnPlanDate
@@ -149,16 +158,6 @@ class TravelPlanActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback = callback)
         // ---------------------------------------------------------- 뒤로가기 기능
 
-        // 캘린더 영역 -----------------------------------------------------------
-        // 현재 날짜를 초기화. 안드로이드 8 버전 이상부터 사용
-        binding.planCalendarDay.text = LocalDate.now().toString()
-
-        // 캘린더뷰에서 선택한 날짜를 불러옴.
-        binding.calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
-            binding.planCalendarDay.text = "$year-${month + 1}-$dayOfMonth"
-        }
-        // ----------------------------------------------------------- 캘린더 영역
-
         // 여행계획 데이터
         val datas = mutableListOf<PlanDetailDatas>().apply {
             add(PlanDetailDatas("오후 12 : 00", "오후 1 : 00", ""))
@@ -235,6 +234,8 @@ class TravelPlanRecyclerAdapter(val datas: MutableList<PlanDetailDatas>) : Recyc
                 }, 15, 0, false).show()
             }
 
+            binding.planDetailNumber.text = "${pos + 1}번"
+            binding.planDetailEditText.requestFocus()
             binding.planDetailTime.text = datas[pos].startTime
             binding.planDetailTime2.text = datas[pos].endTime
 

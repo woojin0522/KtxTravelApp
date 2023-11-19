@@ -104,6 +104,7 @@ class PlanRecyclerAdapter(val context: Context, val datas: MutableList<planData>
             binding.planDate.text = datas[pos].planDate
 
             itemView.setOnClickListener {
+                // 수정모드로 액티비티 전환하기
                 val activity = context as PlanActivity
                 val intent = Intent(activity, TravelPlanActivity::class.java)
                 intent.putExtra("returnTitle", binding.title.text)
