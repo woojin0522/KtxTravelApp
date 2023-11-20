@@ -39,19 +39,21 @@ class PlanActivity : AppCompatActivity() {
         val requestLauncher: ActivityResultLauncher<Intent> = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()){
             val returnTitle = it.data?.getStringExtra("returnTitle")
-            val returnDate = it.data?.getStringExtra("returnDate")
+            val returnStartDate = it.data?.getStringExtra("returnStartDate")
+            val returnEndDate = it.data?.getStringExtra("returnEndDate")
             val returnState = it.data?.getStringExtra("returnState")
             val returnIndex = it.data?.getIntExtra("returnIndex", 0)
 
             if(returnTitle != null) {
                 // returnState가 저장(추가)일 때 리사이클러 항목 추가
                 if(returnState == "저장"){
-                    datas.add(planData(returnTitle.toString(), returnDate.toString()))
+                    datas.add(planData(returnTitle.toString(), returnStartDate.toString(), returnEndDate.toString()))
                 }
                 // returnState가 수정일 때 해당 리사이클러 항목 수정
                 else{
                     datas[returnIndex!!].planTitle = returnTitle.toString()
-                    datas[returnIndex!!].planDate = returnDate.toString()
+                    datas[returnIndex!!].planStartDate = returnStartDate.toString()
+                    datas[returnIndex!!].planEndDate = returnEndDate.toString()
                     Log.d("returnTest", "${datas[returnIndex]}")
                     binding.planRecyclerView.adapter?.notifyDataSetChanged()
                 }
@@ -81,7 +83,8 @@ class PlanActivity : AppCompatActivity() {
 
 data class planData(
     var planTitle: String,
-    var planDate: String
+    var planStartDate: String,
+    var planEndDate: String
 )
 
 class PlanRecyclerAdapter(val context: Context, val datas: MutableList<planData>, val requestLaun: ActivityResultLauncher<Intent>): RecyclerView.Adapter<PlanRecyclerAdapter.ViewHolder>() {
@@ -101,14 +104,16 @@ class PlanRecyclerAdapter(val context: Context, val datas: MutableList<planData>
     inner class ViewHolder(val binding: PlanItemBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(pos: Int){
             binding.title.text = datas[pos].planTitle
-            binding.planDate.text = datas[pos].planDate
+            binding.planStartDate.text = datas[pos].planStartDate
+            binding.planEndDate.text = datas[pos].planEndDate
 
             itemView.setOnClickListener {
                 // 수정모드로 액티비티 전환하기
                 val activity = context as PlanActivity
                 val intent = Intent(activity, TravelPlanActivity::class.java)
                 intent.putExtra("returnTitle", binding.title.text)
-                intent.putExtra("returnDate", binding.planDate.text)
+                intent.putExtra("returnStartDate", binding.planStartDate.text)
+                intent.putExtra("returnEndDate", binding.planEndDate.text)
                 intent.putExtra("returnState", "수정")
                 intent.putExtra("returnIndex", pos)
                 requestLaun.launch(intent)

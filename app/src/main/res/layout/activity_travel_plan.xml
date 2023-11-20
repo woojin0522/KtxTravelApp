@@ -55,10 +55,20 @@
         android:orientation="vertical"
         android:layout_marginTop="55dp"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout2">
-        <CalendarView
+        <com.prolificinteractive.materialcalendarview.MaterialCalendarView
             android:id="@+id/calendarView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            app:mcv_selectionMode="range"
+            android:visibility="gone" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/plan_calanderBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="날짜 선택하기"
+            android:textColor="@color/white"
+            android:background="@color/main_app_color"
+            android:layout_margin="10dp"/>
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/plan_title"
             android:layout_width="match_parent"
@@ -73,11 +83,25 @@
             android:orientation="horizontal"
             android:gravity="center">
             <TextView
-                android:id="@+id/plan_calendarDay"
+                android:id="@+id/plan_start_calendarDay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="year-month-day"
-                android:textSize="18dp"
+                android:text="시작날짜"
+                android:textSize="15dp"
+                android:layout_marginHorizontal="5dp"/>
+            <TextView
+                android:id="@+id/plan_end_calendarDay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="끝나는날짜"
+                android:textSize="15dp"
+                android:layout_marginHorizontal="5dp"/>
+            <TextView
+                android:id="@+id/plan_day_range"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="몇박 몇일"
+                android:textSize="15dp"
                 android:layout_marginHorizontal="5dp"/>
 
             <androidx.appcompat.widget.AppCompatButton

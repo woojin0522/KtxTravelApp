@@ -2,6 +2,7 @@ package com.example.ktxtravelapplication
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.DialogInterface
 import android.content.Intent
@@ -10,7 +11,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.CalendarView
+import android.widget.DatePicker
 import android.widget.TimePicker
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
@@ -18,12 +22,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ktxtravelapplication.databinding.ActivityTravelPlanBinding
 import com.example.ktxtravelapplication.databinding.PlanDetailItemBinding
+import com.prolificinteractive.materialcalendarview.CalendarDay
+import com.prolificinteractive.materialcalendarview.CalendarMode
+import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.util.Calendar
 
 class TravelPlanActivity : AppCompatActivity() {
     // 변수 선언 영역 ------------------------
     lateinit var planTitle: String
-    lateinit var planDate: String
+    lateinit var planStartDate: String
+    lateinit var planEndDate: String
     lateinit var binding: ActivityTravelPlanBinding
     // ------------------------ 변수 선언 영역
     @RequiresApi(Build.VERSION_CODES.O)
@@ -39,22 +48,48 @@ class TravelPlanActivity : AppCompatActivity() {
 
         // 캘린더 영역 -----------------------------------------------------------
         // 현재 날짜를 초기화. 안드로이드 8 버전 이상부터 사용
-        binding.planCalendarDay.text = LocalDate.now().toString()
-        // 캘린더뷰에서 선택한 날짜를 불러옴.
-        binding.calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
-            binding.planCalendarDay.text = "$year-${month + 1}-$dayOfMonth"
+        binding.planStartCalendarDay.text = LocalDate.now().toString()
+        // 캘린더뷰 설정
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+        val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
+        val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+        binding.calendarView.state().edit()
+            .setMinimumDate(CalendarDay.from(currentYear, currentMonth, currentDay))
+            .setCalendarDisplayMode(CalendarMode.MONTHS)
+            .commit()
+        // 캘린더뷰 날짜 범위 선택시
+        binding.calendarView.setOnRangeSelectedListener { widget, dates ->
+            binding.planStartCalendarDay.text = "${dates[0].year}-${dates[0].month}-${dates[0].day} ~ "
+            binding.planEndCalendarDay.text = "${dates[dates.size - 1].year}-${dates[dates.size - 1].month}-${dates[dates.size - 1].day}"
+            binding.planDayRange.text = "${dates.size - 1}박${dates.size}일"
+        }
+        // 캘린더뷰 하루만 선택시
+        binding.calendarView.setOnDateChangedListener { widget, date, selected ->
+            binding.planStartCalendarDay.text = "${date.year}-${date.month}-${date.day} ~ "
+            binding.planEndCalendarDay.text = "${date.year}-${date.month}-${date.day}"
+            binding.planDayRange.text = "당일치기"
         }
         // ----------------------------------------------------------- 캘린더 영역
 
         // 값 전달받기
         val returnPlanTitle = intent.getStringExtra("returnTitle")
-        val returnPlanDate = intent.getStringExtra("returnDate")
+        val returnPlanStartDate = intent.getStringExtra("returnStartDate")
+        val returnPlanEndDate = intent.getStringExtra("returnEndDate")
         val returnState = intent.getStringExtra("returnState")
         val returnIndex = intent.getIntExtra("returnIndex", 0)
-        if(returnPlanTitle == null || returnPlanDate == null){ }
+        if(returnPlanTitle == null || returnPlanStartDate == null || returnPlanEndDate == null){ }
         else {
             binding.planTitle.setText(returnPlanTitle)
-            binding.planCalendarDay.text = returnPlanDate
+            binding.planStartCalendarDay.text = returnPlanStartDate
+            binding.planEndCalendarDay.text = returnPlanEndDate
+
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+
+            val startDate = dateFormat.parse(returnPlanStartDate).time
+            val endDate = dateFormat.parse(returnPlanEndDate).time
+            val subDate = (endDate - startDate) / (24 * 60 * 60 * 1000)
+
+            binding.planDayRange.text = "${subDate}박${subDate + 1}일"
         }
 
         // 수정모드 일때 버튼 이름을 수정하기로 바꾸기
@@ -75,11 +110,13 @@ class TravelPlanActivity : AppCompatActivity() {
         // 값 저장 및 인텐트 값 넘겨주기 함수
         fun planSave(state: String) {
             // 제목 날짜 저장
-            planDate = binding.planCalendarDay.text.toString()
+            planStartDate = binding.planStartCalendarDay.text.toString()
+            planEndDate = binding.planEndCalendarDay.text.toString()
 
             val returnIntent = Intent()
             returnIntent.putExtra("returnTitle", planTitle)
-            returnIntent.putExtra("returnDate", planDate)
+            returnIntent.putExtra("returnStartDate", planStartDate)
+            returnIntent.putExtra("returnEndDate", planEndDate)
             returnIntent.putExtra("returnState", state)
             returnIntent.putExtra("returnIndex", returnIndex)
             setResult(Activity.RESULT_OK, returnIntent)
@@ -183,6 +220,16 @@ class TravelPlanActivity : AppCompatActivity() {
                 planTitle = binding.planTitle.text.toString()
                 if(planTitle == "") titleEmpty()
                 else saveBtn("저장")
+            }
+        }
+
+        binding.planCalanderBtn.setOnClickListener {
+            if(binding.calendarView.visibility == View.GONE) {
+                binding.calendarView.visibility = View.VISIBLE
+                binding.planCalanderBtn.text = "날싸 선택완료"
+            } else {
+                binding.calendarView.visibility = View.GONE
+                binding.planCalanderBtn.text = "날짜 선택하기"
             }
         }
         // -------------------------------------------------------------- 버튼 작동 영역
