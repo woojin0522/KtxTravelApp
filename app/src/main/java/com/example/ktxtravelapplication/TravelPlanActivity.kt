@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
@@ -13,7 +14,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CalendarView
 import android.widget.DatePicker
 import android.widget.TimePicker
 import androidx.activity.OnBackPressedCallback
@@ -28,6 +28,8 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Calendar
 
+val minDate = Calendar.getInstance()
+val maxDate = Calendar.getInstance()
 class TravelPlanActivity : AppCompatActivity() {
     // 변수 선언 영역 ------------------------
     lateinit var planTitle: String
@@ -62,6 +64,8 @@ class TravelPlanActivity : AppCompatActivity() {
             binding.planStartCalendarDay.text = "${dates[0].year}-${dates[0].month}-${dates[0].day} ~ "
             binding.planEndCalendarDay.text = "${dates[dates.size - 1].year}-${dates[dates.size - 1].month}-${dates[dates.size - 1].day}"
             binding.planDayRange.text = "${dates.size - 1}박${dates.size}일"
+            minDate.set(dates[0].year, dates[0].month, dates[0].day)
+            maxDate.set(dates[dates.size - 1].year, dates[dates.size - 1].month, dates[dates.size - 1].day)
         }
         // 캘린더뷰 하루만 선택시
         binding.calendarView.setOnDateChangedListener { widget, date, selected ->
@@ -99,10 +103,10 @@ class TravelPlanActivity : AppCompatActivity() {
 
         // 함수 영역 -------------------------------------------------------------
         // 제목 값이 비어 있을 경우 경고창 표시
-        fun titleEmpty() {
+        fun titleEmpty(myString: String) {
             AlertDialog.Builder(this).run {
                 setTitle("경고")
-                setMessage("제목을 입력 해주세요.")
+                setMessage("${myString}을 입력 해주세요.")
                 setPositiveButton("확인", null)
                 show()
             }
@@ -132,7 +136,7 @@ class TravelPlanActivity : AppCompatActivity() {
                             // 제목값 검사
                             planTitle = binding.planTitle.text.toString()
                             // 제목값 비어있을 경우 경고창 표시
-                            if(planTitle == "") titleEmpty()
+                            if(planTitle == "") titleEmpty("제목")
                             // 제목값 있을 경우 저장
                             else planSave(state)
                         } else {
@@ -212,13 +216,13 @@ class TravelPlanActivity : AppCompatActivity() {
             if(returnState == "수정"){
                 // 수정 버튼 클릭시 확인 여부창 띄우기
                 planTitle = binding.planTitle.text.toString()
-                if(planTitle == "") titleEmpty()
+                if(planTitle == "") titleEmpty("제목")
                 else saveBtn("수정")
             }
             else {
                 // 저장 버튼 클릭시 확인 여부창 띄우기
                 planTitle = binding.planTitle.text.toString()
-                if(planTitle == "") titleEmpty()
+                if(planTitle == "") titleEmpty("제목")
                 else saveBtn("저장")
             }
         }
@@ -232,10 +236,9 @@ class TravelPlanActivity : AppCompatActivity() {
                 binding.planCalanderBtn.text = "날짜 선택하기"
             }
         }
-        // -------------------------------------------------------------- 버튼 작동 영역
 
-        // 시간별 계획 리사이클러뷰
-        binding.planDetailRecyclerView.adapter = TravelPlanRecyclerAdapter(datas)
+        // -------------------------------------------------------------- 버튼 작동 영역
+        binding.planDetailRecyclerView.adapter = TravelPlanRecyclerAdapter(this, datas)
         binding.planDetailRecyclerView.layoutManager = LinearLayoutManager(this)
     }
 
@@ -255,10 +258,11 @@ data class PlanDetailDatas(
 )
 
 // 시간별 계획 리사이클러뷰 어댑터
-class TravelPlanRecyclerAdapter(val datas: MutableList<PlanDetailDatas>) : RecyclerView.Adapter<TravelPlanRecyclerAdapter.ViewHolder>() {
+class TravelPlanRecyclerAdapter(val context: Context, val datas: MutableList<PlanDetailDatas>) : RecyclerView.Adapter<TravelPlanRecyclerAdapter.ViewHolder>() {
     // 뷰 홀더 선언부
     inner class ViewHolder(val binding : PlanDetailItemBinding) : RecyclerView.ViewHolder(binding.root) {
         // 각 항목에서 작동하는 기능이나 텍스트값 등을 변경하는 함수
+        val activity = context as TravelPlanActivity
         fun bind(pos: Int){
             // TimePickerDialog 함수
             fun timePic(textNum: Int) {
@@ -300,6 +304,17 @@ class TravelPlanRecyclerAdapter(val datas: MutableList<PlanDetailDatas>) : Recyc
             // 여행계획 끝나는 시간 클릭시 시간 변경창 띄우기
             binding.planDetailTime2.setOnClickListener {
                 timePic(2)
+            }
+
+            binding.planDateBtn.setOnClickListener {
+                val datePickerDialog = DatePickerDialog(it.context, object: DatePickerDialog.OnDateSetListener {
+                    override fun onDateSet(p0: DatePicker?, p1: Int, p2: Int, p3: Int) {
+                        binding.planSelectedDate.text = "$p1-${p2+1}-$p3"
+                    }
+                }, Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH))
+                datePickerDialog.datePicker.minDate = minDate.timeInMillis
+                datePickerDialog.datePicker.maxDate = maxDate.timeInMillis
+                datePickerDialog.show()
             }
         }
     }
