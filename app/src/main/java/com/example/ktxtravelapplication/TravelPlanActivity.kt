@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Calendar
 
+// 계획 날짜 최소, 최대 범위 설정 변수
 val minDate = Calendar.getInstance()
 val maxDate = Calendar.getInstance()
 class TravelPlanActivity : AppCompatActivity() {
@@ -48,7 +49,7 @@ class TravelPlanActivity : AppCompatActivity() {
         setSupportActionBar(binding.planToolbar)
         supportActionBar?.setTitle("")
 
-        // 캘린더 영역 -----------------------------------------------------------
+        // ----------------------------------캘린더 영역 -----------------------------------
         // 현재 날짜를 초기화. 안드로이드 8 버전 이상부터 사용
         binding.planStartCalendarDay.text = LocalDate.now().toString()
         // 캘린더뷰 설정
@@ -64,6 +65,7 @@ class TravelPlanActivity : AppCompatActivity() {
             binding.planStartCalendarDay.text = "${dates[0].year}-${dates[0].month}-${dates[0].day} ~ "
             binding.planEndCalendarDay.text = "${dates[dates.size - 1].year}-${dates[dates.size - 1].month}-${dates[dates.size - 1].day}"
             binding.planDayRange.text = "${dates.size - 1}박${dates.size}일"
+            // 최소날짜와 최대날짜를 여행 날짜 선택 범위 최소와 최대값으로 설정
             minDate.set(dates[0].year, dates[0].month, dates[0].day)
             maxDate.set(dates[dates.size - 1].year, dates[dates.size - 1].month, dates[dates.size - 1].day)
         }
@@ -73,35 +75,38 @@ class TravelPlanActivity : AppCompatActivity() {
             binding.planEndCalendarDay.text = "${date.year}-${date.month}-${date.day}"
             binding.planDayRange.text = "당일치기"
         }
-        // ----------------------------------------------------------- 캘린더 영역
+        // ----------------------------------캘린더 영역 -----------------------------------
 
-        // 값 전달받기
+        // ----------------------------------값 전달받는 영역--------------------------------
         val returnPlanTitle = intent.getStringExtra("returnTitle")
         val returnPlanStartDate = intent.getStringExtra("returnStartDate")
         val returnPlanEndDate = intent.getStringExtra("returnEndDate")
         val returnState = intent.getStringExtra("returnState")
         val returnIndex = intent.getIntExtra("returnIndex", 0)
+        // 전달받은 값이 null일 경우 아무 동작도 취하지 않음
         if(returnPlanTitle == null || returnPlanStartDate == null || returnPlanEndDate == null){ }
         else {
+            // 전달받은 값을 각 화면에 출력
             binding.planTitle.setText(returnPlanTitle)
             binding.planStartCalendarDay.text = returnPlanStartDate
             binding.planEndCalendarDay.text = returnPlanEndDate
 
+            // 몇박몇일 인지 계산
             val dateFormat = SimpleDateFormat("yyyy-MM-dd")
-
             val startDate = dateFormat.parse(returnPlanStartDate).time
             val endDate = dateFormat.parse(returnPlanEndDate).time
             val subDate = (endDate - startDate) / (24 * 60 * 60 * 1000)
 
             binding.planDayRange.text = "${subDate}박${subDate + 1}일"
         }
+        // ----------------------------------값 전달받는 영역--------------------------------
 
         // 수정모드 일때 버튼 이름을 수정하기로 바꾸기
         if(returnState == "수정"){
             binding.planSaveBtn.text = "수정하기"
         }
 
-        // 함수 영역 -------------------------------------------------------------
+        // -----------------------------------함수 영역 ------------------------------------
         // 제목 값이 비어 있을 경우 경고창 표시
         fun titleEmpty(myString: String) {
             AlertDialog.Builder(this).run {
@@ -117,6 +122,7 @@ class TravelPlanActivity : AppCompatActivity() {
             planStartDate = binding.planStartCalendarDay.text.toString()
             planEndDate = binding.planEndCalendarDay.text.toString()
 
+            // 인텐트 생성후 인텐트로 데이터 넘기기
             val returnIntent = Intent()
             returnIntent.putExtra("returnTitle", planTitle)
             returnIntent.putExtra("returnStartDate", planStartDate)
@@ -146,7 +152,7 @@ class TravelPlanActivity : AppCompatActivity() {
                 }
 
                 setTitle("나가기")
-                setIcon(android.R.drawable.ic_dialog_info)
+/*                setIcon(android.R.drawable.ic_dialog_info)*/
                 setMessage("나가기 전에 ${state}하시겠습니까?")
                 setPositiveButton("네", eventHandler)
                 setNegativeButton("아니오", eventHandler)
@@ -165,16 +171,16 @@ class TravelPlanActivity : AppCompatActivity() {
                 }
 
                 setTitle("저장여부")
-                setIcon(android.R.drawable.ic_dialog_info)
+/*                setIcon(android.R.drawable.ic_dialog_info)*/
                 setMessage("정말 ${state}하시겠습니까?")
                 setPositiveButton("네", eventHandler)
                 setNegativeButton("아니오", eventHandler)
                 show()
             }
         }
-        // -------------------------------------------------------------함수 영역
+        // -----------------------------------함수 영역 ------------------------------------
 
-        // 뒤로가기 기능 ----------------------------------------------------------
+        // -----------------------------------뒤로가기 기능 ---------------------------------
         // 상단바 뒤로가기 버튼
         binding.planBackBtn.setOnClickListener {
             if(returnState == "수정"){
@@ -197,20 +203,19 @@ class TravelPlanActivity : AppCompatActivity() {
             }
         }
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback = callback)
-        // ---------------------------------------------------------- 뒤로가기 기능
+        // -----------------------------------뒤로가기 기능 ---------------------------------
 
         // 여행계획 데이터
         val datas = mutableListOf<PlanDetailDatas>().apply {
-            add(PlanDetailDatas("오후 12 : 00", "오후 1 : 00", ""))
+            add(PlanDetailDatas("시작시간", "끝나는시간", ""))
         }
 
-        // 버튼 작동 영역 --------------------------------------------------------------
+        // -----------------------------------버튼 작동 영역 --------------------------------
         // 시간별 계획 추가 버튼 클릭시
         binding.planDetailPlusBtn.setOnClickListener {
             datas.add(PlanDetailDatas("오후 12 : 00", "오후 1 : 00", ""))
             binding.planDetailRecyclerView.adapter?.notifyItemInserted(datas.size)
         }
-
         // 시간별 계획 저장 버튼 클릭시
         binding.planSaveBtn.setOnClickListener {
             if(returnState == "수정"){
@@ -226,18 +231,21 @@ class TravelPlanActivity : AppCompatActivity() {
                 else saveBtn("저장")
             }
         }
-
+        // 여행 날짜 선택하기버튼 클릭시
         binding.planCalanderBtn.setOnClickListener {
+            // 캘린더뷰가 숨겨져있을경우 캘린더뷰를 띄우고 버튼 텍스트를 날짜 선택완료로 변경
             if(binding.calendarView.visibility == View.GONE) {
                 binding.calendarView.visibility = View.VISIBLE
                 binding.planCalanderBtn.text = "날싸 선택완료"
             } else {
+                // 캘린터뷰가 화면에 보일경우 캘린더뷰를 숨기고 버튼 텍스트를 날짜 선택하기로 변경
                 binding.calendarView.visibility = View.GONE
                 binding.planCalanderBtn.text = "날짜 선택하기"
             }
         }
+        // -----------------------------------버튼 작동 영역 --------------------------------
 
-        // -------------------------------------------------------------- 버튼 작동 영역
+        // 리사이클러뷰 어댑터와 레이아웃 매니저 설정
         binding.planDetailRecyclerView.adapter = TravelPlanRecyclerAdapter(this, datas)
         binding.planDetailRecyclerView.layoutManager = LinearLayoutManager(this)
     }
@@ -250,14 +258,14 @@ class TravelPlanActivity : AppCompatActivity() {
     }
 }
 
-// 여행계획 데이터 클래스
+// -------------------------------------여행계획 데이터 클래스-------------------------------------
 data class PlanDetailDatas(
     val startTime: String,
     val endTime: String,
     val planDetail: String
 )
 
-// 시간별 계획 리사이클러뷰 어댑터
+// --------------------------------시간별 계획 리사이클러뷰 어댑터----------------------------------
 class TravelPlanRecyclerAdapter(val context: Context, val datas: MutableList<PlanDetailDatas>) : RecyclerView.Adapter<TravelPlanRecyclerAdapter.ViewHolder>() {
     // 뷰 홀더 선언부
     inner class ViewHolder(val binding : PlanDetailItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -285,6 +293,7 @@ class TravelPlanRecyclerAdapter(val context: Context, val datas: MutableList<Pla
                 }, 15, 0, false).show()
             }
 
+            // 초기값들 설정
             binding.planDetailNumber.text = "${pos + 1}번"
             binding.planDetailEditText.requestFocus()
             binding.planDetailTime.text = datas[pos].startTime
@@ -306,12 +315,16 @@ class TravelPlanRecyclerAdapter(val context: Context, val datas: MutableList<Pla
                 timePic(2)
             }
 
+            // 계획 날짜 선택하기 버튼 클릭시
             binding.planDateBtn.setOnClickListener {
+                // datePickerDialog를 띄워 날짜를 선택하도록 설정
                 val datePickerDialog = DatePickerDialog(it.context, object: DatePickerDialog.OnDateSetListener {
                     override fun onDateSet(p0: DatePicker?, p1: Int, p2: Int, p3: Int) {
+                        // 버튼 옆에 텍스트를 선택한 날짜로 변경
                         binding.planSelectedDate.text = "$p1-${p2+1}-$p3"
                     }
                 }, Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH))
+                // 최소 최대 날짜 설정
                 datePickerDialog.datePicker.minDate = minDate.timeInMillis
                 datePickerDialog.datePicker.maxDate = maxDate.timeInMillis
                 datePickerDialog.show()
