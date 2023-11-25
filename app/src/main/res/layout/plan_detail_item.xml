@@ -22,7 +22,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginLeft="5dp"
             android:gravity="right">
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/plan_date_btn"
@@ -60,7 +59,7 @@
                 android:id="@+id/plan_delete_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="삭제하기"
+                android:text="삭제"
                 android:textSize="15dp" />
         </LinearLayout>
         <androidx.appcompat.widget.AppCompatEditText

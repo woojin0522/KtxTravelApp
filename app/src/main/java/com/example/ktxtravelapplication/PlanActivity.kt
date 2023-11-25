@@ -1,23 +1,20 @@
 package com.example.ktxtravelapplication
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.view.menu.MenuView.ItemView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ktxtravelapplication.databinding.ActivityPlanBinding
 import com.example.ktxtravelapplication.databinding.PlanItemBinding
 
+var planNumber = 0
 class PlanActivity : AppCompatActivity() {
     lateinit var datas: MutableList<planData>
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,23 +40,26 @@ class PlanActivity : AppCompatActivity() {
             val returnEndDate = it.data?.getStringExtra("returnEndDate")
             val returnState = it.data?.getStringExtra("returnState")
             val returnIndex = it.data?.getIntExtra("returnIndex", 0)
+            val returnPos = it.data?.getIntExtra("returnPos", 0)
+            val returnPlanNumber = it.data?.getIntExtra("returnPlanNumber", 0)
 
             if(returnTitle != null) {
                 // returnState가 저장(추가)일 때 리사이클러 항목 추가
                 if(returnState == "저장"){
-                    datas.add(planData(returnTitle.toString(), returnStartDate.toString(), returnEndDate.toString()))
+                    datas.add(planData(planNumber, returnPos, returnTitle.toString(), returnStartDate.toString(), returnEndDate.toString()))
+                    planNumber = planNumber + 1
+                    Log.d("test", "datas : $datas")
                 }
                 // returnState가 수정일 때 해당 리사이클러 항목 수정
                 else{
+                    datas[returnIndex!!].planPos = returnPos
                     datas[returnIndex!!].planTitle = returnTitle.toString()
                     datas[returnIndex!!].planStartDate = returnStartDate.toString()
                     datas[returnIndex!!].planEndDate = returnEndDate.toString()
-                    Log.d("returnTest", "${datas[returnIndex]}")
                     binding.planRecyclerView.adapter?.notifyDataSetChanged()
                 }
 
             }
-            Log.d("test", "데이터 $datas")
             binding.planRecyclerView.adapter?.notifyItemInserted(datas.size)
         }
 
@@ -69,6 +69,7 @@ class PlanActivity : AppCompatActivity() {
             // 화면 전환간 애니메이션 제거 만약 api34 이상일 경우 overrideActivityTransition 사용
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             intent.putExtra("returnState", "저장")
+            intent.putExtra("returnPlanNumber", planNumber)
             requestLauncher.launch(intent)
         }
 
@@ -82,6 +83,8 @@ class PlanActivity : AppCompatActivity() {
 }
 
 data class planData(
+    var planNumber: Int?,
+    var planPos: Int?,
     var planTitle: String,
     var planStartDate: String,
     var planEndDate: String
@@ -115,7 +118,9 @@ class PlanRecyclerAdapter(val context: Context, val datas: MutableList<planData>
                 intent.putExtra("returnStartDate", binding.planStartDate.text)
                 intent.putExtra("returnEndDate", binding.planEndDate.text)
                 intent.putExtra("returnState", "수정")
+                intent.putExtra("returnPos", datas[pos].planPos)
                 intent.putExtra("returnIndex", pos)
+                intent.putExtra("returnPlanNumber", datas[bindingAdapterPosition].planNumber )
                 requestLaun.launch(intent)
             }
         }

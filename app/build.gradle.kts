@@ -57,10 +57,11 @@ dependencies {
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
     implementation("androidx.recyclerview:recyclerview:1.3.0")
     implementation("com.github.prolificinteractive:material-calendarview:2.0.0")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
 
     implementation("androidx.room:room-ktx:2.6.0")
     implementation("androidx.room:room-runtime:2.6.0")
-    findKaptConfiguration("androidx.room:room-compiler:2.6.0")
+    kapt("androidx.room:room-compiler:2.6.0")
     annotationProcessor("androidx.room:room-compiler:2.6.0")
 
     testImplementation("junit:junit:4.13.2")

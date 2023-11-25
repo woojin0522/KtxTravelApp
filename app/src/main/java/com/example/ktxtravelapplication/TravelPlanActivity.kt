@@ -10,6 +10,8 @@ import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,23 +22,35 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
 import com.example.ktxtravelapplication.databinding.ActivityTravelPlanBinding
 import com.example.ktxtravelapplication.databinding.PlanDetailItemBinding
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Calendar
 
+// --------------------------------전역 변수 영역-------------------------
 // 계획 날짜 최소, 최대 범위 설정 변수
 val minDate = Calendar.getInstance()
 val maxDate = Calendar.getInstance()
+var planPos = 0
+var planNum = 0
+lateinit var planDeleteStates : MutableList<Boolean>
+lateinit var planUpdateStates : MutableList<Boolean>
+// --------------------------------전역 변수 영역-------------------------
 class TravelPlanActivity : AppCompatActivity() {
     // 변수 선언 영역 ------------------------
     lateinit var planTitle: String
     lateinit var planStartDate: String
     lateinit var planEndDate: String
     lateinit var binding: ActivityTravelPlanBinding
+    lateinit var db: PlanDB
     // ------------------------ 변수 선언 영역
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +58,16 @@ class TravelPlanActivity : AppCompatActivity() {
         // 뷰 바인딩
         binding = ActivityTravelPlanBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        planDeleteStates = mutableListOf(false)
+        planUpdateStates = mutableListOf(false)
+
+        // DB 객체 선언
+        val db = Room.databaseBuilder(
+            applicationContext,
+            PlanDB::class.java,
+            "PlanDB"
+        ).build()
 
         // 액션바 대신 툴바 사용 및 타이틀 비워 두기
         setSupportActionBar(binding.planToolbar)
@@ -66,25 +90,36 @@ class TravelPlanActivity : AppCompatActivity() {
             binding.planEndCalendarDay.text = "${dates[dates.size - 1].year}-${dates[dates.size - 1].month}-${dates[dates.size - 1].day}"
             binding.planDayRange.text = "${dates.size - 1}박${dates.size}일"
             // 최소날짜와 최대날짜를 여행 날짜 선택 범위 최소와 최대값으로 설정
-            minDate.set(dates[0].year, dates[0].month, dates[0].day)
-            maxDate.set(dates[dates.size - 1].year, dates[dates.size - 1].month, dates[dates.size - 1].day)
+            minDate.set(dates[0].year, dates[0].month - 1, dates[0].day)
+            maxDate.set(dates[dates.size - 1].year, dates[dates.size - 1].month - 1, dates[dates.size - 1].day)
         }
         // 캘린더뷰 하루만 선택시
         binding.calendarView.setOnDateChangedListener { widget, date, selected ->
             binding.planStartCalendarDay.text = "${date.year}-${date.month}-${date.day} ~ "
             binding.planEndCalendarDay.text = "${date.year}-${date.month}-${date.day}"
             binding.planDayRange.text = "당일치기"
+            // 최소날짜와 최대날짜를 여행 날짜 선택 범위 최소와 최대값으로 설정
+            minDate.set(date.year, date.month - 1, date.day)
+            maxDate.set(date.year, date.month - 1, date.day)
         }
         // ----------------------------------캘린더 영역 -----------------------------------
+
+        // 여행계획 데이터
+        val datas = mutableListOf<PlanDetailDatas>()
 
         // ----------------------------------값 전달받는 영역--------------------------------
         val returnPlanTitle = intent.getStringExtra("returnTitle")
         val returnPlanStartDate = intent.getStringExtra("returnStartDate")
         val returnPlanEndDate = intent.getStringExtra("returnEndDate")
         val returnState = intent.getStringExtra("returnState")
+        val returnPlanNumber = intent.getIntExtra("returnPlanNumber", 0)
         val returnIndex = intent.getIntExtra("returnIndex", 0)
+        val returnPos = intent.getIntExtra("returnPos", 0)
+
         // 전달받은 값이 null일 경우 아무 동작도 취하지 않음
-        if(returnPlanTitle == null || returnPlanStartDate == null || returnPlanEndDate == null){ }
+        planNum = returnPlanNumber
+        if(returnPlanTitle == null || returnPlanStartDate == null || returnPlanEndDate == null){
+        }
         else {
             // 전달받은 값을 각 화면에 출력
             binding.planTitle.setText(returnPlanTitle)
@@ -97,13 +132,35 @@ class TravelPlanActivity : AppCompatActivity() {
             val endDate = dateFormat.parse(returnPlanEndDate).time
             val subDate = (endDate - startDate) / (24 * 60 * 60 * 1000)
 
-            binding.planDayRange.text = "${subDate}박${subDate + 1}일"
+            if(subDate.toInt() == 0) {
+                binding.planDayRange.text = "당일치기"
+            } else {
+                binding.planDayRange.text = "${subDate}박${subDate + 1}일"
+            }
+
+            // returnPos - 1 수 만큼 빈 데이터 add후 db에서 select해서 returnPos - 1 수 만큼 데이터 수정
+            for(i in 0..returnPos - 1){
+                datas.add(PlanDetailDatas("", "오후 12 : 00", "오후 1 : 00", ""))
+            }
+            runBlocking {
+                for(i in 0..returnPos - 1) {
+                    val SelectedDate = db.getDao().getPlan(planNum).get(i).SelectedDate
+                    val StartTime = db.getDao().getPlan(planNum).get(i).StartTime
+                    val EndTime = db.getDao().getPlan(planNum).get(i).EndTime
+                    val DetailText = db.getDao().getPlan(planNum).get(i).Detail
+                    datas.set(i, PlanDetailDatas(SelectedDate, StartTime, EndTime, DetailText))
+
+                    binding.planDetailRecyclerView.adapter?.notifyItemChanged(i)
+                }
+            }
         }
         // ----------------------------------값 전달받는 영역--------------------------------
 
         // 수정모드 일때 버튼 이름을 수정하기로 바꾸기
         if(returnState == "수정"){
             binding.planSaveBtn.text = "수정하기"
+        } else {
+            datas.add(PlanDetailDatas("", "오후 12 : 00", "오후 1 : 00", ""))
         }
 
         // -----------------------------------함수 영역 ------------------------------------
@@ -119,8 +176,66 @@ class TravelPlanActivity : AppCompatActivity() {
         // 값 저장 및 인텐트 값 넘겨주기 함수
         fun planSave(state: String) {
             // 제목 날짜 저장
+            planTitle = binding.planTitle.text.toString()
             planStartDate = binding.planStartCalendarDay.text.toString()
             planEndDate = binding.planEndCalendarDay.text.toString()
+
+            Log.d("test", "$planPos")
+            // 저장(신규등록) 모드일 때
+            if(returnState == "저장"){
+                // insert
+                runBlocking {
+                    for(i in 0..planPos - 1) {
+                        db.getDao().insertPlan(PlanEntity(null, planNum, planTitle, planStartDate, planEndDate,
+                            datas[i].selectedDate, datas[i].startTime, datas[i].endTime, datas[i].planDetail))
+                    }
+                }
+            }
+            // 수정 모드일 때
+            else {
+                Log.d("test", "$returnPos, $planPos")
+                // insert
+                if(returnPos < planPos){
+                    runBlocking {
+                        for(i in returnPos..planPos - 1) {
+                            if (planDeleteStates[i] == false){
+                                db.getDao().insertPlan(PlanEntity(null, planNum, planTitle, planStartDate, planEndDate,
+                                    datas[i].selectedDate, datas[i].startTime, datas[i].endTime, datas[i].planDetail))
+                            }
+                        }
+                    }
+                }
+                else {
+                    // delete
+                    Log.d("test", "$returnPos, $planPos")
+                    for(i in 0..planDeleteStates.size - 1) {
+                        if(planDeleteStates[i] == true){
+                            Log.d("test" , "$planDeleteStates")
+                            CoroutineScope(Dispatchers.IO).launch {
+                                if(db.getDao().getPlan(planNum).size > planPos){
+                                    val id = db.getDao().getPlan(planNum).get(i).id
+                                    db.getDao().deletePlan(id!!.toInt())
+                                    Log.d("test" , "$id")
+                                } else {}
+                            }
+                        } else {
+                            Log.d("test" , "삭제할 데이터 없음.")
+                        }
+                    }
+                }
+
+                /*// update
+                for(i in 0..planUpdateStates.size - 1) {
+                    if(planDeleteStates[i] == false and planUpdateStates[i] == true) {
+                        runBlocking {
+                            val id = db.getDao().getPlan(planNum).get(i).id
+
+                            db.getDao().updatePlan(id!!.toInt(), planTitle, datas[i].planDetail, planStartDate, planEndDate,
+                                datas[i].startTime, datas[i].endTime, datas[i].selectedDate)
+                        }
+                    }
+                }*/
+            }
 
             // 인텐트 생성후 인텐트로 데이터 넘기기
             val returnIntent = Intent()
@@ -128,7 +243,9 @@ class TravelPlanActivity : AppCompatActivity() {
             returnIntent.putExtra("returnStartDate", planStartDate)
             returnIntent.putExtra("returnEndDate", planEndDate)
             returnIntent.putExtra("returnState", state)
+            returnIntent.putExtra("returnPlanNumber", returnPlanNumber)
             returnIntent.putExtra("returnIndex", returnIndex)
+            returnIntent.putExtra("returnPos", planPos)
             setResult(Activity.RESULT_OK, returnIntent)
             // 이전화면으로 값 넘겨주기
             finish()
@@ -205,15 +322,10 @@ class TravelPlanActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback = callback)
         // -----------------------------------뒤로가기 기능 ---------------------------------
 
-        // 여행계획 데이터
-        val datas = mutableListOf<PlanDetailDatas>().apply {
-            add(PlanDetailDatas("시작시간", "끝나는시간", ""))
-        }
-
         // -----------------------------------버튼 작동 영역 --------------------------------
         // 시간별 계획 추가 버튼 클릭시
         binding.planDetailPlusBtn.setOnClickListener {
-            datas.add(PlanDetailDatas("오후 12 : 00", "오후 1 : 00", ""))
+            datas.add(PlanDetailDatas("", "오후 12 : 00", "오후 1 : 00", ""))
             binding.planDetailRecyclerView.adapter?.notifyItemInserted(datas.size)
         }
         // 시간별 계획 저장 버튼 클릭시
@@ -246,8 +358,12 @@ class TravelPlanActivity : AppCompatActivity() {
         // -----------------------------------버튼 작동 영역 --------------------------------
 
         // 리사이클러뷰 어댑터와 레이아웃 매니저 설정
-        binding.planDetailRecyclerView.adapter = TravelPlanRecyclerAdapter(this, datas)
-        binding.planDetailRecyclerView.layoutManager = LinearLayoutManager(this)
+        if(datas.size > 0){
+            binding.planDetailRecyclerView.adapter = TravelPlanRecyclerAdapter(this, datas)
+            binding.planDetailRecyclerView.layoutManager = LinearLayoutManager(this)
+        }
+        else {}
+
     }
 
     // 화면 전환간 애니메이션 제거
@@ -260,9 +376,10 @@ class TravelPlanActivity : AppCompatActivity() {
 
 // -------------------------------------여행계획 데이터 클래스-------------------------------------
 data class PlanDetailDatas(
-    val startTime: String,
-    val endTime: String,
-    val planDetail: String
+    var selectedDate: String,
+    var startTime: String,
+    var endTime: String,
+    var planDetail: String,
 )
 
 // --------------------------------시간별 계획 리사이클러뷰 어댑터----------------------------------
@@ -287,23 +404,37 @@ class TravelPlanRecyclerAdapter(val context: Context, val datas: MutableList<Pla
                             amOrPm = "오전"
                         }
                         // textNum이 1일 경우 시작 시간을 변경, 2일 경우 끝나는 시간을 변경
-                        if(textNum == 1) binding.planDetailTime.text = "${amOrPm} ${hour.toString()} : ${minute.toString().padStart(2, '0')}"
-                        else binding.planDetailTime2.text = "${amOrPm} ${hour.toString()} : ${minute.toString().padStart(2, '0')}"
+                        if(textNum == 1) {
+                            binding.planDetailTime.text = "${amOrPm} ${hour.toString()} : ${minute.toString().padStart(2, '0')}"
+                            datas[pos].startTime = binding.planDetailTime.text.toString()
+                        }
+                        else {
+                            binding.planDetailTime2.text = "${amOrPm} ${hour.toString()} : ${minute.toString().padStart(2, '0')}"
+                            datas[pos].endTime = binding.planDetailTime2.text.toString()
+                        }
+                        planUpdateStates[pos] = true
                     }
                 }, 15, 0, false).show()
             }
 
+            planDeleteStates.add(false)
+            planUpdateStates.add(false)
+
             // 초기값들 설정
             binding.planDetailNumber.text = "${pos + 1}번"
             binding.planDetailEditText.requestFocus()
+            binding.planDetailEditText.setText(datas[pos].planDetail)
+            binding.planSelectedDate.text = datas[pos].selectedDate
             binding.planDetailTime.text = datas[pos].startTime
             binding.planDetailTime2.text = datas[pos].endTime
+            planPos = datas.size
 
             // 삭제하기 버튼 클릭시 리사이클러뷰 항목 삭제
             binding.planDeleteBtn.setOnClickListener {
+                planDeleteStates[pos] = true
                 datas.removeAt(pos)
                 notifyItemRemoved(pos)
-                notifyItemRangeChanged(pos, datas.size)
+                notifyItemRangeChanged(0, datas.size)
             }
 
             // 여행계획 시작 시간 클릭시 시간 변경창 띄우기
@@ -322,6 +453,8 @@ class TravelPlanRecyclerAdapter(val context: Context, val datas: MutableList<Pla
                     override fun onDateSet(p0: DatePicker?, p1: Int, p2: Int, p3: Int) {
                         // 버튼 옆에 텍스트를 선택한 날짜로 변경
                         binding.planSelectedDate.text = "$p1-${p2+1}-$p3"
+                        datas[pos].selectedDate = binding.planSelectedDate.text.toString()
+                        planUpdateStates[pos] = true
                     }
                 }, Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH))
                 // 최소 최대 날짜 설정
@@ -329,6 +462,18 @@ class TravelPlanRecyclerAdapter(val context: Context, val datas: MutableList<Pla
                 datePickerDialog.datePicker.maxDate = maxDate.timeInMillis
                 datePickerDialog.show()
             }
+
+            binding.planDetailEditText.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+                }
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    datas[pos].planDetail = binding.planDetailEditText.text.toString()
+                }
+                override fun afterTextChanged(p0: Editable?) {
+                    planUpdateStates[pos] = true
+                }
+            })
         }
     }
 
