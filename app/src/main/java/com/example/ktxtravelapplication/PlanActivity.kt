@@ -21,20 +21,26 @@ class PlanActivity : AppCompatActivity() {
     lateinit var datas: MutableList<planData>
     lateinit var editor: SharedPreferences.Editor
     companion object {
+        // sharedPreferences 선언
         lateinit var pref : SharedPreferences
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // pref 변수 초기화 - 저장된 값을 불러옴
         pref = getPreferences(Context.MODE_PRIVATE)
         // 리사이클러뷰 데이터 리스트
         datas = mutableListOf()
 
+        // 뷰 바인딩
         val binding = ActivityPlanBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // pref를 수정하는 변수
         editor = pref.edit()
 
+        // pref에서 "저장횟수" key의 데이터값이 0 이상일 때 작동
         if(pref.getInt("저장횟수", 0) > 0){
+            // 저장횟수만큼 반복하여 데이터를 불러옴.
             for(i in 0..pref.getInt("저장횟수", 0)) {
                 val prefPlanNumber = pref.getInt("${i}번 planNumber", 0)
                 val prefPlanPos = pref.getInt("${i}번 planPos", 0)
@@ -42,6 +48,7 @@ class PlanActivity : AppCompatActivity() {
                 val prefPlanStartDate = pref.getString("${i}번 planStartDate", "")
                 val prefPlanEndDate = pref.getString("${i}번 planEndDate", "")
 
+                // 불러온 데이터를 리사이클러뷰 datas에 추가
                 datas.add(planData(prefPlanNumber, prefPlanPos, prefPlanTitle.toString(),
                     prefPlanStartDate.toString(), prefPlanEndDate.toString()))
 
@@ -104,9 +111,12 @@ class PlanActivity : AppCompatActivity() {
 
     }
 
+    // 액티비티가 종료될 때 작동하는 함수
     override fun onDestroy() {
         super.onDestroy()
+        // 리사이클러뷰 datas가 1개 이상 있을때 작동
         if(datas.size > 0){
+            // datas에 size만큼 반복하여 데이터를 저장함.
             for(i in 0..datas.size - 1){
                 editor.putInt("${i}번 planNumber", datas[i].planNumber!!.toInt())
                 editor.putInt("${i}번 planPos", datas[i].planPos!!.toInt())
@@ -121,6 +131,7 @@ class PlanActivity : AppCompatActivity() {
     }
 }
 
+// 리사이클러뷰 항목에 쓰이는 데이터 클래스
 data class planData(
     var planNumber: Int?,
     var planPos: Int?,
@@ -129,6 +140,7 @@ data class planData(
     var planEndDate: String
 )
 
+// 리사이클러뷰 어댑터
 class PlanRecyclerAdapter(val context: Context, val datas: MutableList<planData>, val requestLaun: ActivityResultLauncher<Intent>): RecyclerView.Adapter<PlanRecyclerAdapter.ViewHolder>() {
     override fun getItemCount(): Int {
         return datas.size
@@ -145,14 +157,17 @@ class PlanRecyclerAdapter(val context: Context, val datas: MutableList<planData>
 
     inner class ViewHolder(val binding: PlanItemBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(pos: Int){
+            // 초기값 설정
             binding.title.text = datas[pos].planTitle
             binding.planStartDate.text = datas[pos].planStartDate
             binding.planEndDate.text = datas[pos].planEndDate
 
+            // 리사이클러뷰 각 항목을 클릭하였을 경우 작동
             itemView.setOnClickListener {
                 // 수정모드로 액티비티 전환하기
                 val activity = context as PlanActivity
                 val intent = Intent(activity, TravelPlanActivity::class.java)
+                // 인텐트로 필요한 값 넘겨주기
                 intent.putExtra("returnTitle", binding.title.text)
                 intent.putExtra("returnStartDate", binding.planStartDate.text)
                 intent.putExtra("returnEndDate", binding.planEndDate.text)
