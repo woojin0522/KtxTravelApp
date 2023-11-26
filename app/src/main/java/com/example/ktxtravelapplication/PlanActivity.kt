@@ -3,6 +3,7 @@ package com.example.ktxtravelapplication
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Build.VERSION_CODES.S
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -14,6 +15,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ktxtravelapplication.databinding.ActivityPlanBinding
 import com.example.ktxtravelapplication.databinding.PlanItemBinding
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.util.Calendar
+import java.util.Locale
 
 var planNumber = 0
 
@@ -39,9 +46,9 @@ class PlanActivity : AppCompatActivity() {
         editor = pref.edit()
 
         // pref에서 "저장횟수" key의 데이터값이 0 이상일 때 작동
-        if(pref.getInt("저장횟수", 0) > 0){
+        if(pref.getInt("저장횟수", -1) >= 0){
             // 저장횟수만큼 반복하여 데이터를 불러옴.
-            for(i in 0..pref.getInt("저장횟수", 0)) {
+            for(i in 0..pref.getInt("저장횟수", -1)) {
                 val prefPlanNumber = pref.getInt("${i}번 planNumber", 0)
                 val prefPlanPos = pref.getInt("${i}번 planPos", 0)
                 val prefPlanTitle = pref.getString("${i}번 planTitle", "")
@@ -108,7 +115,6 @@ class PlanActivity : AppCompatActivity() {
         // 리사이클러뷰 생성
         binding.planRecyclerView.adapter = PlanRecyclerAdapter(this, datas, requestLauncher)
         binding.planRecyclerView.layoutManager = LinearLayoutManager(this)
-
     }
 
     // 액티비티가 종료될 때 작동하는 함수

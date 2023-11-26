@@ -31,6 +31,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.nio.file.Files.delete
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Calendar
@@ -41,6 +42,7 @@ val minDate = Calendar.getInstance()
 val maxDate = Calendar.getInstance()
 var planPos = 0
 var planNum = 0
+
 // --------------------------------전역 변수 영역-------------------------
 class TravelPlanActivity : AppCompatActivity() {
     // 변수 선언 영역 ------------------------
@@ -419,6 +421,8 @@ class TravelPlanRecyclerAdapter(val context: Context, val datas: MutableList<Pla
                     datas[bindingAdapterPosition].planDetail = binding.planDetailEditText.text.toString()
                 }
             })
+
+            binding.planDeleteBtn.setOnClickListener {}
         }
     }
 
