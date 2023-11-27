@@ -197,6 +197,8 @@ class TravelPlanActivity : AppCompatActivity() {
             }
             // 수정 모드일 때
             else {
+                /*returnPos가 planPos보다 작을 경우에 실행. 이 때는 DB에 있는 값에서 새로운 항목이 추가되는 것이므로,
+                DB에 새로 추가된 항목을 insert해주어야 한다.*/
                 // insert
                 if(returnPos < planPos){
                     runBlocking {
@@ -206,9 +208,14 @@ class TravelPlanActivity : AppCompatActivity() {
                         }
                     }
                 }
+                // returnPos가 planPos보다 클 경우에 실행. 이때는 새로이 추가되는 항목이 없으므로 insert할 필요가 없음.
                 else {
                     // delete
                     runBlocking {
+                        /*while 문에서 무한반복. 탈출 조건은 deleteStates에 size가 0이거나, true가 없을 때 탈출
+                        while문 내에서 for문을 통해 리사이클러뷰에 삭제버튼이 눌렸는지 안눌렸는지 확인
+                        삭제 버튼이 눌렸을 경우에 true이므로 if문 조건에 해당되어 해당 삭제버튼이 눌린 항목의 DB를 삭제처리
+                        그 다음에 지워진 항목의 deleteStates를 삭제한후 for문을 탈출한다.*/
                         while(true) {
                             for (i in 0..deleteStates.size - 1) {
                                 if (deleteStates[i] == true) {
@@ -219,6 +226,11 @@ class TravelPlanActivity : AppCompatActivity() {
                                     break;
                                 }
                             }
+
+                            /*여기 for문은 deleteStates를 다시 한번 확인하여 true가 있다면 break를 통해 for문을
+                            탈출한 후 다시 처음으로 돌아가 while문을 반복한다. 이때 whileBreakBool은 false값으로 주고
+                            만약 true값이 없다면 WhileBreakBool을 true값으로 준다. 이 말은 즉 deleteStates에
+                            true값이 없다는 뜻이며 while문을 탈출할 조건이 된다는 뜻이다.(db삭제가 끝난다는 의미.)*/
                             var whileBreakBool = false
                             for (i in 0..deleteStates.size - 1) {
                                 if (deleteStates[i] == false){
@@ -229,6 +241,8 @@ class TravelPlanActivity : AppCompatActivity() {
                                 }
                             }
 
+                            /*deleteStates에 size가 0일 경우는 DB에 모든 데이터가 삭제됬다는 뜻이므로 while문을 탈출하는 조건이 되며,
+                            whileBreakBool이 true일 경우 DB에서 삭제 처리할 데이터가 존재하지 않으므로 while문을 탈출할 수 있다는 뜻이다.*/
                             if(whileBreakBool == true || deleteStates.size == 0) {
                                 break
                             }
