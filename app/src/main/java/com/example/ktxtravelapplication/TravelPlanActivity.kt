@@ -51,6 +51,7 @@ class TravelPlanActivity : AppCompatActivity() {
     lateinit var planEndDate: String
     lateinit var binding: ActivityTravelPlanBinding
     lateinit var db: PlanDB
+    lateinit var deleteStates: MutableList<Boolean>
     // ------------------------ 변수 선언 영역
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,6 +66,8 @@ class TravelPlanActivity : AppCompatActivity() {
             PlanDB::class.java,
             "PlanDB"
         ).build()
+
+        deleteStates = mutableListOf()
 
         // 액션바 대신 툴바 사용 및 타이틀 비워 두기
         setSupportActionBar(binding.planToolbar)
@@ -155,8 +158,13 @@ class TravelPlanActivity : AppCompatActivity() {
                     binding.planDetailRecyclerView.adapter?.notifyItemChanged(i)
                 }
             }
+
+            for(i in 0..returnPos - 1) {
+                deleteStates.add(false)
+            }
         } else {
             datas.add(PlanDetailDatas("", "오후 12 : 00", "오후 1 : 00", ""))
+            deleteStates.add(false)
         }
 
         // -----------------------------------함수 영역 ------------------------------------
@@ -198,7 +206,35 @@ class TravelPlanActivity : AppCompatActivity() {
                         }
                     }
                 }
-                else { }
+                else {
+                    // delete
+                    runBlocking {
+                        while(true) {
+                            for (i in 0..deleteStates.size - 1) {
+                                if (deleteStates[i] == true) {
+                                    val plandb = db.getDao().getPlan(planNum)
+                                    val id = plandb[i].id
+                                    db.getDao().deletePlan(id!!.toInt())
+                                    deleteStates.removeAt(i)
+                                    break;
+                                }
+                            }
+                            var whileBreakBool = false
+                            for (i in 0..deleteStates.size - 1) {
+                                if (deleteStates[i] == false){
+                                    whileBreakBool = true
+                                } else {
+                                    whileBreakBool = false
+                                    break
+                                }
+                            }
+
+                            if(whileBreakBool == true || deleteStates.size == 0) {
+                                break
+                            }
+                        }
+                    }
+                }
 
             }
 
@@ -291,6 +327,8 @@ class TravelPlanActivity : AppCompatActivity() {
         binding.planDetailPlusBtn.setOnClickListener {
             datas.add(PlanDetailDatas("", "오후 12 : 00", "오후 1 : 00", ""))
             binding.planDetailRecyclerView.adapter?.notifyItemInserted(datas.size)
+            deleteStates.add(false)
+            Log.d("test", "deleteState plus : $deleteStates")
         }
         // 시간별 계획 저장 버튼 클릭시
         binding.planSaveBtn.setOnClickListener {
@@ -323,7 +361,7 @@ class TravelPlanActivity : AppCompatActivity() {
 
         // 리사이클러뷰 어댑터와 레이아웃 매니저 설정
         if(datas.size > 0){
-            binding.planDetailRecyclerView.adapter = TravelPlanRecyclerAdapter(this, datas)
+            binding.planDetailRecyclerView.adapter = TravelPlanRecyclerAdapter(this, datas, deleteStates)
             binding.planDetailRecyclerView.layoutManager = LinearLayoutManager(this)
         }
         else {}
@@ -347,9 +385,16 @@ data class PlanDetailDatas(
 )
 
 // --------------------------------시간별 계획 리사이클러뷰 어댑터----------------------------------
-class TravelPlanRecyclerAdapter(val context: Context, val datas: MutableList<PlanDetailDatas>) : RecyclerView.Adapter<TravelPlanRecyclerAdapter.ViewHolder>() {
+class TravelPlanRecyclerAdapter(val context: Context, val datas: MutableList<PlanDetailDatas>, val deleteStates: MutableList<Boolean>) : RecyclerView.Adapter<TravelPlanRecyclerAdapter.ViewHolder>() {
     // 뷰 홀더 선언부
     inner class ViewHolder(val binding : PlanDetailItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun deletePlan(pos: Int) {
+            datas.removeAt(pos)
+            notifyItemRemoved(pos)
+            planPos -= 1
+            deleteStates[pos] = true
+            Log.d("test", "$deleteStates")
+        }
         // 각 항목에서 작동하는 기능이나 텍스트값 등을 변경하는 함수
         fun bind(pos: Int){
             // TimePickerDialog 함수
@@ -422,7 +467,9 @@ class TravelPlanRecyclerAdapter(val context: Context, val datas: MutableList<Pla
                 }
             })
 
-            binding.planDeleteBtn.setOnClickListener {}
+            binding.planDeleteBtn.setOnClickListener {
+                deletePlan(pos)
+            }
         }
     }
 
