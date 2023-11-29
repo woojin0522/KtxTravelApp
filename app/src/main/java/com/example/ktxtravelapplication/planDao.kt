@@ -17,8 +17,8 @@ interface planDao {
     @Insert
     suspend fun insertPlan(planEntity: PlanEntity)
 
-    @Query("DELETE FROM tblPlan WHERE id = :id")
-    suspend fun deletePlan(id: Int)
+    @Query("DELETE FROM tblPlan WHERE deleteState = :deleteState")
+    suspend fun deletePlan(deleteState: Boolean)
 
     @Query("UPDATE tblPlan SET planTitle = :planEditTitle, planDetail = :planEditDetail, " +
             "planStartDate = :planEditStartDate, planEndDate = :planEditEndDate, planStartTime = :planEditStartTime, planEndTime = :planEditEndTime, " +
@@ -34,5 +34,8 @@ interface planDao {
         planEditEndTime: String,
         planEditSelectedDate: String
     )
+
+    @Query("UPDATE tblPlan SET deleteState = :deleteState WHERE id = :id")
+    suspend fun updateDeleteState(id: Int, deleteState: Boolean)
 
 }

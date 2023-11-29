@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,11 +26,7 @@ import com.example.ktxtravelapplication.databinding.ActivityTravelPlanBinding
 import com.example.ktxtravelapplication.databinding.PlanDetailItemBinding
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.nio.file.Files.delete
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Calendar
@@ -42,7 +37,8 @@ val minDate = Calendar.getInstance()
 val maxDate = Calendar.getInstance()
 var planPos = 0
 var planNum = 0
-
+var returnPos = 0
+var returnState = ""
 // --------------------------------전역 변수 영역-------------------------
 class TravelPlanActivity : AppCompatActivity() {
     // 변수 선언 영역 ------------------------
@@ -51,7 +47,7 @@ class TravelPlanActivity : AppCompatActivity() {
     lateinit var planEndDate: String
     lateinit var binding: ActivityTravelPlanBinding
     lateinit var db: PlanDB
-    lateinit var deleteStates: MutableList<Boolean>
+    var planSeq = 1
     // ------------------------ 변수 선언 영역
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,18 +56,16 @@ class TravelPlanActivity : AppCompatActivity() {
         binding = ActivityTravelPlanBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // 액션바 대신 툴바 사용 및 타이틀 비워 두기
+        setSupportActionBar(binding.planToolbar)
+        supportActionBar?.setTitle("")
+
         // DB 객체 선언
         val db = Room.databaseBuilder(
             applicationContext,
             PlanDB::class.java,
             "PlanDB"
         ).build()
-
-        deleteStates = mutableListOf()
-
-        // 액션바 대신 툴바 사용 및 타이틀 비워 두기
-        setSupportActionBar(binding.planToolbar)
-        supportActionBar?.setTitle("")
 
         // ----------------------------------캘린더 영역 -----------------------------------
         // 현재 날짜를 초기화. 안드로이드 8 버전 이상부터 사용
@@ -111,9 +105,9 @@ class TravelPlanActivity : AppCompatActivity() {
         val returnPlanTitle = intent.getStringExtra("returnTitle")
         val returnPlanStartDate = intent.getStringExtra("returnStartDate")
         val returnPlanEndDate = intent.getStringExtra("returnEndDate")
-        val returnState = intent.getStringExtra("returnState")
+        returnState = intent.getStringExtra("returnState").toString()
         val returnPlanNumber = intent.getIntExtra("returnPlanNumber", 0)
-        val returnPos = intent.getIntExtra("returnPos", 0)
+        returnPos = intent.getIntExtra("returnPos", 0)
 
         // 전달받은 값이 null일 경우 아무 동작도 취하지 않음
         planNum = returnPlanNumber
@@ -145,7 +139,7 @@ class TravelPlanActivity : AppCompatActivity() {
 
             // returnPos - 1 수 만큼 빈 데이터 add후 db에서 select해서 returnPos - 1 수 만큼 데이터 수정
             for(i in 0..returnPos - 1){
-                datas.add(PlanDetailDatas("", "오후 12 : 00", "오후 1 : 00", ""))
+                datas.add(PlanDetailDatas(i + 1, "", "오후 12 : 00", "오후 1 : 00", ""))
             }
             runBlocking {
                 for(i in 0..returnPos - 1) {
@@ -153,18 +147,14 @@ class TravelPlanActivity : AppCompatActivity() {
                     val StartTime = db.getDao().getPlan(planNum).get(i).StartTime
                     val EndTime = db.getDao().getPlan(planNum).get(i).EndTime
                     val DetailText = db.getDao().getPlan(planNum).get(i).Detail
-                    datas.set(i, PlanDetailDatas(SelectedDate, StartTime, EndTime, DetailText))
+                    datas.set(i, PlanDetailDatas(i + 1, SelectedDate, StartTime, EndTime, DetailText))
 
+                    planSeq = returnPos
                     binding.planDetailRecyclerView.adapter?.notifyItemChanged(i)
                 }
             }
-
-            for(i in 0..returnPos - 1) {
-                deleteStates.add(false)
-            }
         } else {
-            datas.add(PlanDetailDatas("", "오후 12 : 00", "오후 1 : 00", ""))
-            deleteStates.add(false)
+            datas.add(PlanDetailDatas(planSeq,"", "오후 12 : 00", "오후 1 : 00", ""))
         }
 
         // -----------------------------------함수 영역 ------------------------------------
@@ -189,7 +179,7 @@ class TravelPlanActivity : AppCompatActivity() {
                 runBlocking {
                     if(planPos >= 1){
                         for(i in 0..planPos - 1) {
-                            db.getDao().insertPlan(PlanEntity(null, planNum, planTitle, planStartDate, planEndDate,
+                            db.getDao().insertPlan(PlanEntity(null, false, planNum, planTitle, planStartDate, planEndDate,
                                 datas[i].selectedDate, datas[i].startTime, datas[i].endTime, datas[i].planDetail))
                         }
                     }
@@ -203,53 +193,51 @@ class TravelPlanActivity : AppCompatActivity() {
                 if(returnPos < planPos){
                     runBlocking {
                         for(i in returnPos..planPos - 1) {
-                            db.getDao().insertPlan(PlanEntity(null, planNum, planTitle, planStartDate, planEndDate,
+                            db.getDao().insertPlan(PlanEntity(null, false, planNum, planTitle, planStartDate, planEndDate,
                                 datas[i].selectedDate, datas[i].startTime, datas[i].endTime, datas[i].planDetail))
                         }
                     }
                 }
-                // returnPos가 planPos보다 클 경우에 실행. 이때는 새로이 추가되는 항목이 없으므로 insert할 필요가 없음.
+                // returnPos가 planPos보다 크거나 같을 경우에 실행. 이때는 새로이 추가되는 항목이 없으므로 insert할 필요가 없음.
                 else {
-                    // delete
+                    // 삭제기능
                     runBlocking {
-                        /*while 문에서 무한반복. 탈출 조건은 deleteStates에 size가 0이거나, true가 없을 때 탈출
-                        while문 내에서 for문을 통해 리사이클러뷰에 삭제버튼이 눌렸는지 안눌렸는지 확인
-                        삭제 버튼이 눌렸을 경우에 true이므로 if문 조건에 해당되어 해당 삭제버튼이 눌린 항목의 DB를 삭제처리
-                        그 다음에 지워진 항목의 deleteStates를 삭제한후 for문을 탈출한다.*/
+                        var whileStop = false
                         while(true) {
-                            for (i in 0..deleteStates.size - 1) {
-                                if (deleteStates[i] == true) {
-                                    val plandb = db.getDao().getPlan(planNum)
-                                    val id = plandb[i].id
-                                    db.getDao().deletePlan(id!!.toInt())
-                                    deleteStates.removeAt(i)
-                                    break;
-                                }
-                            }
-
-                            /*여기 for문은 deleteStates를 다시 한번 확인하여 true가 있다면 break를 통해 for문을
-                            탈출한 후 다시 처음으로 돌아가 while문을 반복한다. 이때 whileBreakBool은 false값으로 주고
-                            만약 true값이 없다면 WhileBreakBool을 true값으로 준다. 이 말은 즉 deleteStates에
-                            true값이 없다는 뜻이며 while문을 탈출할 조건이 된다는 뜻이다.(db삭제가 끝난다는 의미.)*/
-                            var whileBreakBool = false
-                            for (i in 0..deleteStates.size - 1) {
-                                if (deleteStates[i] == false){
-                                    whileBreakBool = true
-                                } else {
-                                    whileBreakBool = false
+                            // for문을 통해 deleteState 검출, true이면 db 삭제후 for문 빠져나가기, true검출 안되면 whileStop = true
+                            for(i in 0..db.getDao().getPlan(planNum).size - 1) {
+                                val delState = db.getDao().getPlan(planNum).get(i).deleteState
+                                if(delState == true) {
+                                    db.getDao().deletePlan(true)
                                     break
                                 }
+                                else{
+                                    whileStop = true
+                                }
                             }
-
-                            /*deleteStates에 size가 0일 경우는 DB에 모든 데이터가 삭제됬다는 뜻이므로 while문을 탈출하는 조건이 되며,
-                            whileBreakBool이 true일 경우 DB에서 삭제 처리할 데이터가 존재하지 않으므로 while문을 탈출할 수 있다는 뜻이다.*/
-                            if(whileBreakBool == true || deleteStates.size == 0) {
+                            // whileStop 이 true일 때 while문 빠져나가기
+                            if(whileStop == true){
                                 break
                             }
                         }
                     }
-                }
 
+                    runBlocking {
+                        if(db.getDao().getPlan(planNum).size < planPos) {
+                            for(i in db.getDao().getPlan(planNum).size..planPos - 1) {
+                                db.getDao().insertPlan(PlanEntity(null, false, planNum, planTitle, planStartDate, planEndDate,
+                                    datas[i].selectedDate, datas[i].startTime, datas[i].endTime, datas[i].planDetail))
+                            }
+                        }
+                    }
+                    runBlocking {
+                        for(i in 0..db.getDao().getPlan(planNum).size - 1) {
+                            val id = db.getDao().getPlan(planNum).get(i).id
+                            db.getDao().updatePlan(id!!.toInt(), planTitle, datas[i].planDetail, planStartDate,
+                                planEndDate, datas[i].startTime, datas[i].endTime, datas[i].selectedDate)
+                        }
+                    }
+                }
             }
 
             // 인텐트 생성후 인텐트로 데이터 넘기기
@@ -264,6 +252,7 @@ class TravelPlanActivity : AppCompatActivity() {
             // 이전화면으로 값 넘겨주기
             finish()
         }
+
         // 뒤로가기 버튼 기능 함수
         fun backBtn(state: String) {
             AlertDialog.Builder(this).run {
@@ -283,7 +272,7 @@ class TravelPlanActivity : AppCompatActivity() {
                 }
 
                 setTitle("나가기")
-/*                setIcon(android.R.drawable.ic_dialog_info)*/
+                /*                setIcon(android.R.drawable.ic_dialog_info)*/
                 setMessage("나가기 전에 ${state}하시겠습니까?")
                 setPositiveButton("네", eventHandler)
                 setNegativeButton("아니오", eventHandler)
@@ -302,7 +291,7 @@ class TravelPlanActivity : AppCompatActivity() {
                 }
 
                 setTitle("저장여부")
-/*                setIcon(android.R.drawable.ic_dialog_info)*/
+                /*                setIcon(android.R.drawable.ic_dialog_info)*/
                 setMessage("정말 ${state}하시겠습니까?")
                 setPositiveButton("네", eventHandler)
                 setNegativeButton("아니오", eventHandler)
@@ -339,10 +328,9 @@ class TravelPlanActivity : AppCompatActivity() {
         // -----------------------------------버튼 작동 영역 --------------------------------
         // 시간별 계획 추가 버튼 클릭시
         binding.planDetailPlusBtn.setOnClickListener {
-            datas.add(PlanDetailDatas("", "오후 12 : 00", "오후 1 : 00", ""))
+            planSeq = planSeq + 1
+            datas.add(PlanDetailDatas(planSeq ,"", "오후 12 : 00", "오후 1 : 00", ""))
             binding.planDetailRecyclerView.adapter?.notifyItemInserted(datas.size)
-            deleteStates.add(false)
-            Log.d("test", "deleteState plus : $deleteStates")
         }
         // 시간별 계획 저장 버튼 클릭시
         binding.planSaveBtn.setOnClickListener {
@@ -375,7 +363,7 @@ class TravelPlanActivity : AppCompatActivity() {
 
         // 리사이클러뷰 어댑터와 레이아웃 매니저 설정
         if(datas.size > 0){
-            binding.planDetailRecyclerView.adapter = TravelPlanRecyclerAdapter(this, datas, deleteStates)
+            binding.planDetailRecyclerView.adapter = TravelPlanRecyclerAdapter(this, datas, db)
             binding.planDetailRecyclerView.layoutManager = LinearLayoutManager(this)
         }
         else {}
@@ -392,6 +380,7 @@ class TravelPlanActivity : AppCompatActivity() {
 
 // -------------------------------------여행계획 데이터 클래스-------------------------------------
 data class PlanDetailDatas(
+    var sequence: Int,
     var selectedDate: String,
     var startTime: String,
     var endTime: String,
@@ -399,16 +388,23 @@ data class PlanDetailDatas(
 )
 
 // --------------------------------시간별 계획 리사이클러뷰 어댑터----------------------------------
-class TravelPlanRecyclerAdapter(val context: Context, val datas: MutableList<PlanDetailDatas>, val deleteStates: MutableList<Boolean>) : RecyclerView.Adapter<TravelPlanRecyclerAdapter.ViewHolder>() {
+class TravelPlanRecyclerAdapter(val context: Context, val datas: MutableList<PlanDetailDatas>, val db: PlanDB) : RecyclerView.Adapter<TravelPlanRecyclerAdapter.ViewHolder>() {
+    fun deletePlan(pos: Int) {
+        if(returnState == "수정") {
+            if(returnPos >= planPos) {
+                runBlocking {
+                    val id = db.getDao().getPlan(planNum).get(datas[pos].sequence - 1).id
+                    db.getDao().updateDeleteState(id!!.toInt(), true)
+                }
+            }
+        } else{ }
+        datas.removeAt(pos)
+        notifyItemRemoved(pos)
+
+        planPos = planPos - 1
+    }
     // 뷰 홀더 선언부
     inner class ViewHolder(val binding : PlanDetailItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun deletePlan(pos: Int) {
-            datas.removeAt(pos)
-            notifyItemRemoved(pos)
-            planPos -= 1
-            deleteStates[pos] = true
-            Log.d("test", "$deleteStates")
-        }
         // 각 항목에서 작동하는 기능이나 텍스트값 등을 변경하는 함수
         fun bind(pos: Int){
             // TimePickerDialog 함수
@@ -482,7 +478,7 @@ class TravelPlanRecyclerAdapter(val context: Context, val datas: MutableList<Pla
             })
 
             binding.planDeleteBtn.setOnClickListener {
-                deletePlan(pos)
+                deletePlan(bindingAdapterPosition)
             }
         }
     }

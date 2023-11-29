@@ -9,6 +9,9 @@ data class PlanEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int?,
 
+    @ColumnInfo(name = "deleteState")
+    val deleteState: Boolean,
+
     @ColumnInfo(name = "planNumber")
     val planNumber: Int,
 
