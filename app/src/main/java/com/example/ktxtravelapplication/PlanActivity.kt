@@ -1,6 +1,8 @@
 package com.example.ktxtravelapplication
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build.VERSION_CODES.S
@@ -18,6 +20,7 @@ import androidx.room.Room
 import com.example.ktxtravelapplication.databinding.ActivityPlanBinding
 import com.example.ktxtravelapplication.databinding.PlanItemBinding
 import kotlinx.coroutines.runBlocking
+import java.nio.file.Files.delete
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalTime
@@ -123,43 +126,85 @@ class PlanActivity : AppCompatActivity() {
         ).build()
         //
         binding.planMinusBtn.setOnClickListener {
-            runBlocking {
-                var whileStop = false
+            fun deletePlan() {
+                runBlocking {
+                    var whileStop = false
 
-                for(i in 0..datas.size - 1) {
-                    if (datas[i].deleteChecked == true) {
-                        editor.remove("${i}번 planNumber")
-                        editor.remove("${i}번 planPos")
-                        editor.remove("${i}번 planTitle")
-                        editor.remove("${i}번 planStartDate")
-                        editor.remove("${i}번 planEndDate")
-
-                        editor.apply()
-                    }
-                }
-                while(true) {
                     for (i in 0..datas.size - 1) {
                         if (datas[i].deleteChecked == true) {
-                            db.getDao().allDeletePlan(datas[i].planNumber!!.toInt())
+                            editor.remove("${i}번 planNumber")
+                            editor.remove("${i}번 planPos")
+                            editor.remove("${i}번 planTitle")
+                            editor.remove("${i}번 planStartDate")
+                            editor.remove("${i}번 planEndDate")
 
-                            datas.removeAt(i)
-                            binding.planRecyclerView.adapter?.notifyItemRemoved(i)
-
-                            whileStop = false
-                            break
-                        }
-                        else{
-                            whileStop = true
-                        }
-                    }
-                    //
-                    if(whileStop == true || datas.size == 0) {
-                        if(datas.size == 0) {
-                            editor.remove("저장횟수")
                             editor.apply()
                         }
-                        break
                     }
+                    while (true) {
+                        for (i in 0..datas.size - 1) {
+                            if (datas[i].deleteChecked == true) {
+                                db.getDao().allDeletePlan(datas[i].planNumber!!.toInt())
+
+                                datas.removeAt(i)
+                                binding.planRecyclerView.adapter?.notifyItemRemoved(i)
+
+                                whileStop = false
+                                break
+                            } else {
+                                whileStop = true
+                            }
+                        }
+                        //
+                        if (whileStop == true || datas.size == 0) {
+                            if (datas.size == 0) {
+                                editor.remove("저장횟수")
+                                editor.apply()
+                            }
+                            break
+                        }
+                    }
+                }
+            }
+
+            fun checkNull(message: String) {
+                AlertDialog.Builder(this).run{
+                    setTitle("경고")
+                    setMessage(message)
+                    setPositiveButton("확인", null)
+                    show()
+                }
+            }
+
+            if(datas.isEmpty()) {
+                checkNull("삭제할 항목이 없습니다.")
+            }
+            else {
+                AlertDialog.Builder(this).run {
+                    val eventHandler = object : DialogInterface.OnClickListener {
+                        override fun onClick(p0: DialogInterface?, p1: Int) {
+                            if (p1 == DialogInterface.BUTTON_POSITIVE) {
+                                var checked = false
+                                for (i in 0..datas.size - 1) {
+                                    if (datas[i].deleteChecked == true) {
+                                        deletePlan()
+                                        checked = true
+                                        break
+                                    }
+                                }
+                                if (checked == false) {
+                                    checkNull("삭제할 항목을 추가해주세요.")
+                                }
+                            } else {
+                            }
+                        }
+                    }
+
+                    setTitle("경고")
+                    setMessage("정말 삭제하시겠습니까?")
+                    setPositiveButton("네", eventHandler)
+                    setNegativeButton("아니오", eventHandler)
+                    show()
                 }
             }
         }

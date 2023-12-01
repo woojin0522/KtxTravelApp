@@ -193,17 +193,8 @@ class TravelPlanActivity : AppCompatActivity() {
                     if (planPos >= 1) {
                         for (i in 0..planPos - 1) {
                             db.getDao().insertPlan(
-                                PlanEntity(
-                                    null,
-                                    false,
-                                    planNum,
-                                    planTitle,
-                                    planStartDate,
-                                    planEndDate,
-                                    datas[i].selectedDate,
-                                    datas[i].startTime,
-                                    datas[i].endTime,
-                                    datas[i].planDetail
+                                PlanEntity(null, false, planNum, planTitle, planStartDate, planEndDate,
+                                    datas[i].selectedDate, datas[i].startTime, datas[i].endTime, datas[i].planDetail
                                 )
                             )
                         }
@@ -219,17 +210,8 @@ class TravelPlanActivity : AppCompatActivity() {
                     runBlocking {
                         for (i in returnPos..planPos - 1) {
                             db.getDao().insertPlan(
-                                PlanEntity(
-                                    null,
-                                    false,
-                                    planNum,
-                                    planTitle,
-                                    planStartDate,
-                                    planEndDate,
-                                    datas[i].selectedDate,
-                                    datas[i].startTime,
-                                    datas[i].endTime,
-                                    datas[i].planDetail
+                                PlanEntity(null, false, planNum, planTitle, planStartDate, planEndDate,
+                                    datas[i].selectedDate, datas[i].startTime, datas[i].endTime, datas[i].planDetail
                                 )
                             )
                         }
@@ -241,20 +223,12 @@ class TravelPlanActivity : AppCompatActivity() {
                             for (i in 0..endIndex - 1) {
                                 if (db.getDao().getPlan(planNum).get(i).deleteState == false) {
                                     val id = db.getDao().getPlan(planNum).get(i).id
-                                    db.getDao().updatePlan(
-                                        id!!.toInt(),
-                                        planTitle,
-                                        datas[i].planDetail,
-                                        planStartDate,
-                                        planEndDate,
-                                        datas[i].startTime,
-                                        datas[i].endTime,
-                                        datas[i].selectedDate
+                                    db.getDao().updatePlan(id!!.toInt(), planTitle, datas[i].planDetail, planStartDate,
+                                        planEndDate, datas[i].startTime, datas[i].endTime, datas[i].selectedDate
                                     )
                                 }
                             }
-                        } else {
-                        }
+                        } else { }
                     }
                 }
                 // returnPos가 planPos보다 크거나 같을 경우에 실행. 이때는 새로이 추가되는 항목이 없으므로 insert할 필요가 없음.
@@ -284,17 +258,8 @@ class TravelPlanActivity : AppCompatActivity() {
                         val startIndex = db.getDao().getPlan(planNum).size
                         for (i in startIndex..planPos - 1) {
                             db.getDao().insertPlan(
-                                PlanEntity(
-                                    null,
-                                    false,
-                                    planNum,
-                                    planTitle,
-                                    planStartDate,
-                                    planEndDate,
-                                    datas[i].selectedDate,
-                                    datas[i].startTime,
-                                    datas[i].endTime,
-                                    datas[i].planDetail
+                                PlanEntity(null, false, planNum, planTitle, planStartDate, planEndDate,
+                                    datas[i].selectedDate, datas[i].startTime, datas[i].endTime, datas[i].planDetail
                                 )
                             )
                         }
@@ -305,15 +270,8 @@ class TravelPlanActivity : AppCompatActivity() {
                             for (i in 0..endIndex - 1) {
                                 if (db.getDao().getPlan(planNum).get(i).deleteState == false) {
                                     val id = db.getDao().getPlan(planNum).get(i).id
-                                    db.getDao().updatePlan(
-                                        id!!.toInt(),
-                                        planTitle,
-                                        datas[i].planDetail,
-                                        planStartDate,
-                                        planEndDate,
-                                        datas[i].startTime,
-                                        datas[i].endTime,
-                                        datas[i].selectedDate
+                                    db.getDao().updatePlan(id!!.toInt(), planTitle, datas[i].planDetail, planStartDate,
+                                        planEndDate, datas[i].startTime, datas[i].endTime, datas[i].selectedDate
                                     )
                                 }
                             }
@@ -355,7 +313,6 @@ class TravelPlanActivity : AppCompatActivity() {
                 }
 
                 setTitle("나가기")
-                /*                setIcon(android.R.drawable.ic_dialog_info)*/
                 setMessage("나가기 전에 ${state}하시겠습니까?")
                 setPositiveButton("네", eventHandler)
                 setNegativeButton("아니오", eventHandler)
@@ -376,7 +333,6 @@ class TravelPlanActivity : AppCompatActivity() {
                 }
 
                 setTitle("저장여부")
-                /*                setIcon(android.R.drawable.ic_dialog_info)*/
                 setMessage("정말 ${state}하시겠습니까?")
                 setPositiveButton("네", eventHandler)
                 setNegativeButton("아니오", eventHandler)
