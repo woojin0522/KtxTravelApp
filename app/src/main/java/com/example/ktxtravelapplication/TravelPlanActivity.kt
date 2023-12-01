@@ -15,6 +15,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.DatePicker
 import android.widget.TimePicker
 import androidx.activity.OnBackPressedCallback
@@ -39,6 +40,7 @@ var planPos = 0
 var planNum = 0
 var returnPos = 0
 var returnState = ""
+var planSeq = 1
 // --------------------------------전역 변수 영역-------------------------
 class TravelPlanActivity : AppCompatActivity() {
     // 변수 선언 영역 ------------------------
@@ -47,7 +49,7 @@ class TravelPlanActivity : AppCompatActivity() {
     lateinit var planEndDate: String
     lateinit var binding: ActivityTravelPlanBinding
     lateinit var db: PlanDB
-    var planSeq = 1
+
     // ------------------------ 변수 선언 영역
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +71,9 @@ class TravelPlanActivity : AppCompatActivity() {
 
         // ----------------------------------캘린더 영역 -----------------------------------
         // 현재 날짜를 초기화. 안드로이드 8 버전 이상부터 사용
-        binding.planStartCalendarDay.text = LocalDate.now().toString()
+        binding.planStartCalendarDay.text = LocalDate.now().toString() + " ~ "
+        binding.planEndCalendarDay.text = LocalDate.now().toString()
+        binding.planDayRange.text = "당일치기"
         // 캘린더뷰 설정
         val currentYear = Calendar.getInstance().get(Calendar.YEAR)
         val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
@@ -80,12 +84,18 @@ class TravelPlanActivity : AppCompatActivity() {
             .commit()
         // 캘린더뷰 날짜 범위 선택시
         binding.calendarView.setOnRangeSelectedListener { widget, dates ->
-            binding.planStartCalendarDay.text = "${dates[0].year}-${dates[0].month}-${dates[0].day} ~ "
-            binding.planEndCalendarDay.text = "${dates[dates.size - 1].year}-${dates[dates.size - 1].month}-${dates[dates.size - 1].day}"
+            binding.planStartCalendarDay.text =
+                "${dates[0].year}-${dates[0].month}-${dates[0].day} ~ "
+            binding.planEndCalendarDay.text =
+                "${dates[dates.size - 1].year}-${dates[dates.size - 1].month}-${dates[dates.size - 1].day}"
             binding.planDayRange.text = "${dates.size - 1}박${dates.size}일"
             // 최소날짜와 최대날짜를 여행 날짜 선택 범위 최소와 최대값으로 설정
             minDate.set(dates[0].year, dates[0].month - 1, dates[0].day)
-            maxDate.set(dates[dates.size - 1].year, dates[dates.size - 1].month - 1, dates[dates.size - 1].day)
+            maxDate.set(
+                dates[dates.size - 1].year,
+                dates[dates.size - 1].month - 1,
+                dates[dates.size - 1].day
+            )
         }
         // 캘린더뷰 하루만 선택시
         binding.calendarView.setOnDateChangedListener { widget, date, selected ->
@@ -111,9 +121,8 @@ class TravelPlanActivity : AppCompatActivity() {
 
         // 전달받은 값이 null일 경우 아무 동작도 취하지 않음
         planNum = returnPlanNumber
-        if(returnPlanTitle == null || returnPlanStartDate == null || returnPlanEndDate == null){
-        }
-        else {
+        if (returnPlanTitle == null || returnPlanStartDate == null || returnPlanEndDate == null) {
+        } else {
             // 전달받은 값을 각 화면에 출력
             binding.planTitle.setText(returnPlanTitle)
             binding.planStartCalendarDay.text = returnPlanStartDate
@@ -125,7 +134,7 @@ class TravelPlanActivity : AppCompatActivity() {
             val endDate = dateFormat.parse(returnPlanEndDate).time
             val subDate = (endDate - startDate) / (24 * 60 * 60 * 1000)
 
-            if(subDate.toInt() == 0) {
+            if (subDate.toInt() == 0) {
                 binding.planDayRange.text = "당일치기"
             } else {
                 binding.planDayRange.text = "${subDate}박${subDate + 1}일"
@@ -134,27 +143,30 @@ class TravelPlanActivity : AppCompatActivity() {
         // ----------------------------------값 전달받는 영역--------------------------------
 
         // 수정모드 일때 버튼 이름을 수정하기로 바꾸기
-        if(returnState == "수정"){
+        if (returnState == "수정") {
             binding.planSaveBtn.text = "수정하기"
 
             // returnPos - 1 수 만큼 빈 데이터 add후 db에서 select해서 returnPos - 1 수 만큼 데이터 수정
-            for(i in 0..returnPos - 1){
+            for (i in 0..returnPos - 1) {
                 datas.add(PlanDetailDatas(i + 1, "", "오후 12 : 00", "오후 1 : 00", ""))
             }
             runBlocking {
-                for(i in 0..returnPos - 1) {
+                for (i in 0..returnPos - 1) {
                     val SelectedDate = db.getDao().getPlan(planNum).get(i).SelectedDate
                     val StartTime = db.getDao().getPlan(planNum).get(i).StartTime
                     val EndTime = db.getDao().getPlan(planNum).get(i).EndTime
                     val DetailText = db.getDao().getPlan(planNum).get(i).Detail
-                    datas.set(i, PlanDetailDatas(i + 1, SelectedDate, StartTime, EndTime, DetailText))
+                    datas.set(
+                        i,
+                        PlanDetailDatas(i + 1, SelectedDate, StartTime, EndTime, DetailText)
+                    )
 
                     planSeq = returnPos
                     binding.planDetailRecyclerView.adapter?.notifyItemChanged(i)
                 }
             }
         } else {
-            datas.add(PlanDetailDatas(planSeq,"", "오후 12 : 00", "오후 1 : 00", ""))
+            datas.add(PlanDetailDatas(planSeq, "", "오후 12 : 00", "오후 1 : 00", ""))
         }
 
         // -----------------------------------함수 영역 ------------------------------------
@@ -167,6 +179,7 @@ class TravelPlanActivity : AppCompatActivity() {
                 show()
             }
         }
+
         // 값 저장 및 인텐트 값 넘겨주기 함수
         fun planSave(state: String) {
             // 제목 날짜 저장
@@ -174,13 +187,25 @@ class TravelPlanActivity : AppCompatActivity() {
             planStartDate = binding.planStartCalendarDay.text.toString()
             planEndDate = binding.planEndCalendarDay.text.toString()
             // 저장(신규등록) 모드일 때
-            if(returnState == "저장"){
+            if (returnState == "저장") {
                 // insert
                 runBlocking {
-                    if(planPos >= 1){
-                        for(i in 0..planPos - 1) {
-                            db.getDao().insertPlan(PlanEntity(null, false, planNum, planTitle, planStartDate, planEndDate,
-                                datas[i].selectedDate, datas[i].startTime, datas[i].endTime, datas[i].planDetail))
+                    if (planPos >= 1) {
+                        for (i in 0..planPos - 1) {
+                            db.getDao().insertPlan(
+                                PlanEntity(
+                                    null,
+                                    false,
+                                    planNum,
+                                    planTitle,
+                                    planStartDate,
+                                    planEndDate,
+                                    datas[i].selectedDate,
+                                    datas[i].startTime,
+                                    datas[i].endTime,
+                                    datas[i].planDetail
+                                )
+                            )
                         }
                     }
                 }
@@ -190,11 +215,45 @@ class TravelPlanActivity : AppCompatActivity() {
                 /*returnPos가 planPos보다 작을 경우에 실행. 이 때는 DB에 있는 값에서 새로운 항목이 추가되는 것이므로,
                 DB에 새로 추가된 항목을 insert해주어야 한다.*/
                 // insert
-                if(returnPos < planPos){
+                if (returnPos < planPos) {
                     runBlocking {
-                        for(i in returnPos..planPos - 1) {
-                            db.getDao().insertPlan(PlanEntity(null, false, planNum, planTitle, planStartDate, planEndDate,
-                                datas[i].selectedDate, datas[i].startTime, datas[i].endTime, datas[i].planDetail))
+                        for (i in returnPos..planPos - 1) {
+                            db.getDao().insertPlan(
+                                PlanEntity(
+                                    null,
+                                    false,
+                                    planNum,
+                                    planTitle,
+                                    planStartDate,
+                                    planEndDate,
+                                    datas[i].selectedDate,
+                                    datas[i].startTime,
+                                    datas[i].endTime,
+                                    datas[i].planDetail
+                                )
+                            )
+                        }
+                    }
+
+                    runBlocking {
+                        val endIndex = db.getDao().getPlan(planNum).size
+                        if (endIndex != 0) {
+                            for (i in 0..endIndex - 1) {
+                                if (db.getDao().getPlan(planNum).get(i).deleteState == false) {
+                                    val id = db.getDao().getPlan(planNum).get(i).id
+                                    db.getDao().updatePlan(
+                                        id!!.toInt(),
+                                        planTitle,
+                                        datas[i].planDetail,
+                                        planStartDate,
+                                        planEndDate,
+                                        datas[i].startTime,
+                                        datas[i].endTime,
+                                        datas[i].selectedDate
+                                    )
+                                }
+                            }
+                        } else {
                         }
                     }
                 }
@@ -203,38 +262,62 @@ class TravelPlanActivity : AppCompatActivity() {
                     // 삭제기능
                     runBlocking {
                         var whileStop = false
-                        while(true) {
+                        while (true) {
                             // for문을 통해 deleteState 검출, true이면 db 삭제후 for문 빠져나가기, true검출 안되면 whileStop = true
-                            for(i in 0..db.getDao().getPlan(planNum).size - 1) {
+                            for (i in 0..db.getDao().getPlan(planNum).size - 1) {
                                 val delState = db.getDao().getPlan(planNum).get(i).deleteState
-                                if(delState == true) {
+                                if (delState == true) {
                                     db.getDao().deletePlan(true)
                                     break
-                                }
-                                else{
+                                } else {
                                     whileStop = true
                                 }
                             }
                             // whileStop 이 true일 때 while문 빠져나가기
-                            if(whileStop == true){
+                            if (whileStop == true || db.getDao().getPlan(planNum).size == 0) {
                                 break
                             }
                         }
                     }
 
                     runBlocking {
-                        if(db.getDao().getPlan(planNum).size < planPos) {
-                            for(i in db.getDao().getPlan(planNum).size..planPos - 1) {
-                                db.getDao().insertPlan(PlanEntity(null, false, planNum, planTitle, planStartDate, planEndDate,
-                                    datas[i].selectedDate, datas[i].startTime, datas[i].endTime, datas[i].planDetail))
-                            }
+                        val startIndex = db.getDao().getPlan(planNum).size
+                        for (i in startIndex..planPos - 1) {
+                            db.getDao().insertPlan(
+                                PlanEntity(
+                                    null,
+                                    false,
+                                    planNum,
+                                    planTitle,
+                                    planStartDate,
+                                    planEndDate,
+                                    datas[i].selectedDate,
+                                    datas[i].startTime,
+                                    datas[i].endTime,
+                                    datas[i].planDetail
+                                )
+                            )
                         }
                     }
                     runBlocking {
-                        for(i in 0..db.getDao().getPlan(planNum).size - 1) {
-                            val id = db.getDao().getPlan(planNum).get(i).id
-                            db.getDao().updatePlan(id!!.toInt(), planTitle, datas[i].planDetail, planStartDate,
-                                planEndDate, datas[i].startTime, datas[i].endTime, datas[i].selectedDate)
+                        val endIndex = db.getDao().getPlan(planNum).size
+                        if (endIndex != 0) {
+                            for (i in 0..endIndex - 1) {
+                                if (db.getDao().getPlan(planNum).get(i).deleteState == false) {
+                                    val id = db.getDao().getPlan(planNum).get(i).id
+                                    db.getDao().updatePlan(
+                                        id!!.toInt(),
+                                        planTitle,
+                                        datas[i].planDetail,
+                                        planStartDate,
+                                        planEndDate,
+                                        datas[i].startTime,
+                                        datas[i].endTime,
+                                        datas[i].selectedDate
+                                    )
+                                }
+                            }
+                        } else {
                         }
                     }
                 }
@@ -258,11 +341,11 @@ class TravelPlanActivity : AppCompatActivity() {
             AlertDialog.Builder(this).run {
                 val eventHandler = object : DialogInterface.OnClickListener {
                     override fun onClick(p0: DialogInterface?, p1: Int) {
-                        if(p1 == DialogInterface.BUTTON_POSITIVE) {
+                        if (p1 == DialogInterface.BUTTON_POSITIVE) {
                             // 제목값 검사
                             planTitle = binding.planTitle.text.toString()
                             // 제목값 비어있을 경우 경고창 표시
-                            if(planTitle == "") titleEmpty("제목")
+                            if (planTitle == "") titleEmpty("제목")
                             // 제목값 있을 경우 저장
                             else planSave(state)
                         } else {
@@ -279,14 +362,16 @@ class TravelPlanActivity : AppCompatActivity() {
                 show()
             }
         }
+
         // 저장하기 버튼 기능 함수
         fun saveBtn(state: String) {
             AlertDialog.Builder(this).run {
                 val eventHandler = object : DialogInterface.OnClickListener {
                     override fun onClick(p0: DialogInterface?, p1: Int) {
-                        if(p1 == DialogInterface.BUTTON_POSITIVE) {
+                        if (p1 == DialogInterface.BUTTON_POSITIVE) {
                             planSave(state)
-                        } else {}
+                        } else {
+                        }
                     }
                 }
 
@@ -303,10 +388,9 @@ class TravelPlanActivity : AppCompatActivity() {
         // -----------------------------------뒤로가기 기능 ---------------------------------
         // 상단바 뒤로가기 버튼
         binding.planBackBtn.setOnClickListener {
-            if(returnState == "수정"){
+            if (returnState == "수정") {
                 backBtn("수정")
-            }
-            else {
+            } else {
                 backBtn("저장")
             }
         }
@@ -314,10 +398,9 @@ class TravelPlanActivity : AppCompatActivity() {
         // 뒤로가기 버튼 클릭시
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if(returnState == "수정"){
+                if (returnState == "수정") {
                     backBtn("수정")
-                }
-                else {
+                } else {
                     backBtn("저장")
                 }
             }
@@ -329,30 +412,32 @@ class TravelPlanActivity : AppCompatActivity() {
         // 시간별 계획 추가 버튼 클릭시
         binding.planDetailPlusBtn.setOnClickListener {
             planSeq = planSeq + 1
-            datas.add(PlanDetailDatas(planSeq ,"", "오후 12 : 00", "오후 1 : 00", ""))
+            datas.add(PlanDetailDatas(planSeq, "", "오후 12 : 00", "오후 1 : 00", ""))
             binding.planDetailRecyclerView.adapter?.notifyItemInserted(datas.size)
         }
         // 시간별 계획 저장 버튼 클릭시
         binding.planSaveBtn.setOnClickListener {
-            if(returnState == "수정"){
+            if (returnState == "수정") {
                 // 수정 버튼 클릭시 확인 여부창 띄우기
                 planTitle = binding.planTitle.text.toString()
-                if(planTitle == "") titleEmpty("제목")
+                if (planTitle == "") titleEmpty("제목")
                 else saveBtn("수정")
-            }
-            else {
+            } else {
                 // 저장 버튼 클릭시 확인 여부창 띄우기
                 planTitle = binding.planTitle.text.toString()
-                if(planTitle == "") titleEmpty("제목")
+                if (planTitle == "") titleEmpty("제목")
                 else saveBtn("저장")
             }
         }
         // 여행 날짜 선택하기버튼 클릭시
         binding.planCalanderBtn.setOnClickListener {
             // 캘린더뷰가 숨겨져있을경우 캘린더뷰를 띄우고 버튼 텍스트를 날짜 선택완료로 변경
-            if(binding.calendarView.visibility == View.GONE) {
+            if (binding.calendarView.visibility == View.GONE) {
                 binding.calendarView.visibility = View.VISIBLE
                 binding.planCalanderBtn.text = "날싸 선택완료"
+
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(window.decorView.applicationWindowToken, 0)
             } else {
                 // 캘린터뷰가 화면에 보일경우 캘린더뷰를 숨기고 버튼 텍스트를 날짜 선택하기로 변경
                 binding.calendarView.visibility = View.GONE
@@ -362,11 +447,8 @@ class TravelPlanActivity : AppCompatActivity() {
         // -----------------------------------버튼 작동 영역 --------------------------------
 
         // 리사이클러뷰 어댑터와 레이아웃 매니저 설정
-        if(datas.size > 0){
-            binding.planDetailRecyclerView.adapter = TravelPlanRecyclerAdapter(this, datas, db)
-            binding.planDetailRecyclerView.layoutManager = LinearLayoutManager(this)
-        }
-        else {}
+        binding.planDetailRecyclerView.adapter = TravelPlanRecyclerAdapter(this, datas, db)
+        binding.planDetailRecyclerView.layoutManager = LinearLayoutManager(this)
 
     }
 
@@ -401,6 +483,7 @@ class TravelPlanRecyclerAdapter(val context: Context, val datas: MutableList<Pla
         datas.removeAt(pos)
         notifyItemRemoved(pos)
 
+        planSeq = planSeq - 1
         planPos = planPos - 1
     }
     // 뷰 홀더 선언부

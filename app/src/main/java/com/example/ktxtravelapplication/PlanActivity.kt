@@ -8,13 +8,16 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
 import com.example.ktxtravelapplication.databinding.ActivityPlanBinding
 import com.example.ktxtravelapplication.databinding.PlanItemBinding
+import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalTime
@@ -48,7 +51,7 @@ class PlanActivity : AppCompatActivity() {
         // pref에서 "저장횟수" key의 데이터값이 0 이상일 때 작동
         if(pref.getInt("저장횟수", -1) >= 0){
             // 저장횟수만큼 반복하여 데이터를 불러옴.
-            for(i in 0..pref.getInt("저장횟수", -1)) {
+            for(i in 0..pref.getInt("저장횟수", 0)) {
                 val prefPlanNumber = pref.getInt("${i}번 planNumber", 0)
                 val prefPlanPos = pref.getInt("${i}번 planPos", 0)
                 val prefPlanTitle = pref.getString("${i}번 planTitle", "")
@@ -57,7 +60,7 @@ class PlanActivity : AppCompatActivity() {
 
                 // 불러온 데이터를 리사이클러뷰 datas에 추가
                 datas.add(planData(prefPlanNumber, prefPlanPos, prefPlanTitle.toString(),
-                    prefPlanStartDate.toString(), prefPlanEndDate.toString()))
+                    prefPlanStartDate.toString(), prefPlanEndDate.toString(), false))
 
                 binding.planRecyclerView.adapter?.notifyItemInserted(i)
             }
@@ -86,7 +89,7 @@ class PlanActivity : AppCompatActivity() {
             if(returnTitle != null) {
                 // returnState가 저장(추가)일 때 리사이클러 항목 추가
                 if(returnState == "저장"){
-                    datas.add(planData(planNumber, returnPos, returnTitle.toString(), returnStartDate.toString(), returnEndDate.toString()))
+                    datas.add(planData(planNumber, returnPos, returnTitle.toString(), returnStartDate.toString(), returnEndDate.toString(), false))
                     planNumber = planNumber + 1
                 }
                 // returnState가 수정일 때 해당 리사이클러 항목 수정
@@ -110,6 +113,55 @@ class PlanActivity : AppCompatActivity() {
             intent.putExtra("returnState", "저장")
             intent.putExtra("returnPlanNumber", planNumber)
             requestLauncher.launch(intent)
+        }
+
+        //
+        val db = Room.databaseBuilder(
+            applicationContext,
+            PlanDB::class.java,
+            "PlanDB"
+        ).build()
+        //
+        binding.planMinusBtn.setOnClickListener {
+            runBlocking {
+                var whileStop = false
+
+                for(i in 0..datas.size - 1) {
+                    if (datas[i].deleteChecked == true) {
+                        editor.remove("${i}번 planNumber")
+                        editor.remove("${i}번 planPos")
+                        editor.remove("${i}번 planTitle")
+                        editor.remove("${i}번 planStartDate")
+                        editor.remove("${i}번 planEndDate")
+
+                        editor.apply()
+                    }
+                }
+                while(true) {
+                    for (i in 0..datas.size - 1) {
+                        if (datas[i].deleteChecked == true) {
+                            db.getDao().allDeletePlan(datas[i].planNumber!!.toInt())
+
+                            datas.removeAt(i)
+                            binding.planRecyclerView.adapter?.notifyItemRemoved(i)
+
+                            whileStop = false
+                            break
+                        }
+                        else{
+                            whileStop = true
+                        }
+                    }
+                    //
+                    if(whileStop == true || datas.size == 0) {
+                        if(datas.size == 0) {
+                            editor.remove("저장횟수")
+                            editor.apply()
+                        }
+                        break
+                    }
+                }
+            }
         }
 
         // 리사이클러뷰 생성
@@ -143,7 +195,8 @@ data class planData(
     var planPos: Int?,
     var planTitle: String,
     var planStartDate: String,
-    var planEndDate: String
+    var planEndDate: String,
+    var deleteChecked: Boolean
 )
 
 // 리사이클러뷰 어댑터
@@ -178,10 +231,16 @@ class PlanRecyclerAdapter(val context: Context, val datas: MutableList<planData>
                 intent.putExtra("returnStartDate", binding.planStartDate.text)
                 intent.putExtra("returnEndDate", binding.planEndDate.text)
                 intent.putExtra("returnState", "수정")
-                intent.putExtra("returnPos", datas[pos].planPos)
-                intent.putExtra("returnIndex", pos)
+                intent.putExtra("returnPos", datas[bindingAdapterPosition].planPos)
+                intent.putExtra("returnIndex", bindingAdapterPosition)
                 intent.putExtra("returnPlanNumber", datas[bindingAdapterPosition].planNumber )
                 requestLaun.launch(intent)
+            }
+
+            binding.planDeleteCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
+                if (isChecked){ datas[bindingAdapterPosition].deleteChecked = true}
+                else { datas[bindingAdapterPosition].deleteChecked = false }
+                Log.d("test", "checked: ${datas[bindingAdapterPosition].deleteChecked}")
             }
         }
     }
