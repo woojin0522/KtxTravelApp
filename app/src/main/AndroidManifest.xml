@@ -22,10 +22,22 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".seasonTab.TemaWinterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".seasonTab.TemaFallActivity"
+            android:exported="false" />
+        <activity
+            android:name=".seasonTab.TemaSummerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".seasonTab.TemaSpringActivity"
+            android:exported="false" />
+        <activity
             android:name=".TravelPlanActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustPan"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".TicketActivity"
             android:exported="false"

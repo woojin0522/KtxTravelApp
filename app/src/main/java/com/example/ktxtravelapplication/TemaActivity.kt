@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.ktxtravelapplication.databinding.ActivityTemaBinding
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
 class TemaActivity : AppCompatActivity() {
@@ -32,6 +31,7 @@ class TemaActivity : AppCompatActivity() {
             when(position) {
                 0 -> tab.text = "계절"
                 1 -> tab.text = "테마열차"
+                2 -> tab.text = "축제"
             }
         }.attach()
     }
@@ -41,7 +41,7 @@ class TemaActivity : AppCompatActivity() {
 class temaViewPagerAdapter(activity: FragmentActivity): FragmentStateAdapter(activity) {
     val fragments: List<Fragment>
     init {
-        fragments = listOf(seasonTabFragment(), temaTrainFragment())
+        fragments = listOf(temaSeasonsFragment(), temaCourseFragment(), temaFestivalFragment())
     }
     override fun getItemCount(): Int {
         return fragments.size
