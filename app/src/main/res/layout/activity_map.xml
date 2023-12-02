@@ -14,44 +14,55 @@
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize">
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/map_toolbar"
+            android:layout_height="wrap_content">
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:theme="@style/AppTheme">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/map_toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:theme="@style/AppTheme">
 
-                <androidx.appcompat.widget.AppCompatImageButton
-                    android:id="@+id/map_backBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:src="@drawable/baseline_keyboard_arrow_left_24"
-                    android:background="@color/main_app_color"/>
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/map_backBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:src="@drawable/baseline_keyboard_arrow_left_24"
+                        android:background="@color/main_app_color"/>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="@string/title_activity_map"
+                        android:textColor="@color/white"
+                        android:textSize="25dp" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/map_drawer_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:layout_marginRight="20dp"
+                        android:background="@color/main_app_color"
+                        android:src="@drawable/hambuger_icon" />
+                </androidx.appcompat.widget.Toolbar>
                 <TextView
+                    android:id="@+id/current_ktx_lines"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@string/title_activity_map"
+                    android:text="노선을 선택해주세요."
                     android:textColor="@color/white"
-                    android:textSize="25dp" />
-
-                <androidx.appcompat.widget.AppCompatImageButton
-                    android:id="@+id/map_drawer_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:layout_marginRight="20dp"
-                    android:background="@color/main_app_color"
-                    android:src="@drawable/hambuger_icon" />
-            </androidx.appcompat.widget.Toolbar>
+                    android:textSize="17dp"/>
+            </LinearLayout>
         </com.google.android.material.appbar.AppBarLayout>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="55dp"
+            android:layout_marginTop="80dp"
             app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/map_fragment"
@@ -60,7 +71,8 @@
                 android:layout_height="match_parent"
                 app:navermap_latitude="37.555"
                 app:navermap_longitude="126.971"
-                app:navermap_zoom="15"/>
+                app:navermap_zoom="15">
+            </androidx.fragment.app.FragmentContainerView>
         </RelativeLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
     <LinearLayout
