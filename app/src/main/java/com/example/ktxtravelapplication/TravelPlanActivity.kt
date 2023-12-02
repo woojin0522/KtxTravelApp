@@ -148,7 +148,7 @@ class TravelPlanActivity : AppCompatActivity() {
 
             // returnPos - 1 수 만큼 빈 데이터 add후 db에서 select해서 returnPos - 1 수 만큼 데이터 수정
             for (i in 0..returnPos - 1) {
-                datas.add(PlanDetailDatas(i + 1, "", "오후 12 : 00", "오후 1 : 00", ""))
+                datas.add(PlanDetailDatas(i + 1, "계획 날짜 선택", "오후 12 : 00", "오후 1 : 00", ""))
             }
             runBlocking {
                 for (i in 0..returnPos - 1) {
@@ -166,7 +166,7 @@ class TravelPlanActivity : AppCompatActivity() {
                 }
             }
         } else {
-            datas.add(PlanDetailDatas(planSeq, "", "오후 12 : 00", "오후 1 : 00", ""))
+            datas.add(PlanDetailDatas(planSeq, "계획 날짜 선택", "오후 12 : 00", "오후 1 : 00", ""))
         }
 
         // -----------------------------------함수 영역 ------------------------------------
@@ -368,7 +368,7 @@ class TravelPlanActivity : AppCompatActivity() {
         // 시간별 계획 추가 버튼 클릭시
         binding.planDetailPlusBtn.setOnClickListener {
             planSeq = planSeq + 1
-            datas.add(PlanDetailDatas(planSeq, "", "오후 12 : 00", "오후 1 : 00", ""))
+            datas.add(PlanDetailDatas(planSeq, "계획 날짜 선택", "오후 12 : 00", "오후 1 : 00", ""))
             binding.planDetailRecyclerView.adapter?.notifyItemInserted(datas.size)
         }
         // 시간별 계획 저장 버튼 클릭시

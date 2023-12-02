@@ -193,7 +193,7 @@ class PlanActivity : AppCompatActivity() {
                                     }
                                 }
                                 if (checked == false) {
-                                    checkNull("삭제할 항목을 추가해주세요.")
+                                    checkNull("삭제할 항목을 선택해주세요.")
                                 }
                             } else {
                             }
