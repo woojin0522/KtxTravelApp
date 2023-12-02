@@ -1,32 +1,21 @@
 package com.example.ktxtravelapplication
 
-import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.UiThread
-import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.ktxtravelapplication.databinding.ActivityMapBinding
-import com.google.android.material.navigation.NavigationView
-import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.CameraAnimation
-import com.naver.maps.map.CameraPosition
-import com.naver.maps.map.CameraUpdate
-import com.naver.maps.map.LocationSource
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
-import com.naver.maps.map.NaverMapOptions
 import com.naver.maps.map.OnMapReadyCallback
-import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
-import com.naver.maps.map.widget.LocationButtonView
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
-    lateinit var toggle: ActionBarDrawerToggle
     lateinit var locationSource: FusedLocationSource
     lateinit var naverMap: NaverMap
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,6 +60,30 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
         onBackPressedDispatcher.addCallback(this, callback)
+
+        val ktxLines = arrayOf("경부선", "호남선")
+        var lineChecked = 0
+
+        // 네비게이션 항목 선택시
+        binding.mapNavView.setNavigationItemSelectedListener {
+            if(it.itemId == R.id.menu_item1){
+                AlertDialog.Builder(this).run {
+                    setTitle("ktx 노선 선택")
+                    setSingleChoiceItems(ktxLines, lineChecked, object: DialogInterface.OnClickListener{
+                        override fun onClick(dialog: DialogInterface?, checked: Int) {
+                            Toast.makeText(context, "${ktxLines[checked]}을 선택하셨습니다.", Toast.LENGTH_SHORT).show()
+                            lineChecked = checked
+                        }
+                    })
+                    setPositiveButton("닫기", null)
+                    show()
+                }
+            }
+            else if(it.itemId == R.id.menu_item2) {
+                Toast.makeText(this, "관광지가 표시됩니다.", Toast.LENGTH_SHORT).show()
+            }
+            true
+        }
 
         // 권한 가져오기
         var permissions = arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION,

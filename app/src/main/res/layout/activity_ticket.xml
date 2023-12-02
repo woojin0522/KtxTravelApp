@@ -14,17 +14,13 @@
             android:layout_height="wrap_content"
             app:titleTextColor="#ffffff"
             android:theme="@style/AppTheme">
-            <androidx.appcompat.widget.AppCompatButton
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/ticket_backBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="←"
-                android:textColor="#ffffff"
-                android:background="#00668B"
-                android:textSize="30dp"
-                android:outlineSpotShadowColor="#00668B"
-                android:paddingRight="50dp"
-                android:layout_gravity="left"/>
+                android:layout_gravity="left"
+                android:src="@drawable/baseline_keyboard_arrow_left_24"
+                android:background="@color/main_app_color"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

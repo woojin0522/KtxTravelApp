@@ -18,7 +18,7 @@
             android:layout_gravity="center"
             android:theme="@style/AppTheme">
 
-            <androidx.appcompat.widget.AppCompatButton
+            <!--<androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/plan_backBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -28,8 +28,14 @@
                 android:paddingRight="50dp"
                 android:text="←"
                 android:textColor="#ffffff"
-                android:textSize="30dp" />
-
+                android:textSize="30dp" />-->
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/plan_backBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:src="@drawable/baseline_keyboard_arrow_left_24"
+                android:background="@color/main_app_color"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
