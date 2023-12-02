@@ -30,7 +30,7 @@ class TemaActivity : AppCompatActivity() {
         TabLayoutMediator(binding.temaTabLayout, binding.temaTabViewPager2) { tab, position ->
             when(position) {
                 0 -> tab.text = "계절"
-                1 -> tab.text = "테마열차"
+                1 -> tab.text = "추천코스"
                 2 -> tab.text = "축제"
             }
         }.attach()
