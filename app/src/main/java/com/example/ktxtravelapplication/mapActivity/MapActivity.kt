@@ -1,4 +1,4 @@
-package com.example.ktxtravelapplication
+package com.example.ktxtravelapplication.mapActivity
 
 import android.content.DialogInterface
 import android.os.Bundle
@@ -7,7 +7,10 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.ActivityMapBinding
+import com.example.ktxtravelapplication.mapActivity.ktxLinesData.KtxLinesList
+import com.example.ktxtravelapplication.mapActivity.ktxLinesData.StationPositions
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
@@ -63,31 +66,56 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         onBackPressedDispatcher.addCallback(this, callback)
 
+        // ktx노선 배열
         val ktxLines = arrayOf("경부선", "호남선", "경전선", "전라선", "강릉선", "중앙선", "중부내륙선")
-        val gyeongbuLine = arrayOf(
-            stationPositions(37.612175933, 126.834157342),
-            stationPositions(37.554530651,126.970713923),
-            stationPositions(37.515272619, 126.907021401),
-            stationPositions(37.266093058, 126.999850621),
-            stationPositions(37.416561026, 126.884662956),
-            stationPositions(36.794306610, 127.104482191),
-            stationPositions(36.619908542, 127.327705362),
-            stationPositions(36.332165597, 127.434310227),
-            stationPositions(36.113522147, 128.180999088),
-            stationPositions(35.881469815, 128.540403081),
-            stationPositions(35.879388797, 128.628366313),
-            stationPositions(35.798448095, 129.1387937113),
-            stationPositions(35.551582289, 129.138493907),
-            stationPositions(35.819322921, 128.727612868),
-            stationPositions(35.474467976, 128.771203688),
-            stationPositions(35.205435931, 128.9971386603),
-            stationPositions(35.115078556, 129.041418419),
-        )
+        // 현재 선택된 라디오버튼 변수
         var lineChecked = 0
+        // 마커 리스트 선언
         val markers = mutableListOf<Marker>()
+
+        // 마커 세팅 함수
+        fun markerSetting(line: MutableList<StationPositions>) {
+            // 기존에 지도에 남아있던 마커 제거
+            for(i in 0..markers.size - 1) {
+                markers[i].map = null
+            }
+            // 매개변수로 받은 노선에 맞는 역에 해당하는 마커를 표시
+            for(i in 0..line.size - 1) {
+                markers.add(Marker())
+                markers[i].position = LatLng(line[i].latitude, line[i].longitude)
+                markers[i].map = naverMap
+            }
+            // 마커 설정후 지도가 한눈에 보이게 카메라 업뎃
+            val cameraUpdate = CameraUpdate.scrollAndZoomTo(LatLng(36.332165597, 127.434310227), 5.5)
+            naverMap.moveCamera(cameraUpdate)
+        }
+        /*//파이어스토어 사용시..
+        //파이어스토어 객체 생성..
+        val db = FirebaseFirestore.getInstance()
+        // 파이어스토어에서 값을 가져와 해당 노선에 맞는 마커를 세팅..
+        fun dbGet(ktxLine: String, markerSetLine: MutableList<StationPositions>) {
+            db.collection("노선데이터")
+                .document("KTX노선")
+                .collection(ktxLine)
+                .get()
+                .addOnSuccessListener { result ->
+                    for(document in result) {
+                        val lat = document["lat"].toString()
+                        val latitude = lat.toDouble()
+                        val lng = document["lng"].toString()
+                        val longitude = lng.toDouble()
+                        markerSetLine.add(StationPositions(latitude, longitude))
+                    }
+                    markerSetting(markerSetLine)
+                }
+                .addOnFailureListener {exception ->
+                    Log.d("test", "Error getting documents: ", exception)
+                }
+        }*/
 
         // 네비게이션 항목 선택시
         binding.mapNavView.setNavigationItemSelectedListener {
+            // 네비게이션에서 ktx노선 항목 클릭시
             if(it.itemId == R.id.menu_item1){
                 AlertDialog.Builder(this).run {
                     setTitle("ktx 노선 선택")
@@ -97,16 +125,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                             binding.currentKtxLines.text = "현재 노선 : ${ktxLines[checked]}"
                             lineChecked = checked
                             if(checked == 0) {
-                                for(i in 0..markers.size - 1) {
-                                    markers[i].map = null
-                                }
-                                for(i in 0..gyeongbuLine.size - 1) {
-                                    markers.add(Marker())
-                                    markers[i].position = LatLng(gyeongbuLine[i].latitude, gyeongbuLine[i].longitude)
-                                    markers[i].map = naverMap
-                                }
-                                val cameraUpdate = CameraUpdate.scrollAndZoomTo(LatLng(gyeongbuLine[1].latitude, gyeongbuLine[1].longitude), 5.5)
-                                naverMap.moveCamera(cameraUpdate)
+                                /*dbGet("경부선", KtxLinesList().gyeongbuLine)*/
+                                markerSetting(KtxLinesList().gyeongbuLine)
                             }
                             else if(checked == 1) {
                                 for(i in 0..markers.size - 1) {
@@ -119,6 +139,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     show()
                 }
             }
+            // 네비게이션에서 관광지표시 항목 클릭시
             else if(it.itemId == R.id.menu_item2) {
                 Toast.makeText(this, "관광지가 표시됩니다.", Toast.LENGTH_SHORT).show()
             }
@@ -142,10 +163,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
     }
 
-    data class stationPositions(
+    /*data class stationPositions(
         val latitude: Double,
         val longitude: Double
-    )
+    )*/
 
     override fun onRequestPermissionsResult(
         requestCode: Int,

@@ -1,4 +1,4 @@
-package com.example.ktxtravelapplication
+package com.example.ktxtravelapplication.ticketActivity
 
 import android.R
 import android.content.Intent

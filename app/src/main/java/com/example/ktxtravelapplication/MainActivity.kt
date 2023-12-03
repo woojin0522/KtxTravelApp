@@ -13,6 +13,10 @@ import androidx.activity.OnBackPressedCallback
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.ktxtravelapplication.databinding.ActivityMainBinding
+import com.example.ktxtravelapplication.mapActivity.MapActivity
+import com.example.ktxtravelapplication.planActivity.PlanActivity
+import com.example.ktxtravelapplication.temaActivity.TemaActivity
+import com.example.ktxtravelapplication.ticketActivity.TicketActivity
 
 
 class MainActivity : AppCompatActivity() {

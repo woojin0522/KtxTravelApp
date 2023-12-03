@@ -1,17 +1,16 @@
-package com.example.ktxtravelapplication
+package com.example.ktxtravelapplication.temaActivity.temaFragments
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.ktxtravelapplication.databinding.FragmentTemaSeasonsBinding
-import com.example.ktxtravelapplication.seasonTab.TemaFallActivity
-import com.example.ktxtravelapplication.seasonTab.TemaSpringActivity
-import com.example.ktxtravelapplication.seasonTab.TemaSummerActivity
-import com.example.ktxtravelapplication.seasonTab.TemaWinterActivity
+import com.example.ktxtravelapplication.temaActivity.temaSeasons.TemaFallActivity
+import com.example.ktxtravelapplication.temaActivity.temaSeasons.TemaSpringActivity
+import com.example.ktxtravelapplication.temaActivity.temaSeasons.TemaSummerActivity
+import com.example.ktxtravelapplication.temaActivity.temaSeasons.TemaWinterActivity
 
 @Suppress("UNREACHABLE_CODE")
 class temaSeasonsFragment : Fragment() {

@@ -1,16 +1,14 @@
-package com.example.ktxtravelapplication
+package com.example.ktxtravelapplication.planActivity
 
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
-import android.os.Build.VERSION_CODES.S
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,14 +17,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import com.example.ktxtravelapplication.databinding.ActivityPlanBinding
 import com.example.ktxtravelapplication.databinding.PlanItemBinding
+import com.example.ktxtravelapplication.planActivity.planRoomDB.PlanDB
 import kotlinx.coroutines.runBlocking
-import java.nio.file.Files.delete
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.util.Calendar
-import java.util.Locale
 
 var planNumber = 0
 
@@ -62,8 +54,10 @@ class PlanActivity : AppCompatActivity() {
                 val prefPlanEndDate = pref.getString("${i}번 planEndDate", "")
 
                 // 불러온 데이터를 리사이클러뷰 datas에 추가
-                datas.add(planData(prefPlanNumber, prefPlanPos, prefPlanTitle.toString(),
-                    prefPlanStartDate.toString(), prefPlanEndDate.toString(), false))
+                datas.add(
+                    planData(prefPlanNumber, prefPlanPos, prefPlanTitle.toString(),
+                    prefPlanStartDate.toString(), prefPlanEndDate.toString(), false)
+                )
 
                 binding.planRecyclerView.adapter?.notifyItemInserted(i)
             }

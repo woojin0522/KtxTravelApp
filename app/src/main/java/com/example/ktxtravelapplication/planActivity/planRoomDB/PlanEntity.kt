@@ -1,4 +1,4 @@
-package com.example.ktxtravelapplication
+package com.example.ktxtravelapplication.planActivity.planRoomDB
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

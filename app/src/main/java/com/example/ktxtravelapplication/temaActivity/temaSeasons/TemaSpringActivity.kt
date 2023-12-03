@@ -1,4 +1,4 @@
-package com.example.ktxtravelapplication.seasonTab
+package com.example.ktxtravelapplication.temaActivity.temaSeasons
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PlanActivity">
+    tools:context=".planActivity.PlanActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout2"
@@ -17,18 +17,6 @@
             android:layout_height="?attr/actionBarSize"
             android:layout_gravity="center"
             android:theme="@style/AppTheme">
-
-            <!--<androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/plan_backBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:background="#00668B"
-                android:outlineSpotShadowColor="#00668B"
-                android:paddingRight="50dp"
-                android:text="←"
-                android:textColor="#ffffff"
-                android:textSize="30dp" />-->
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/plan_backBtn"
                 android:layout_width="wrap_content"

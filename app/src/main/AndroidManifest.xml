@@ -22,36 +22,36 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".seasonTab.TemaWinterActivity"
+            android:name=".temaActivity.temaSeasons.TemaWinterActivity"
             android:exported="false" />
         <activity
-            android:name=".seasonTab.TemaFallActivity"
+            android:name=".temaActivity.temaSeasons.TemaFallActivity"
             android:exported="false" />
         <activity
-            android:name=".seasonTab.TemaSummerActivity"
+            android:name=".temaActivity.temaSeasons.TemaSummerActivity"
             android:exported="false" />
         <activity
-            android:name=".seasonTab.TemaSpringActivity"
+            android:name=".temaActivity.temaSeasons.TemaSpringActivity"
             android:exported="false" />
         <activity
-            android:name=".TravelPlanActivity"
+            android:name=".planActivity.TravelPlanActivity"
             android:exported="false"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".TicketActivity"
+            android:name=".ticketActivity.TicketActivity"
             android:exported="false"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".PlanActivity"
+            android:name=".planActivity.PlanActivity"
             android:exported="false"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".TemaActivity"
+            android:name=".temaActivity.TemaActivity"
             android:exported="false"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".MapActivity"
+            android:name=".mapActivity.MapActivity"
             android:exported="false"
             android:theme="@style/AppTheme" />
         <activity

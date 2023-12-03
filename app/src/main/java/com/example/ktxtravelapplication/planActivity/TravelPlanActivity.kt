@@ -1,4 +1,4 @@
-package com.example.ktxtravelapplication
+package com.example.ktxtravelapplication.planActivity
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -25,6 +25,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import com.example.ktxtravelapplication.databinding.ActivityTravelPlanBinding
 import com.example.ktxtravelapplication.databinding.PlanDetailItemBinding
+import com.example.ktxtravelapplication.planActivity.planRoomDB.PlanDB
+import com.example.ktxtravelapplication.planActivity.planRoomDB.PlanEntity
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import kotlinx.coroutines.runBlocking
@@ -400,6 +402,18 @@ class TravelPlanActivity : AppCompatActivity() {
                 binding.planCalanderBtn.text = "날짜 선택하기"
             }
         }
+        /*binding.planShareBtn.setOnClickListener {
+            planTitle = binding.planTitle.text.toString()
+            planStartDate = binding.planStartCalendarDay.text.toString()
+            planEndDate = binding.planEndCalendarDay.text.toString()
+            val shareIntent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TITLE, "여행계획 공유")
+
+                type="text/plain"
+            }
+            startActivity(Intent.createChooser(shareIntent, title))
+        }*/
         // -----------------------------------버튼 작동 영역 --------------------------------
 
         // 리사이클러뷰 어댑터와 레이아웃 매니저 설정

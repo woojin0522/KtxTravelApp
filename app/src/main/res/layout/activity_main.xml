@@ -13,16 +13,6 @@
         android:orientation="vertical"
         android:layout_marginBottom="200dp"
         app:layout_constraintBottom_toBottomOf="parent">
-
-        <!--<ImageView
-            android:id="@+id/mainImageView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxWidth="1000dp"
-            android:maxHeight="1000dp"
-            android:adjustViewBounds="true"
-            android:layout_weight="1"
-            app:srcCompat="@drawable/main_image" />-->
         <!--뷰페이저2. 이곳에 이미지 슬라이드 기능 생성-->
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/mainViewPager"

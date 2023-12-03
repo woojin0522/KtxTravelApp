@@ -1,4 +1,4 @@
-package com.example.ktxtravelapplication
+package com.example.ktxtravelapplication.temaActivity.temaFragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

@@ -1,4 +1,4 @@
-package com.example.ktxtravelapplication
+package com.example.ktxtravelapplication.temaActivity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -6,6 +6,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.ktxtravelapplication.databinding.ActivityTemaBinding
+import com.example.ktxtravelapplication.temaActivity.temaFragments.temaCourseFragment
+import com.example.ktxtravelapplication.temaActivity.temaFragments.temaFestivalFragment
+import com.example.ktxtravelapplication.temaActivity.temaFragments.temaSeasonsFragment
 import com.google.android.material.tabs.TabLayoutMediator
 
 class TemaActivity : AppCompatActivity() {
