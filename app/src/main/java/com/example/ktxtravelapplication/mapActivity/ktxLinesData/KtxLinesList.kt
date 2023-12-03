@@ -2,7 +2,7 @@ package com.example.ktxtravelapplication.mapActivity.ktxLinesData
 
 public class KtxLinesList {
     val gyeongbuLine = mutableListOf<StationPositions>(
-        StationPositions(37.612175933, 126.834157342),
+        /*StationPositions(37.612175933, 126.834157342),
         StationPositions(37.554530651,126.970713923),
         StationPositions(37.515272619, 126.907021401),
         StationPositions(37.266093058, 126.999850621),
@@ -18,7 +18,7 @@ public class KtxLinesList {
         StationPositions(35.819322921, 128.727612868),
         StationPositions(35.474467976, 128.771203688),
         StationPositions(35.205435931, 128.9971386603),
-        StationPositions(35.115078556, 129.041418419),
+        StationPositions(35.115078556, 129.041418419),*/
     )
 
     val gyeongjeonLine = mutableListOf<StationPositions>()

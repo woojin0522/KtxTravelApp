@@ -2,6 +2,7 @@ package com.example.ktxtravelapplication.mapActivity
 
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.UiThread
@@ -11,6 +12,7 @@ import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.ActivityMapBinding
 import com.example.ktxtravelapplication.mapActivity.ktxLinesData.KtxLinesList
 import com.example.ktxtravelapplication.mapActivity.ktxLinesData.StationPositions
+import com.google.firebase.firestore.FirebaseFirestore
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
@@ -89,7 +91,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             val cameraUpdate = CameraUpdate.scrollAndZoomTo(LatLng(36.332165597, 127.434310227), 5.5)
             naverMap.moveCamera(cameraUpdate)
         }
-        /*//파이어스토어 사용시..
+        //파이어스토어 사용시..
         //파이어스토어 객체 생성..
         val db = FirebaseFirestore.getInstance()
         // 파이어스토어에서 값을 가져와 해당 노선에 맞는 마커를 세팅..
@@ -111,7 +113,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 .addOnFailureListener {exception ->
                     Log.d("test", "Error getting documents: ", exception)
                 }
-        }*/
+        }
 
         // 네비게이션 항목 선택시
         binding.mapNavView.setNavigationItemSelectedListener {
@@ -119,15 +121,19 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             if(it.itemId == R.id.menu_item1){
                 AlertDialog.Builder(this).run {
                     setTitle("ktx 노선 선택")
+                    // 라디오 선택 상자
                     setSingleChoiceItems(ktxLines, lineChecked, object: DialogInterface.OnClickListener{
                         override fun onClick(dialog: DialogInterface?, checked: Int) {
+                            // 선택한 노선을 토스트 메시지로 알려줌.
                             Toast.makeText(context, "${ktxLines[checked]}을 선택하셨습니다.", Toast.LENGTH_SHORT).show()
                             binding.currentKtxLines.text = "현재 노선 : ${ktxLines[checked]}"
                             lineChecked = checked
+                            // 경부선을 선택
                             if(checked == 0) {
-                                /*dbGet("경부선", KtxLinesList().gyeongbuLine)*/
-                                markerSetting(KtxLinesList().gyeongbuLine)
+                                dbGet("경부선", KtxLinesList().gyeongbuLine)
+                                /*markerSetting(KtxLinesList().gyeongbuLine)*/
                             }
+                            // 호남선을 선택
                             else if(checked == 1) {
                                 for(i in 0..markers.size - 1) {
                                     markers[i].map = null

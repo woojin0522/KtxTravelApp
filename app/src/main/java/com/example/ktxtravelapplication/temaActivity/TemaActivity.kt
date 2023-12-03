@@ -27,7 +27,7 @@ class TemaActivity : AppCompatActivity() {
             finish()
         }
 
-        binding.temaTabViewPager2.adapter = temaViewPagerAdapter(this)
+        binding.temaTabViewPager2.adapter = TemaViewPagerAdapter(this)
         
         //탭 레이아웃에서 탭을 선택할 때 이벤트 리스너
         TabLayoutMediator(binding.temaTabLayout, binding.temaTabViewPager2) { tab, position ->
@@ -41,7 +41,7 @@ class TemaActivity : AppCompatActivity() {
 }
 
 // 뷰페이저 어댑터
-class temaViewPagerAdapter(activity: FragmentActivity): FragmentStateAdapter(activity) {
+class TemaViewPagerAdapter(activity: FragmentActivity): FragmentStateAdapter(activity) {
     val fragments: List<Fragment>
     init {
         fragments = listOf(temaSeasonsFragment(), temaCourseFragment(), temaFestivalFragment())
