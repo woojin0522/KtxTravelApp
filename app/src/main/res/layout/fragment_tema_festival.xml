@@ -4,9 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".temaActivity.temaFragments.temaFestivalFragment">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="축제"
-        android:textSize="50dp" />
+    <ImageView
+        android:scaleType="centerCrop"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:ignore="UseAppTint"
+        android:tint="#60000000"
+        android:src="@drawable/festival"
+        android:tintMode="src_atop" />
 </FrameLayout>
