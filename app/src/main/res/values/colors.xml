@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!--button 컬러-->
+    <color name="map_button_color">#7A94CC</color>
+    <color name="map_button_click_color">#B7C8EC</color>
+    <color name="tema_button_color">#BCBCBC</color>
+    <color name="tema_button_click_color">#EFEFEF</color>
+    <color name="plan_button_color">#80AED6</color>
+    <color name="plan_button_click_color">#B2CBE1</color>
+    <color name="ticket_button_color">#DD988B</color>
+    <color name="ticket_button_click_color">#E4BDB5</color>
+    <color name="main_app_color">#00668B</color>
+    <color name="plan_item_color">#84BFB0</color>
+</resources>

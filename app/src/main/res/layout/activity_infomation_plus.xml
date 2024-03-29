@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".mapActivity.InfomationPlusActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/info_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme"
+            app:titleTextColor="#ffffff">
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/info_backBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:background="@color/main_app_color"
+                android:src="@drawable/baseline_keyboard_arrow_left_24" />
+
+            <TextView
+                android:id="@+id/info_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/title_station_info"
+                android:textColor="#ffffff"
+                android:textSize="25dp" />
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginTop="55dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="상세 페이지입니다."
+            android:textSize="20dp"
+            android:layout_gravity="center"/>
+        <ImageView
+            android:id="@+id/info_image"
+            android:src="@drawable/notimage"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:transitionName="imgTrans"/>
+        <!--<Button
+            android:id="@+id/info_plus_plan_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="여행계획 짜기" />-->
+        <!--<TextView
+            android:id="@+id/info_plus_likeCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="좋아요 수 : 0 "
+            android:textSize="20dp"/>-->
+        <TextView
+            android:id="@+id/info_plus_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="역명 : "
+            android:textSize="20dp"/>
+        <TextView
+            android:id="@+id/info_plus_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="주소 : "
+            android:textSize="20dp"/>
+        <TextView
+            android:id="@+id/info_plus_dist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="역에서의 거리 : "
+            android:textSize="20dp"/>
+        <TextView
+            android:id="@+id/info_plus_tel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="전화번호 : "
+            android:textSize="20dp"/>
+        <TextView
+            android:id="@+id/info_plus_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="역에 대한 설명"
+            android:textSize="17dp"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">KTX 여행</string>
+    <!--메인화면 버튼 이름-->
+    <string name="map_button">KTX지도</string>
+    <string name="tema_button">테마여행</string>
+    <string name="plan_button">여행계획</string>
+    <string name="ticket_button">티켓구매</string>
+
+    <!--각 메뉴화면 제목-->
+    <string name="title_activity_map">KTX 지도</string>
+    <string name="title_activity_tema">테마여행</string>
+    <string name="title_activity_plan">여행계획</string>
+    <string name="title_activity_ticket">티켓 구매</string>
+    <string name="title_station_info">역 상세정보</string>
+
+    <!--드로어 레이아웃 열고 닫기 확인 문자열-->
+    <string name="map_drawer_open">DrawerOpen</string>
+    <string name="map_drawer_close">DrawerClose</string>
+    <!--드로어 레이아웃 헤더 제목-->
+    <string name="map_drawer_head">지도설정</string>
+    <!--드로어 레이아웃 아이템 제목-->
+    <string name="map_drawer_item_title1">KTX 노선선택</string>
+    <string name="map_drawer_item_title2">관광지 표시</string>
+
+    <!--테마여행 탭 메뉴 버튼 제목-->
+    <string name="tema_tab_title1">계절</string>
+    <string name="tema_tab_title2">테마열차</string>
+
+    <!--티켓 구매화면 설명-->
+    <string name="korail_detail">이미지를 클릭하면 코레일톡 앱으로 연결됩니다.</string>
+    <string name="str_detail">이미지를 클릭하면 SRT예매 앱으로 연결됩니다.</string>
+    <string name="ticket_explain">(앱이 설치되어 있지 않을 경우 설치화면으로 이동됩니다.)</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="stationInfomation">역에 대한 설명이 쓰일 위치입니다.</string>
+    <string name="Infomation">설명이 쓰일 위치입니다.</string>
+</resources>

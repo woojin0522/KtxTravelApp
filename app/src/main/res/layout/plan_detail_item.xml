@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <TextView
+        android:id="@+id/plan_detail_number"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:text="1번"
+        android:textStyle="bold"
+        android:textSize="15dp"
+        android:layout_gravity="center_vertical"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="right">
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/plan_date_btn"
+                android:layout_width="30dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="10dp"
+                android:src="@android:drawable/ic_menu_my_calendar"
+                android:background="@color/main_app_color"/>
+            <TextView
+                android:id="@+id/plan_selected_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="계획 날짜선택"
+                android:textSize="14dp"
+                android:layout_marginRight="10dp" />
+            <TextView
+                android:id="@+id/plan_detail_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="오전 12 : 00"
+                android:textSize="14dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" ~ "
+                android:textSize="14dp" />
+            <TextView
+                android:id="@+id/plan_detail_time2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="오후 1 : 00"
+                android:textSize="15dp"/>
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/plan_delete_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="삭제"
+                android:textSize="15dp" />
+        </LinearLayout>
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/plan_detail_editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:text=""
+            android:hint="계획을 입력하세요."
+            android:lines="3"
+            android:ems="20"
+            android:textSize="15dp" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/black"/>
+    </LinearLayout>
+</LinearLayout>

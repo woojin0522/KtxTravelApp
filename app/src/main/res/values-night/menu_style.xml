@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/main_app_color</item>
+        <item name="android:statusBarColor">@color/main_app_color</item>
+
+        <item name="android:timePickerStyle">@style/MyTimePickerTheme</item>
+    </style>
+
+    <style name="calenderViewStyle" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:textColor">@color/white</item>
+    </style>
+</resources>
