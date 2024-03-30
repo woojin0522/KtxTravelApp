@@ -11,6 +11,12 @@ import com.example.ktxtravelapplication.databinding.ActivityInfomationPlusBindin
 import com.example.ktxtravelapplication.planActivity.PlanActivity
 import com.example.ktxtravelapplication.planActivity.TravelPlanActivity
 import com.example.ktxtravelapplication.planActivity.planNumber
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.getValue
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 class InfomationPlusActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -53,12 +53,6 @@
             android:layout_height="200dp"
             android:layout_gravity="center"
             android:transitionName="imgTrans"/>
-        <!--<Button
-            android:id="@+id/info_plus_plan_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="여행계획 짜기" />-->
         <!--<TextView
             android:id="@+id/info_plus_likeCount"
             android:layout_width="match_parent"

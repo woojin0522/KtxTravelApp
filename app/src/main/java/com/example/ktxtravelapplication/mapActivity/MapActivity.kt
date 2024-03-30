@@ -15,6 +15,7 @@ import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.DrawableRes
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -42,9 +43,11 @@ import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
+import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.util.MarkerIcons
 import org.xmlpull.v1.XmlPullParser
@@ -621,6 +624,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     markers.add(Marker())
                     markers[i].position = LatLng(lineList[i].latitude, lineList[i].longitude)
                     markers[i].map = naverMap
+                    markers[i].icon = OverlayImage.fromResource(R.drawable.ktxmarker_removebg)
+                    markers[i].width = 120
+                    markers[i].height = 140
+                    /*markers[i].captionText = lineList[i].stationName + "역"
+                    markers[i].captionTextSize = 20f
+                    markers[i].captionColor = Color.BLUE
+                    markers[i].setCaptionAligns(Align.Top)*/
                 }
                 // 마커 설정후 지도가 한눈에 보이게 카메라 업뎃
                 val cameraUpdate = CameraUpdate.scrollAndZoomTo(LatLng(36.332165597, 127.434310227), 5.5)
@@ -698,7 +708,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     fun infoMarkerSetting(){
         val myRef = database.getReference(infoType)
         val infoList = mutableListOf<TourData>()
-        val infoArray = ArrayList<TourData>()
         // 파이어베이스에서 데이터 호출
         myRef.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -722,14 +731,37 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     }
                 }
 
+                var infoName = ""
+                var infoTitle = ""
+                var infoMarkerImage = OverlayImage.fromResource(R.drawable.tourmarker_removebg)
+                if(infoType=="tourDatas"){
+                    infoName = "관광지명 : "
+                    infoTitle = "관광지 상세정보"
+                    infoMarkerImage = OverlayImage.fromResource(R.drawable.tourmarker_removebg)
+                }
+                else if(infoType=="festivalDatas"){
+                    infoName = "축제/공연/행사명 : "
+                    infoTitle = "축제/공연/행사 상세정보"
+                    infoMarkerImage = OverlayImage.fromResource(R.drawable.festivalmarker_removebg)
+                }
+                else if(infoType=="accommodationDatas"){
+                    infoName = "숙박명 : "
+                    infoTitle = "숙박 상세정보"
+                    infoMarkerImage = OverlayImage.fromResource(R.drawable.accommodationmarker_removebg)
+                }
+                else if(infoType=="foodshopDatas"){
+                    infoName = "음식점명 : "
+                    infoTitle = "음식점 상세정보"
+                    infoMarkerImage = OverlayImage.fromResource(R.drawable.foodshopmarker_removebg)
+                }
+
                 for(i in 0..infoList.size - 1) {
                     tour_markers.add(Marker())
                     tour_markers[i].position = LatLng(infoList[i].latitude, infoList[i].longitude)
                     tour_markers[i].map = naverMap
-                    tour_markers[i].icon = MarkerIcons.BLACK
-                    tour_markers[i].iconTintColor = Color.RED
-                    tour_markers[i].width = 80
-                    tour_markers[i].height = 80
+                    tour_markers[i].icon = infoMarkerImage
+                    tour_markers[i].width = 100
+                    tour_markers[i].height = 120
                 }
 
                 // 마커 클릭시 정보창 표시
@@ -756,27 +788,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                         val view = layoutInflater.inflate(R.layout.infomation_window,null)
                         for(i in 0..infoList.size-1){
                             // 클릭한 마커에 맞는 정보창을 표시한다
-                            var infoName = ""
-                            var infoTitle = ""
                             if (tour_markers[i].infoWindow == null){ }
                             else {
                                 val Infomation = infoList[i].infomation
-                                if(infoType=="tourDatas"){
-                                    infoName = "관광지명 : "
-                                    infoTitle = "관광지 상세정보"
-                                }
-                                else if(infoType=="festivalDatas"){
-                                    infoName = "축제/공연/행사명 : "
-                                    infoTitle = "축제/공연/행사 상세정보"
-                                }
-                                else if(infoType=="accommodationDatas"){
-                                    infoName = "숙박명 : "
-                                    infoTitle = "숙박 상세정보"
-                                }
-                                else if(infoType=="foodshopDatas"){
-                                    infoName = "음식점명 : "
-                                    infoTitle = "음식점 상세정보"
-                                }
                                 view.findViewById<TextView>(R.id.info_window_name).text = infoName + infoList[i].title
                                 view.findViewById<TextView>(R.id.info_window_address).text = "주소: " + infoList[i].addr1 + " " + infoList[i].addr2
                                 view.findViewById<TextView>(R.id.info_window_dist).text = "역에서 거리: " + infoList[i].dist.toInt() + "m"
