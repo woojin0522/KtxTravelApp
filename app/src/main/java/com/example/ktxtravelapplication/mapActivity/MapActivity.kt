@@ -9,7 +9,9 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
+import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -62,19 +64,37 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var line: String
     lateinit var infoType: String
     lateinit var database: FirebaseDatabase
+    lateinit var binding: ActivityMapBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 뷰 바인딩 선언
-        val binding = ActivityMapBinding.inflate(layoutInflater)
+        binding = ActivityMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         // 액션바를 툴바로 교체
         setSupportActionBar(binding.mapToolbar)
         supportActionBar!!.setTitle("")
 
-        // 뒤로가기 버튼
-        binding.mapBackBtn.setOnClickListener{
+        // 뒤로가기 작동 함수
+        fun backAction() {
+            val returnIntent = Intent() // 인텐트 생성
+            returnIntent.putExtra("ktxLine", line) // 선택된 ktx노선 값을 넘김
+            returnIntent.putExtra("infoType", infoType) // 선택된 정보타입 값을 넘김
+            setResult(Activity.RESULT_OK, returnIntent)
             finish()
+        }
+
+        var initTime = 0L
+        val toast = Toast.makeText(this, "지도화면을 나가시려면 뒤로가기를 한번 더 눌러주세요.", Toast.LENGTH_SHORT)
+        // 뒤로가기 버튼 클릭 리스너
+        binding.mapBackBtn.setOnClickListener{
+            if(System.currentTimeMillis() - initTime > 3000) {
+                toast.show()
+                initTime = System.currentTimeMillis()
+            }
+            else{
+                backAction()
+            }
         }
 
         // 드로어 레이아웃 열고 닫기 버튼
@@ -90,8 +110,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         // 뒤로가기 버튼
-        var initTime = 0L
-        val toast = Toast.makeText(this, "지도화면을 나가시려면 뒤로가기를 한번 더 눌러주세요.", Toast.LENGTH_SHORT)
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 // 드로어 레이아웃이 열려있을 떄 뒤로가기 버튼을 누를경우 드로어 레이아웃을 닫는다.
@@ -106,11 +124,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                         initTime = System.currentTimeMillis()
                     }
                     else{
-                        val returnIntent = Intent()
-                        returnIntent.putExtra("ktxLine", line)
-                        returnIntent.putExtra("infoType", infoType)
-                        setResult(Activity.RESULT_OK, returnIntent)
-                        finish()
+                        backAction()
                     }
                 }
             }
@@ -172,115 +186,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         firebaseInsert(KtxLinesList().jungangLine)
         firebaseInsert(KtxLinesList().jungbuNaeryukLine)
         firebaseInsert(KtxLinesList().donghaeLine)*/
-        // ktx노선 정보를 파이어베이스에서 불러들여 마커 생성
-        /*fun stationMarkerSetting(lineName: String){
-            val myRef = database.getReference("ktxLines")
-            val lineList = mutableListOf<StationPositions>()
-            // 파이어베이스에서 데이터 호출
-            myRef.addValueEventListener(object: ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    for(shot in snapshot.children) {
-                        for(station in shot.children){
-                            if(shot.key.toString() == lineName) {
-                                val stationNum = station.child("stationNum").value.toString()
-                                val stationName = station.child("stationName").value.toString()
-                                val stationEngName = station.child("stationEngName").value.toString()
-                                val stationAddress = station.child("stationAddress").value.toString()
-                                val latitude = station.child("latitude").value.toString()
-                                val longitude = station.child("longitude").value.toString()
-                                val stationInfomation = station.child("stationInfomation").value.toString()
-                                val likeCount = station.child("likeCount").value.toString()
-
-                                lineList.add(StationPositions(stationNum.toInt(), stationEngName,stationName,stationAddress,
-                                    latitude.toDouble(),longitude.toDouble(),stationInfomation,likeCount.toInt()))
-                            }
-                        }
-                    }
-
-                    // 기존에 지도에 남아있던 마커 제거
-                    for(i in 0..markers.size - 1) {
-                        markers[i].map = null
-                    }
-                    // 매개변수로 받은 노선에 맞는 역에 해당하는 마커를 표시
-                    for(i in 0..lineList.size - 1) {
-                        markers.add(Marker())
-                        markers[i].position = LatLng(lineList[i].latitude, lineList[i].longitude)
-                        markers[i].map = naverMap
-                    }
-                    // 마커 설정후 지도가 한눈에 보이게 카메라 업뎃
-                    val cameraUpdate = CameraUpdate.scrollAndZoomTo(LatLng(36.332165597, 127.434310227), 5.5)
-                    naverMap.moveCamera(cameraUpdate)
-
-                    // 마커 클릭시 정보창 표시
-                    val infoWindow = InfoWindow()
-                    naverMap.setOnMapClickListener { pointF, latLng ->
-                        infoWindow.close()
-                    }
-                    // 마커 클릭 이벤트 리스너입니다요~
-                    val listener = Overlay.OnClickListener {overlay ->
-                        val marker = overlay as Marker
-
-                        if (marker.infoWindow == null) {
-                            // 현재 마커에 정보 창이 열려있지 않을 경우 엶
-                            infoWindow.open(marker)
-                        } else {
-                            // 이미 현재 마커에 정보 창이 열려있을 경우 닫음
-                            infoWindow.close()
-                        }
-
-                        true
-                    }
-
-                    // 정보창 어댑터 !!
-                    infoWindow.adapter = object : InfoWindow.ViewAdapter() {
-                        override fun getView(p0: InfoWindow): View {
-                            val view = layoutInflater.inflate(R.layout.infomation_window,null)
-                            for(i in 0..lineList.size-1){
-                                // 클릭한 마커에 맞는 정보창을 표시한다~
-                                if (markers[i].infoWindow == null){}
-                                else {
-                                    view.findViewById<TextView>(R.id.info_window_name).text = "역명: " + lineList[i].stationName + "역"
-                                    view.findViewById<TextView>(R.id.info_window_address).text = "주소: " + lineList[i].stationAddress
-
-                                    val storage = Firebase.storage
-                                    val storageRef = storage.getReference("image")
-                                    val imageName = lineList[i].stationEngName
-                                    val stationImage = storageRef.child("${imageName}.jpg")
-                                    var intentURL = ""
-                                    val imageURL = stationImage.downloadUrl.addOnSuccessListener {
-                                        intentURL = it.toString() }.addOnFailureListener{}
-
-                                    p0.onClickListener = Overlay.OnClickListener {overlay ->
-                                        Toast.makeText(applicationContext, "클릭 성공", Toast.LENGTH_SHORT).show()
-
-                                        Log.d("test", intentURL)
-                                        //상세정보 페이지로 이동
-                                        val intent = Intent(this@MapActivity, InfomationPlusActivity::class.java)
-                                        intent.putExtra("infoTitle", "역 상세정보")
-                                        intent.putExtra("infoName", "역명 : " + lineList[i].stationName + "역")
-                                        intent.putExtra("infoAddress", "주소 : " + lineList[i].stationAddress)
-                                        intent.putExtra("infoDescription", lineList[i].stationInfomation)
-                                        intent.putExtra("infoImage", intentURL)
-                                        startActivity(intent)
-
-                                        true
-                                    }
-                                }
-                            }
-                            // 정보창에 적용할 뷰를 반환!!
-                            return view
-                        }
-                    }
-                    // 각 마커에 리스너 연결!@!
-                    for(i in 0..lineList.size - 1) {
-                        markers[i].onClickListener = listener
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {}
-            })
-        }*/
-
         //---------------------------api 파싱 후 파이어베이스로 데이터 전달-----------------------
         /*fun fetchXML(url: String, contentNumber: Int) {
             lateinit var page : String // url 주소 통해 전달받은 내용 저장할 변수
@@ -501,7 +406,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                             lineChecked = checked
                             // 경부선을 선택
                             if(checked == 0) {
-                                /*dbGet("경부선", KtxLinesList().gyeongbuLine)*/
                                 for(i in 0..tour_markers.size - 1) {
                                     tour_markers[i].map = null
                                 }
@@ -593,6 +497,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     infoType="tourDatas"
                     //tourMarkerSetting(12)
                     infoMarkerSetting()
+                    binding.markerDeleteBtn.text = "■ 관광지마커 삭제하기"
                 }
             }
             // 축제/공연/행사
@@ -611,6 +516,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     //tourMarkerSetting(15)
                     infoType="festivalDatas"
                     infoMarkerSetting()
+                    binding.markerDeleteBtn.text = "■ 축제마커 삭제하기"
                 }
             }
             // 숙박
@@ -629,6 +535,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     //tourMarkerSetting(32)
                     infoType="accommodationDatas"
                     infoMarkerSetting()
+                    binding.markerDeleteBtn.text = "■ 숙박마커 삭제하기"
                 }
             }
             // 음식점
@@ -647,6 +554,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     //tourMarkerSetting(39)
                     infoType="foodshopDatas"
                     infoMarkerSetting()
+                    binding.markerDeleteBtn.text = "■ 음식점마커 삭제하기"
                 }
             }
             true
@@ -659,6 +567,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     tour_markers[i].map = null
                 }
                 tourList.clear()
+                binding.markerDeleteBtn.text = "■ 표시 마커  없음"
             }
         }
 
@@ -934,6 +843,28 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         infoType = intent.getStringExtra("infoType").toString()
         stationMarkerSetting(line)
         infoMarkerSetting()
+
+        var currentLine = "노선을 선택해주세요."
+        when(line) {
+            "gyeongbuLine" -> currentLine = "현재 노선 : 경부선"
+            "gyeongjeonLine" -> currentLine = "현재 노선 : 경전선"
+            "donghaeLine" -> currentLine = "현재 노선 : 동해선"
+            "honamLine" -> currentLine = "현재 노선 : 호남선"
+            "jeollaLine" -> currentLine = "현재 노선 : 전라선"
+            "gangneungLine" -> currentLine = "현재 노선 : 강릉선"
+            "jungangLine" -> currentLine = "현재 노선 : 중앙선"
+            "jungbuNaeryukLine" -> currentLine = "현재 노선 : 중부내륙선"
+        }
+        binding.currentKtxLines.text = currentLine
+
+        var currentInfoType = "■ 표시 마커 없음"
+        when(infoType) {
+            "tourDatas" -> currentInfoType = "■ 관광지마커 삭제하기"
+            "festivalDatas" -> currentInfoType = "■ 축제마커 삭제하기"
+            "accommodationDatas" -> currentInfoType = "■ 숙박마커 삭제하기"
+            "foodshopDatas" -> currentInfoType = "■ 음식점마커 삭제하기"
+        }
+        binding.markerDeleteBtn.text = currentInfoType
     }
 
     companion object {

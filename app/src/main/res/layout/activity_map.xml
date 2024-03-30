@@ -60,16 +60,22 @@
                         android:layout_height="wrap_content"
                         android:text="노선을 선택해주세요."
                         android:textColor="@color/white"
+                        android:layout_gravity="left"
+                        android:layout_marginLeft="5dp"
                         android:textSize="17dp"/>
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"/>
                     <TextView
                         android:id="@+id/marker_delete_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="■마커 삭제하기"
+                        android:text="■ 표시 마커 없음"
                         android:textColor="@color/white"
-                        android:textSize="17dp"
-                        android:layout_marginLeft="140dp"
-                        android:layout_marginRight="1dp"/>
+                        android:layout_gravity="right"
+                        android:layout_marginRight="5dp"
+                        android:textSize="17dp" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.appbar.AppBarLayout>

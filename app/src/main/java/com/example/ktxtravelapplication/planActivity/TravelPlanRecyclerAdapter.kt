@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.ktxtravelapplication.databinding.PlanDetailItemBinding
 import com.example.ktxtravelapplication.planActivity.planRoomDB.PlanDB
 import kotlinx.coroutines.runBlocking
+import okhttp3.internal.notify
+import okhttp3.internal.notifyAll
 import java.util.Calendar
 
 class TravelPlanRecyclerAdapter(val context: Context, val datas: MutableList<PlanDetailDatas>, val db: PlanDB) : RecyclerView.Adapter<TravelPlanRecyclerAdapter.ViewHolder>() {
@@ -30,6 +32,11 @@ class TravelPlanRecyclerAdapter(val context: Context, val datas: MutableList<Pla
 
         planSeq = planSeq - 1
         planPos = planPos - 1
+
+        for(i in pos..datas.size - 1) {
+            datas[i].sequence = datas[i].sequence - 1
+        }
+        notifyDataSetChanged()
     }
     // 뷰 홀더 선언부
     inner class ViewHolder(val binding : PlanDetailItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -63,7 +70,7 @@ class TravelPlanRecyclerAdapter(val context: Context, val datas: MutableList<Pla
             }
 
             // 초기값들 설정
-            binding.planDetailNumber.text = "${pos + 1}번"
+            binding.planDetailNumber.text = "${datas[pos].sequence}번"
             binding.planDetailEditText.requestFocus()
             binding.planDetailEditText.setText(datas[pos].planDetail)
             binding.planSelectedDate.text = datas[pos].selectedDate
