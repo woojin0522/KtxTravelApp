@@ -190,7 +190,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         firebaseInsert(KtxLinesList().jungbuNaeryukLine)
         firebaseInsert(KtxLinesList().donghaeLine)*/
         //---------------------------api 파싱 후 파이어베이스로 데이터 전달-----------------------
-        /*fun fetchXML(url: String, contentNumber: Int) {
+        fun fetchXML(url: String, contentNumber: Int) {
             lateinit var page : String // url 주소 통해 전달받은 내용 저장할 변수
             //xml 데이터 가져와서 파싱
             // 외부에서 데이터 가져올 때 화면 계속 동작하도록 AsyncTask 이용
@@ -344,9 +344,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
             getDangerGrade().execute()
-        }*/
+        }
 
-        /*fun tourMarkerSetting(contentNumber: Int){
+        fun tourMarkerSetting(contentNumber: Int){
             val num_of_rows = 10
             val page_no = 1
             val mobile_os = "AND"
@@ -386,7 +386,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 fetchXML(requestUrl, contentNumber)
             }
-        }*/
+        }
         //----------------------------------------------------------------------------------
 
         fun drawClose(){
@@ -700,7 +700,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     markers[i].onClickListener = listener
                 }
             }
-
             override fun onCancelled(error: DatabaseError) {}
         })
     }
