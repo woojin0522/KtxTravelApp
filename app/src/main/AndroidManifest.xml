@@ -29,10 +29,6 @@
             android:exported="false"
             android:theme="@style/AppTheme"/>
         <activity
-            android:name=".mapActivity.info_full_imageActivity"
-            android:exported="false"
-            android:theme="@style/AppTheme" />
-        <activity
             android:name=".mapActivity.InfomationPlusActivity"
             android:exported="false"
             android:theme="@style/AppTheme" />

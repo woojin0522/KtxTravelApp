@@ -1,6 +1,10 @@
 package com.example.ktxtravelapplication
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -39,6 +43,31 @@ class MainActivity : AppCompatActivity() {
         viewPager_mainImages.adapter = MainImageViewPagerAdapter(getMainImages()) // 뷰 페이저에 어댑터 적용
         viewPager_mainImages.orientation = ViewPager2.ORIENTATION_HORIZONTAL // 뷰 페이저의 방향을 횡단으로 설정
         viewPager_mainImages.isUserInputEnabled = false // 뷰 페이저 스왑을 제한
+
+        // 네트워크 접속 확인
+        fun isNetworkAvailable() : Boolean {
+            val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                val nw = connectivityManager.activeNetwork ?: return false
+                val actNw = connectivityManager.getNetworkCapabilities(nw) ?: return false
+                return when {
+                    actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
+                        true
+                    }
+                    actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
+                        true
+                    }
+                    else -> false
+                }
+            }
+            // api 23 이하
+            else {
+                return connectivityManager.activeNetworkInfo?.isConnected ?: false
+            }
+        }
+        if(isNetworkAvailable() == false) {
+            Toast.makeText(this, "네트워크 연결을 확인해 주세요.", Toast.LENGTH_LONG).show()
+        }
 
         // 자동 슬라이드를 위한 뷰페이저 쓰레드
         val thread=Thread(PagerRunnable())

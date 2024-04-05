@@ -1,13 +1,21 @@
 package com.example.ktxtravelapplication.mapActivity
 
 import android.app.Activity
+import android.app.ActivityOptions
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.Drawable
+import android.media.tv.TvContract.Channels.Logo
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
+import android.transition.Visibility
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -21,6 +29,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
+import androidx.core.view.marginBottom
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -51,6 +60,8 @@ import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.util.MarkerIcons
+import com.naver.maps.map.widget.LocationButtonView
+import com.naver.maps.map.widget.LogoView
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedReader
@@ -78,6 +89,31 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         // 액션바를 툴바로 교체
         setSupportActionBar(binding.mapToolbar)
         supportActionBar!!.setTitle("")
+
+        // 네트워크 접속 확인
+        fun isNetworkAvailable() : Boolean {
+            val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                val nw = connectivityManager.activeNetwork ?: return false
+                val actNw = connectivityManager.getNetworkCapabilities(nw) ?: return false
+                return when {
+                    actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
+                        true
+                    }
+                    actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
+                        true
+                    }
+                    else -> false
+                }
+            }
+            // api 23 이하
+            else {
+                return connectivityManager.activeNetworkInfo?.isConnected ?: false
+            }
+        }
+        if(isNetworkAvailable() == false) {
+            Toast.makeText(this, "네트워크 연결을 확인해 주세요.", Toast.LENGTH_LONG).show()
+        }
 
         // 뒤로가기 작동 함수
         fun backAction() {
@@ -817,61 +853,51 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 // 마커 클릭시 정보창 표시
                 val infoWindow = InfoWindow()
                 naverMap.setOnMapClickListener { pointF, latLng ->
-                    infoWindow.close()
+                    /*infoWindow.close()*/
+                    binding.infoWindowLayout.visibility = View.GONE
+                    binding.infoWindowLogoview.visibility = View.INVISIBLE
                 }
                 // 마커 클릭 이벤트 리스너입니다요~
                 val listener = Overlay.OnClickListener {overlay ->
                     val marker = overlay as Marker
 
-                    if (marker.infoWindow == null) {
-                        // 현재 마커에 정보 창이 열려있지 않을 경우 엶
-                        infoWindow.open(marker)
-                    } else {
-                        // 이미 현재 마커에 정보 창이 열려있을 경우 닫음
-                        infoWindow.close()
-                    }
+                    for(i in 0..lineList.size - 1){
+                        if(marker.captionText == lineList[i].stationName + "역"){
+                            val storage = Firebase.storage
+                            val storageRef = storage.getReference("image")
+                            val imageName = lineList[i].stationEngName
+                            val stationImage = storageRef.child("${imageName}.jpg")
+                            var intentURL = ""
+                            val imageURL = stationImage.downloadUrl.addOnSuccessListener {
+                                intentURL = it.toString()
+                                Glide.with(this@MapActivity)
+                                    .load(it)
+                                    .placeholder(getDrawable(R.drawable.loading))
+                                    .error(getDrawable(R.drawable.notimage))
+                                    .fallback(getDrawable(R.drawable.notimage))
+                                    .into(binding.infoWindowImage)
+                            }.addOnFailureListener{
+                                binding.infoWindowImage.setImageDrawable(getDrawable(R.drawable.notimage))
+                            }
+                            binding.infoWindowName.text = "역명: " + lineList[i].stationName + "역"
+                            binding.infoWindowAddress.text = "주소: " + lineList[i].stationAddress
+                            binding.infoWindowDist.visibility = View.GONE
 
-                    true
-                }
-
-                // 정보창 어댑터 !!
-                infoWindow.adapter = object : InfoWindow.ViewAdapter() {
-                    override fun getView(p0: InfoWindow): View {
-                        val view = layoutInflater.inflate(R.layout.infomation_window,null)
-                        for(i in 0..lineList.size-1){
-                            // 클릭한 마커에 맞는 정보창을 표시한다~
-                            if (markers[i].infoWindow == null){}
-                            else {
-                                view.findViewById<TextView>(R.id.info_window_name).text = "역명: " + lineList[i].stationName + "역"
-                                view.findViewById<TextView>(R.id.info_window_address).text = "주소: " + lineList[i].stationAddress
-                                view.findViewById<TextView>(R.id.info_window_dist).isVisible = false
-
-                                val storage = Firebase.storage
-                                val storageRef = storage.getReference("image")
-                                val imageName = lineList[i].stationEngName
-                                val stationImage = storageRef.child("${imageName}.jpg")
-                                var intentURL = ""
-                                val imageURL = stationImage.downloadUrl.addOnSuccessListener {
-                                    intentURL = it.toString() }.addOnFailureListener{}
-
-                                p0.onClickListener = Overlay.OnClickListener {overlay ->
-                                    Log.d("test", intentURL)
-                                    //상세정보 페이지로 이동
-                                    val intent = Intent(this@MapActivity, InfomationPlusActivity::class.java)
-                                    intent.putExtra("infoTitle", "역 상세정보")
-                                    intent.putExtra("infoName", "역명 : " + lineList[i].stationName + "역")
-                                    intent.putExtra("infoAddress", "주소 : " + lineList[i].stationAddress)
-                                    intent.putExtra("infoDescription", lineList[i].stationInfomation)
-                                    intent.putExtra("infoImage", intentURL)
-                                    startActivity(intent)
-
-                                    true
-                                }
+                            binding.infoWindowLayout.setOnClickListener{
+                                val intent = Intent(this@MapActivity, InfomationPlusActivity::class.java)
+                                intent.putExtra("infoTitle", "역 상세정보")
+                                intent.putExtra("infoName", "역명 : " + lineList[i].stationName + "역")
+                                intent.putExtra("infoAddress", "주소 : " + lineList[i].stationAddress)
+                                intent.putExtra("infoDescription", lineList[i].stationInfomation)
+                                intent.putExtra("infoImage", intentURL)
+                                startActivity(intent)
                             }
                         }
-                        // 정보창에 적용할 뷰를 반환!!
-                        return view
                     }
+                    binding.infoWindowLogoview.visibility = View.VISIBLE
+                    binding.infoWindowLayout.visibility = View.VISIBLE
+
+                    true
                 }
                 // 각 마커에 리스너 연결!@!
                 for(i in 0..lineList.size - 1) {
@@ -955,54 +981,46 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 // 마커 클릭시 정보창 표시
                 val infoWindow = InfoWindow()
                 naverMap.setOnMapClickListener { pointF, latLng ->
-                    infoWindow.close()
+                    /*infoWindow.close()*/
+                    binding.infoWindowLayout.visibility = View.GONE
+                    binding.infoWindowLogoview.visibility = View.INVISIBLE
                 }
                 // 마커 클릭 이벤트 리스너
                 val listener = Overlay.OnClickListener {overlay ->
                     val marker = overlay as Marker
 
-                    if (marker.infoWindow == null) {
-                        // 현재 마커에 정보 창이 열려있지 않을 경우 엶
-                        infoWindow.open(marker)
-                    } else {
-                        // 이미 현재 마커에 정보 창이 열려있을 경우 닫음
-                        infoWindow.close()
-                    }
-                    true
-                }
-                // 정보창 어댑터 !!
-                infoWindow.adapter = object : InfoWindow.ViewAdapter() {
-                    override fun getView(p0: InfoWindow): View {
-                        val view = layoutInflater.inflate(R.layout.infomation_window,null)
-                        for(i in 0..infoList.size-1){
-                            // 클릭한 마커에 맞는 정보창을 표시한다
-                            if (tour_markers[i].infoWindow == null){ }
-                            else {
-                                view.findViewById<TextView>(R.id.info_window_name).text = infoName + infoList[i].title
-                                view.findViewById<TextView>(R.id.info_window_address).text = "주소: " + infoList[i].addr1 + " " + infoList[i].addr2
-                                view.findViewById<TextView>(R.id.info_window_dist).text = "역에서 거리: " + infoList[i].dist.toInt() + "m"
+                    for(i in 0..infoList.size - 1) {
+                        if(marker.position == LatLng(infoList[i].latitude, infoList[i].longitude)){
+                            binding.infoWindowName.text = infoName + infoList[i].title
+                            binding.infoWindowAddress.text = "주소: " + infoList[i].addr1 + " " + infoList[i].addr2
+                            binding.infoWindowDist.visibility = View.VISIBLE
+                            binding.infoWindowDist.text = "역에서 거리: " + infoList[i].dist.toInt() + "m"
 
-                                p0.onClickListener = Overlay.OnClickListener {overlay ->
-                                    //상세정보 페이지로 이동
-                                    val intent = Intent(this@MapActivity, InfomationPlusActivity::class.java)
-                                    intent.putExtra("infoTitle", infoTitle)
-                                    intent.putExtra("infoName", infoName + infoList[i].title)
-                                    intent.putExtra("infoAddress", "주소 : " + infoList[i].addr1 + " " + infoList[i].addr2)
-                                    intent.putExtra("infoDescription", infoList[i].infomation)
-                                    intent.putExtra("infoHomepage", infoList[i].homepageUrl)
-                                    intent.putExtra("infoTel", "전화번호 : " + infoList[i].tel)
-                                    intent.putExtra("infoDist", infoList[i].dist.toInt())
-                                    val tourImage = infoList[i].imageUri
-                                    intent.putExtra("infoImage", tourImage)
-                                    startActivity(intent)
-
-                                    true
-                                }
+                            Glide.with(this@MapActivity)
+                                .load(infoList[i].imageUri)
+                                .placeholder(getDrawable(R.drawable.loading)) // 이미지 로딩 시작하기 전 표시할 이미지
+                                .error(getDrawable(R.drawable.notimage)) // 로딩 에러 발생 시 표시할 이미지
+                                .fallback(getDrawable(R.drawable.notimage)) // 로드할 때 url이 비어있을 경우 표시할 이미지
+                                .into(binding.infoWindowImage) // 이미지를 넣을 뷰
+                            binding.infoWindowLayout.setOnClickListener{
+                                val intent = Intent(this@MapActivity, InfomationPlusActivity::class.java)
+                                intent.putExtra("infoTitle", infoTitle)
+                                intent.putExtra("infoName", infoName + infoList[i].title)
+                                intent.putExtra("infoAddress", "주소 : " + infoList[i].addr1 + " " + infoList[i].addr2)
+                                intent.putExtra("infoDescription", infoList[i].infomation)
+                                intent.putExtra("infoHomepage", infoList[i].homepageUrl)
+                                intent.putExtra("infoTel", "전화번호 : " + infoList[i].tel)
+                                intent.putExtra("infoDist", infoList[i].dist.toInt())
+                                val tourImage = infoList[i].imageUri
+                                intent.putExtra("infoImage", tourImage)
+                                startActivity(intent)
                             }
                         }
-                        // 정보창에 적용할 뷰를 반환!!
-                        return view
                     }
+                    binding.infoWindowLogoview.visibility = View.VISIBLE
+                    binding.infoWindowLayout.visibility = View.VISIBLE
+
+                    true
                 }
                 // 각 마커에 리스너 연결!@!
                 for(i in 0..tour_markers.size - 1) {
@@ -1037,7 +1055,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         val uiSettings = naverMap.uiSettings
 
         uiSettings.isCompassEnabled = true
-        uiSettings.isLocationButtonEnabled = true
+        uiSettings.isLocationButtonEnabled = false
+
+        val locationButtonView = binding.infoWindowLocationBtn as LocationButtonView
+        locationButtonView.map = naverMap
+
+        uiSettings.setLogoMargin(30, 5, 10, 20)
 
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
 
