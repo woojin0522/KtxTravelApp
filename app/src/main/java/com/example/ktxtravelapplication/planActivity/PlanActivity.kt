@@ -7,16 +7,11 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import com.example.ktxtravelapplication.databinding.ActivityPlanBinding
-import com.example.ktxtravelapplication.databinding.PlanItemBinding
 import com.example.ktxtravelapplication.planActivity.planRoomDB.PlanDB
 import kotlinx.coroutines.runBlocking
 

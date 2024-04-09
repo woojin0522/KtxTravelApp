@@ -9,26 +9,11 @@ import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
-import android.view.View
-import android.webkit.WebChromeClient
-import android.webkit.WebViewClient
-import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.ActivityInfomationPlusBinding
-import com.example.ktxtravelapplication.mapActivity.ktxLinesData.KtxLinesList
-import com.example.ktxtravelapplication.mapActivity.tourData.TourData
-import com.example.ktxtravelapplication.planActivity.PlanActivity
-import com.example.ktxtravelapplication.planActivity.TravelPlanActivity
-import com.example.ktxtravelapplication.planActivity.planNumber
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.getValue
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedReader
@@ -197,11 +182,6 @@ class InfomationPlusActivity : AppCompatActivity() {
             .error(getDrawable(R.drawable.notimage)) // 로딩 에러 발생 시 표시할 이미지
             .fallback(getDrawable(R.drawable.notimage)) // 로드할 때 url이 비어있을 경우 표시할 이미지
             .into(binding.infoImage) // 이미지를 넣을 뷰
-        // 여행계획 버튼 클릭시
-        /*binding.infoPlusPlanBtn.setOnClickListener {
-            val intent = Intent(this, PlanActivity::class.java)
-            startActivity(intent)
-        }*/
 
         // 이미지 클릭시 확대
         binding.infoImage.setOnClickListener {
@@ -210,7 +190,6 @@ class InfomationPlusActivity : AppCompatActivity() {
             val opt = ActivityOptions.makeSceneTransitionAnimation(this, it, "imgTrans")
             startActivity(intent, opt.toBundle())
         }
-        //.circleCrop() //동그랗게 자르기
         binding.infoBackBtn.setOnClickListener {
             finish()
         }

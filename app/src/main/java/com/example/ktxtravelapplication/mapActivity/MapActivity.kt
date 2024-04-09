@@ -1,52 +1,34 @@
 package com.example.ktxtravelapplication.mapActivity
 
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.Drawable
-import android.media.tv.TvContract.Channels.Logo
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
-import android.transition.Visibility
 import android.util.Log
-import android.view.Gravity
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.Switch
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.annotation.DrawableRes
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.startActivity
-import androidx.core.view.isVisible
-import androidx.core.view.marginBottom
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.ActivityMapBinding
 import com.example.ktxtravelapplication.mapActivity.ktxLinesData.KtxLinesList
 import com.example.ktxtravelapplication.mapActivity.ktxLinesData.StationPositions
 import com.example.ktxtravelapplication.mapActivity.tourData.TourData
-import com.example.ktxtravelapplication.planActivity.TravelPlanActivity
-import com.google.api.ResourceProto.resource
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import com.google.firebase.storage.storage
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
@@ -59,9 +41,7 @@ import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
-import com.naver.maps.map.util.MarkerIcons
 import com.naver.maps.map.widget.LocationButtonView
-import com.naver.maps.map.widget.LogoView
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedReader
@@ -765,7 +745,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                             val infomation = info.child("infomation").value.toString()
                             val imageUri = info.child("imageUri").value.toString()
                             val tel = info.child("tel").value.toString()
-                            val likeCount = info.child("likeCount").value.toString()
+                            var likeCount = info.child("likeCount").value.toString()
                             val homepage = info.child("homepage").value.toString()
                             val contentId = info.child("contentId").value.toString()
                             val contentTypeId = info.child("contentTypeId").value.toString()
@@ -818,9 +798,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
 
                 // 마커 클릭시 정보창 표시
-                val infoWindow = InfoWindow()
                 naverMap.setOnMapClickListener { pointF, latLng ->
-                    /*infoWindow.close()*/
                     binding.infoWindowLayout.visibility = View.GONE
                     binding.infoWindowLogoview.visibility = View.INVISIBLE
                 }
@@ -829,6 +807,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     val marker = overlay as Marker
 
                     for(i in 0..infoList.size - 1) {
+                        Log.d("test", infoList[i].toString())
                         if(marker.position == LatLng(infoList[i].latitude, infoList[i].longitude)){
                             binding.infoWindowName.text = infoName + infoList[i].title
                             binding.infoWindowAddress.text = "주소: " + infoList[i].addr1 + " " + infoList[i].addr2
@@ -841,6 +820,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                                 .error(getDrawable(R.drawable.notimage)) // 로딩 에러 발생 시 표시할 이미지
                                 .fallback(getDrawable(R.drawable.notimage)) // 로드할 때 url이 비어있을 경우 표시할 이미지
                                 .into(binding.infoWindowImage) // 이미지를 넣을 뷰
+
                             binding.infoWindowLayout.setOnClickListener{
                                 val intent = Intent(this@MapActivity, InfomationPlusActivity::class.java)
                                 intent.putExtra("infoTitle", infoTitle)
@@ -850,6 +830,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                                 intent.putExtra("infoDist", infoList[i].dist.toInt())
                                 intent.putExtra("infoContentId", infoList[i].contentId)
                                 intent.putExtra("infoContentTypeId", infoList[i].contentTypeId)
+                                intent.putExtra("infoType", infoType)
+                                intent.putExtra("lineName", line)
+                                intent.putExtra("infoNum", i)
                                 val tourImage = infoList[i].imageUri
                                 intent.putExtra("infoImage", tourImage)
                                 startActivity(intent)

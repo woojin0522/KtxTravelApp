@@ -53,12 +53,6 @@
             android:layout_height="200dp"
             android:layout_gravity="center"
             android:transitionName="imgTrans"/>
-        <!--<TextView
-            android:id="@+id/info_plus_likeCount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="좋아요 수 : 0 "
-            android:textSize="20dp"/>-->
         <TextView
             android:id="@+id/info_plus_name"
             android:layout_width="match_parent"

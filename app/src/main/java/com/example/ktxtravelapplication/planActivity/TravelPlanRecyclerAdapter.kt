@@ -13,8 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.ktxtravelapplication.databinding.PlanDetailItemBinding
 import com.example.ktxtravelapplication.planActivity.planRoomDB.PlanDB
 import kotlinx.coroutines.runBlocking
-import okhttp3.internal.notify
-import okhttp3.internal.notifyAll
 import java.util.Calendar
 
 class TravelPlanRecyclerAdapter(val context: Context, val datas: MutableList<PlanDetailDatas>, val db: PlanDB) : RecyclerView.Adapter<TravelPlanRecyclerAdapter.ViewHolder>() {
