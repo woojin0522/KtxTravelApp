@@ -227,157 +227,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         firebaseInsert(KtxLinesList().jungbuNaeryukLine)
         firebaseInsert(KtxLinesList().donghaeLine)*/
         //---------------------------api 파싱 후 파이어베이스로 데이터 전달-----------------------
-        // 관광지 설명과 홈페이지 저장
-        /*fun fetchInfoXML(num:Int, contentId: Int, contentTypeId: Int, infoList: MutableList<TourData>) {
-            // 관광지 정보 수집
-            val mobile_os = "AND"
-            val mobile_app = "AppTest"
-            val type = ""
-            val defaultYN = "Y"
-            val firstImageYN = "N"
-            val areacodeYN = "N"
-            val catcodeYN = "N"
-            val addrinfoYN = "N"
-            val mapinfoYN = "N"
-            val overviewYN = "Y"
-            val num_of_rows = 10
-            val page_no = 1
-            val serviceKey = "e46t%2FAlWggwGsJUF83Wf0XJ3VQijD7S8SNd%2Fs7TcbccStSNHqy1aQfXBRwMkttdlcNu7Aob3cDOGLa11VzRf7Q%3D%3D"
-            val serviceUrl = "https://apis.data.go.kr/B551011/KorService1/detailCommon1"
-
-            val requestUrl = serviceUrl + "?MobileOS=" + mobile_os + "&MobileApp=" + mobile_app +
-                    "&_type=" + type + "&contentId=" + contentId + "&contentTypeId=" + contentTypeId +
-                    "&defaultYN=" + defaultYN + "&firstImageYN=" + firstImageYN + "&areacodeYN=" + areacodeYN +
-                    "&catcodeYN=" + catcodeYN + "&addrinfoYN=" + addrinfoYN + "&mapinfoYN=" + mapinfoYN +
-                    "&overviewYN=" + overviewYN + "&numOfRows=" + num_of_rows + "&pageNo=" + page_no + "&serviceKey=" + serviceKey
-
-            lateinit var page : String // url 주소 통해 전달받은 내용 저장할 변수
-
-            class getDangerGrade: AsyncTask<Void, Void, Void>() {
-                override fun doInBackground(vararg p0: Void?): Void? {
-                    // 데이터 스트림 형태로 가져오기
-                    val stream = URL(requestUrl).openStream()
-                    val bufReader = BufferedReader(InputStreamReader(stream, "UTF-8"))
-
-                    //한줄씩 읽어서 스트링 형태로 바꾼 후 page에 저장
-                    page = ""
-                    var line = bufReader.readLine()
-                    while(line != null){
-                        page += line
-                        line = bufReader.readLine()
-                    }
-
-                    return null
-                }
-
-                override fun onPostExecute(result: Void?) {
-                    super.onPostExecute(result)
-
-                    var tagHomepage = false
-                    var tagOverview = false
-                    var homepageUrl = ""
-                    var overview = ""
-
-                    var factory = XmlPullParserFactory.newInstance() // 파서 생성
-                    factory.isNamespaceAware = true // 파서 설정
-                    var xpp = factory.newPullParser() // xml 파서
-
-                    // 파싱하기
-                    xpp.setInput(StringReader(page))
-
-                    // 파싱 진행
-                    var eventType = xpp.eventType
-                    while(eventType != XmlPullParser.END_DOCUMENT) {
-                        if (eventType == XmlPullParser.START_DOCUMENT){}
-                        else if(eventType == XmlPullParser.START_TAG) {
-                            var tagName = xpp.name
-
-                            if(tagName.equals("homepage")) tagHomepage = true
-                            else if(tagName.equals("overview")) tagOverview = true
-                        }
-
-                        if(eventType == XmlPullParser.TEXT) {
-                            if(tagHomepage) {
-                                homepageUrl = xpp.text
-                                tagHomepage = false
-                            }
-                            else if(tagOverview) {
-                                overview = xpp.text
-                                tagOverview = false
-                            }
-                        }
-                        if(eventType == XmlPullParser.END_TAG){}
-
-                        eventType = xpp.next()
-                    }
-
-                    //관광지 데이터를 파이어베이스에 저장
-                    var myRef = database.getReference("")
-                    if(contentTypeId == 12) {myRef = database.getReference("tourDatas")}
-                    else if(contentTypeId == 15) {myRef = database.getReference("festivalDatas")} // 행사
-                    else if(contentTypeId == 32) {myRef = database.getReference("accommodationDatas")} // 숙박
-                    else if(contentTypeId == 39) {myRef = database.getReference("foodshopDatas")} // 음식점
-
-                    var lineName = ""
-                    if(tour_line == KtxLinesList().gyeongbuLine) lineName = "gyeongbuLine"
-                    else if(tour_line == KtxLinesList().donghaeLine) lineName = "donghaeLine"
-                    else if(tour_line == KtxLinesList().gangneungLine) lineName = "gangneungLine"
-                    else if(tour_line == KtxLinesList().jungangLine) lineName = "jungangLine"
-                    else if(tour_line == KtxLinesList().jeollaLine) lineName = "jeollaLine"
-                    else if(tour_line == KtxLinesList().gyeongjeonLine) lineName = "gyeongjeonLine"
-                    else if(tour_line == KtxLinesList().honamLine) lineName = "honamLine"
-                    else if(tour_line == KtxLinesList().jungbuNaeryukLine) lineName = "jungbuNaeryukLine"
-
-                    myRef.child(lineName).child(num.toString()).child("infomation").setValue(overview)
-                    myRef.child(lineName).child(num.toString()).child("homepage").setValue(homepageUrl)
-                }
-            }
-            getDangerGrade().execute()
-        }
-
-        fun bringData(){
-            val myRef = database.getReference(infoType)
-            val infoList = mutableListOf<TourData>()
-            // 파이어베이스에서 데이터 호출
-            myRef.addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    for (shot in snapshot.children) {
-                        for (info in shot.children) {
-                            if (shot.key.toString() == line) {
-                                val title = info.child("title").value.toString()
-                                val addr = info.child("addr1").value.toString()
-                                val addr2 = info.child("addr2").value.toString()
-                                val latitude = info.child("latitude").value.toString()
-                                val longitude = info.child("longitude").value.toString()
-                                val dist = info.child("dist").value.toString()
-                                val infomation = info.child("infomation").value.toString()
-                                val imageUri = info.child("imageUri").value.toString()
-                                val tel = info.child("tel").value.toString()
-                                val likeCount = info.child("likeCount").value.toString()
-                                val homepage = info.child("homepage").value.toString()
-                                val contentId = info.child("contentId").value.toString()
-                                val contentTypeId = info.child("contentTypeId").value.toString()
-
-                                infoList.add(TourData(title, addr, addr2, imageUri, dist.toDouble(), latitude.toDouble(), longitude.toDouble(),
-                                    infomation, tel, homepage, likeCount.toInt(), contentId.toInt(), contentTypeId.toInt())
-                                )
-                            }
-                        }
-                    }
-
-                    for(i in 0..infoList.size - 1) {
-                        fetchInfoXML(i, infoList[i].contentId, infoList[i].contentTypeId, infoList)
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
-            })
-        }*/
-
         // 관광지 정보 저장
-        /*fun fetchXML(url: String, contentNumber: Int) {
+        fun fetchXML(url: String, contentNumber: Int) {
             lateinit var page : String // url 주소 통해 전달받은 내용 저장할 변수
             //xml 데이터 가져와서 파싱
             // 외부에서 데이터 가져올 때 화면 계속 동작하도록 AsyncTask 이용
@@ -510,15 +361,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     else if(contentNumber == 32) {myRef = database.getReference("accommodationDatas")} // 숙박
                     else if(contentNumber == 39) {myRef = database.getReference("foodshopDatas")} // 음식점
 
-                    var lineName = ""
-                    if(tour_line == KtxLinesList().gyeongbuLine) lineName = "gyeongbuLine"
-                    else if(tour_line == KtxLinesList().donghaeLine) lineName = "donghaeLine"
-                    else if(tour_line == KtxLinesList().gangneungLine) lineName = "gangneungLine"
-                    else if(tour_line == KtxLinesList().jungangLine) lineName = "jungangLine"
-                    else if(tour_line == KtxLinesList().jeollaLine) lineName = "jeollaLine"
-                    else if(tour_line == KtxLinesList().gyeongjeonLine) lineName = "gyeongjeonLine"
-                    else if(tour_line == KtxLinesList().honamLine) lineName = "honamLine"
-                    else if(tour_line == KtxLinesList().jungbuNaeryukLine) lineName = "jungbuNaeryukLine"
+                    var lineName = line
 
                     for(i in 0..tourList.size - 1) {
                         val title = tourList[i].title.replace("[", "(").replace("]", ")").replace(".", "/")
@@ -556,7 +399,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         fun tourMarkerSetting(contentNumber: Int){
-            val num_of_rows = 10
+            val num_of_rows = 20
             val page_no = 1
             val mobile_os = "AND"
             val mobile_app = "AppTest"
@@ -566,7 +409,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             if(contentNumber == 15){
                 arrange = "D"
             }
-            val radius = "1000"
+            val radius = "2000"
             val contentTypeId = contentNumber.toString()
             val serviceKey = "e46t%2FAlWggwGsJUF83Wf0XJ3VQijD7S8SNd%2Fs7TcbccStSNHqy1aQfXBRwMkttdlcNu7Aob3cDOGLa11VzRf7Q%3D%3D"
             val serviceUrl = "https://apis.data.go.kr/B551011/KorService1/locationBasedList1"
@@ -595,7 +438,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 fetchXML(requestUrl, contentNumber)
             }
-        }*/
+        }
 
         //----------------------------------------------------------------------------------
 
@@ -709,7 +552,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     drawClose()
                     infoType="tourDatas"
                     //tourMarkerSetting(12)
-                    //bringData()
                     infoMarkerSetting()
                     binding.markerDeleteBtn.text = "■ 관광지마커 삭제하기"
                 }
@@ -729,7 +571,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     infoType="festivalDatas"
                     //tourMarkerSetting(15)
-                    //bringData()
                     infoMarkerSetting()
                     binding.markerDeleteBtn.text = "■ 축제마커 삭제하기"
                 }
@@ -749,7 +590,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     infoType="accommodationDatas"
                     //tourMarkerSetting(32)
-                    //bringData()
                     infoMarkerSetting()
                     binding.markerDeleteBtn.text = "■ 숙박마커 삭제하기"
                 }
@@ -769,7 +609,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     infoType="foodshopDatas"
                     //tourMarkerSetting(39)
-                    //bringData()
                     infoMarkerSetting()
                     binding.markerDeleteBtn.text = "■ 음식점마커 삭제하기"
                 }
@@ -1007,10 +846,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                                 intent.putExtra("infoTitle", infoTitle)
                                 intent.putExtra("infoName", infoName + infoList[i].title)
                                 intent.putExtra("infoAddress", "주소 : " + infoList[i].addr1 + " " + infoList[i].addr2)
-                                intent.putExtra("infoDescription", infoList[i].infomation)
-                                intent.putExtra("infoHomepage", infoList[i].homepageUrl)
                                 intent.putExtra("infoTel", "전화번호 : " + infoList[i].tel)
                                 intent.putExtra("infoDist", infoList[i].dist.toInt())
+                                intent.putExtra("infoContentId", infoList[i].contentId)
+                                intent.putExtra("infoContentTypeId", infoList[i].contentTypeId)
                                 val tourImage = infoList[i].imageUri
                                 intent.putExtra("infoImage", tourImage)
                                 startActivity(intent)
