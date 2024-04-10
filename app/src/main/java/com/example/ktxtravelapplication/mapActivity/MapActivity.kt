@@ -627,6 +627,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     fun stationMarkerSetting(lineName: String){
         val myRef = database.getReference("ktxLines")
         val lineList = mutableListOf<StationPositions>()
+        var lineArray = arrayListOf<StationPositions>()
         // 파이어베이스에서 데이터 호출
         myRef.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -644,6 +645,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
                             lineList.add(StationPositions(stationNum.toInt(), stationEngName,stationName,stationAddress,
                                 latitude.toDouble(),longitude.toDouble(),stationInfomation,likeCount.toInt()))
+
+                            lineArray.add(
+                                StationPositions(stationNum.toInt(), stationEngName,stationName,stationAddress,
+                                    latitude.toDouble(),longitude.toDouble(),stationInfomation,likeCount.toInt())
+                            )
                         }
                     }
                 }
@@ -709,6 +715,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                                 intent.putExtra("infoAddress", "주소 : " + lineList[i].stationAddress)
                                 intent.putExtra("infoDescription", lineList[i].stationInfomation)
                                 intent.putExtra("infoImage", intentURL)
+                                intent.putExtra("lineList", lineArray)
+                                intent.putExtra("lineName", line)
                                 startActivity(intent)
                             }
                         }

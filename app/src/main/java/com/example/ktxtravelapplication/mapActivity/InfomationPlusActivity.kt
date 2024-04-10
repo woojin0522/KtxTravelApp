@@ -9,10 +9,24 @@ import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.bumptech.glide.Glide
 import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.ActivityInfomationPlusBinding
+import com.example.ktxtravelapplication.databinding.StationItemBinding
+import com.example.ktxtravelapplication.mapActivity.ktxLinesData.StationPositions
+import com.example.ktxtravelapplication.temaActivity.TemaViewPagerAdapter
+import com.example.ktxtravelapplication.temaActivity.temaFragments.temaCourseFragment
+import com.example.ktxtravelapplication.temaActivity.temaFragments.temaFestivalFragment
+import com.example.ktxtravelapplication.temaActivity.temaFragments.temaSeasonsFragment
 import com.google.firebase.database.FirebaseDatabase
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
@@ -38,6 +52,7 @@ class InfomationPlusActivity : AppCompatActivity() {
         val infoDist = intent.getIntExtra("infoDist", 0)
         val contentId = intent.getIntExtra("infoContentId", 0)
         val contentTypeId = intent.getIntExtra("infoContentTypeId", 0)
+        val lineName = intent.getStringExtra("lineName")
 
         // 관광지 설명과 홈페이지 불러오기
         fun fetchInfoXML(contentId: Int, contentTypeId: Int) {
@@ -157,6 +172,15 @@ class InfomationPlusActivity : AppCompatActivity() {
             binding.infoPlusTel.isVisible = false
             binding.infoPlusHomepage.isVisible = false
             binding.infoPlusDescription.isVisible = false
+            binding.infoAllTab.visibility = View.VISIBLE
+            val lineArray = intent.getSerializableExtra("lineList") as ArrayList<StationPositions>
+            lineArray.sortBy { it.stationNum }
+            Log.d("test", lineArray.toString())
+
+            binding.infoTabViewPager2.adapter = InfoViewPagerAdapter(this, lineArray, lineName.toString())
+        }
+        else{
+            fetchInfoXML(contentId, contentTypeId)
         }
 
         binding.infoTitle.text = infoTitle
@@ -193,7 +217,20 @@ class InfomationPlusActivity : AppCompatActivity() {
         binding.infoBackBtn.setOnClickListener {
             finish()
         }
+    }
+}
 
-        fetchInfoXML(contentId, contentTypeId)
+// 뷰페이저 어댑터
+class InfoViewPagerAdapter(activity: FragmentActivity, lineArray: ArrayList<StationPositions>, lineName: String): FragmentStateAdapter(activity) {
+    val fragments: List<Fragment>
+    init {
+        fragments = listOf(InfoLineFragment(lineArray, lineName))
+    }
+    override fun getItemCount(): Int {
+        return fragments.size
+    }
+
+    override fun createFragment(position: Int): Fragment {
+        return fragments[position]
     }
 }
