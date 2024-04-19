@@ -36,7 +36,6 @@ import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Align
-import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
@@ -60,11 +59,16 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var infoType: String
     lateinit var database: FirebaseDatabase
     lateinit var binding: ActivityMapBinding
+    lateinit var saveLineName: String
+    lateinit var saveInfoType: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 뷰 바인딩 선언
         binding = ActivityMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        saveLineName = ""
+        saveInfoType = ""
 
         // 액션바를 툴바로 교체
         setSupportActionBar(binding.mapToolbar)
@@ -624,12 +628,26 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString("lineName", line)
+        outState.putString("infoType", infoType)
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        saveLineName = ""
+        saveInfoType = ""
+        saveLineName = savedInstanceState.getString("lineName","")
+        saveInfoType = savedInstanceState.getString("infoType", "")
+        super.onRestoreInstanceState(savedInstanceState)
+    }
+
     fun stationMarkerSetting(lineName: String){
         val myRef = database.getReference("ktxLines")
         val lineList = mutableListOf<StationPositions>()
         var lineArray = arrayListOf<StationPositions>()
         // 파이어베이스에서 데이터 호출
-        myRef.addValueEventListener(object: ValueEventListener {
+        myRef.addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for(shot in snapshot.children) {
                     for(station in shot.children){
@@ -658,6 +676,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 for(i in 0..markers.size - 1) {
                     markers[i].map = null
                 }
+                val dialog = LoadingDialog(this@MapActivity)
+                dialog.show()
                 // 매개변수로 받은 노선에 맞는 역에 해당하는 마커를 표시
                 for(i in 0..lineList.size - 1) {
                     markers.add(Marker())
@@ -671,12 +691,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     markers[i].captionColor = Color.BLUE
                     markers[i].setCaptionAligns(Align.Top)
                 }
+                dialog.dismiss()
+
                 // 마커 설정후 지도가 한눈에 보이게 카메라 업뎃
                 val cameraUpdate = CameraUpdate.scrollAndZoomTo(LatLng(36.332165597, 127.434310227), 5.5)
                 naverMap.moveCamera(cameraUpdate)
 
                 // 마커 클릭시 정보창 표시
-                val infoWindow = InfoWindow()
                 naverMap.setOnMapClickListener { pointF, latLng ->
                     /*infoWindow.close()*/
                     binding.infoWindowLayout.visibility = View.GONE
@@ -739,7 +760,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         val myRef = database.getReference(infoType)
         val infoList = mutableListOf<TourData>()
         // 파이어베이스에서 데이터 호출
-        myRef.addValueEventListener(object : ValueEventListener{
+        myRef.addListenerForSingleValueEvent(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 for(shot in snapshot.children){
                     for(info in shot.children){
@@ -815,7 +836,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     val marker = overlay as Marker
 
                     for(i in 0..infoList.size - 1) {
-                        Log.d("test", infoList[i].toString())
                         if(marker.position == LatLng(infoList[i].latitude, infoList[i].longitude)){
                             binding.infoWindowName.text = infoName + infoList[i].title
                             binding.infoWindowAddress.text = "주소: " + infoList[i].addr1 + " " + infoList[i].addr2
@@ -843,6 +863,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                                 intent.putExtra("infoNum", i)
                                 val tourImage = infoList[i].imageUri
                                 intent.putExtra("infoImage", tourImage)
+                                Log.d("test", i.toString())
                                 startActivity(intent)
                             }
                         }
@@ -894,10 +915,20 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
 
-        line = intent.getStringExtra("ktxLine").toString()
-        infoType = intent.getStringExtra("infoType").toString()
-        stationMarkerSetting(line)
-        infoMarkerSetting()
+        if(saveLineName.isNullOrEmpty() == false) {
+            line = saveLineName
+            stationMarkerSetting(line)
+            if(saveInfoType.isNullOrEmpty() == false){
+                infoType = saveInfoType
+                infoMarkerSetting()
+            }
+        }
+        else{
+            line = intent.getStringExtra("ktxLine").toString()
+            infoType = intent.getStringExtra("infoType").toString()
+            stationMarkerSetting(line)
+            infoMarkerSetting()
+        }
 
         var currentLine = "노선을 선택해주세요."
         when(line) {

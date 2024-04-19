@@ -2,6 +2,7 @@ package com.example.ktxtravelapplication.mapActivity
 
 import android.app.ActivityOptions
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.Paint
 import android.net.Uri
@@ -9,8 +10,8 @@ import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
-import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -19,6 +20,14 @@ import com.bumptech.glide.Glide
 import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.ActivityInfomationPlusBinding
 import com.example.ktxtravelapplication.mapActivity.ktxLinesData.StationPositions
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedReader
@@ -27,10 +36,21 @@ import java.io.StringReader
 import java.net.URL
 
 class InfomationPlusActivity : AppCompatActivity() {
+    lateinit var database: FirebaseDatabase
+    lateinit var editor: SharedPreferences.Editor
+    lateinit var lineName: String
+    var infoNum = 0
+    var likeCheck = false
+    companion object{
+        lateinit var pref: SharedPreferences
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityInfomationPlusBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        pref = getPreferences(MODE_PRIVATE)
+        editor = pref.edit()
 
         setSupportActionBar(binding.infoToolbar)
         supportActionBar!!.setTitle("")
@@ -43,7 +63,7 @@ class InfomationPlusActivity : AppCompatActivity() {
         val infoDist = intent.getIntExtra("infoDist", 0)
         val contentId = intent.getIntExtra("infoContentId", 0)
         val contentTypeId = intent.getIntExtra("infoContentTypeId", 0)
-        val lineName = intent.getStringExtra("lineName")
+        lineName = intent.getStringExtra("lineName").toString()
 
         // 관광지 설명과 홈페이지 불러오기
         fun fetchInfoXML(contentId: Int, contentTypeId: Int) {
@@ -159,19 +179,65 @@ class InfomationPlusActivity : AppCompatActivity() {
             getDangerGrade().execute()
         }
 
-        if(infoTitle == "역 상세정보"){
+        if(infoTitle == "역 상세정보"){                                // 상세 정보창이 역 정보일 경우 실행
             binding.infoPlusTel.isVisible = false
             binding.infoPlusHomepage.isVisible = false
             binding.infoPlusDescription.isVisible = false
             binding.infoAllTab.visibility = View.VISIBLE
             val lineArray = intent.getSerializableExtra("lineList") as ArrayList<StationPositions>
             lineArray.sortBy { it.stationNum }
-            Log.d("test", lineArray.toString())
 
-            binding.infoTabViewPager2.adapter = InfoViewPagerAdapter(this, lineArray, lineName.toString())
+            binding.infoPlusLikeLayout.visibility = View.GONE
+            binding.infoTabViewPager2.adapter = InfoViewPagerAdapter(this, lineArray, lineName)
         }
-        else{
+        else{                                                        // 상세 정보창이 관광지, 음식점등의 정보일 경우 실행
+            binding.infoPlusLikeLayout.visibility = View.VISIBLE
+
+            val infoType = intent.getStringExtra("infoType")
+            infoNum = intent.getIntExtra("infoNum", 0)
+            likeCheck = pref.getBoolean("추천 체크 ${lineName}/${infoNum}", false)
+
+            if(likeCheck) binding.infoPlusLikeBtn.text = "추천취소"
+            else binding.infoPlusLikeBtn.text = "추천하기"
+
+            var strLikeCount = ""
+            var intLikeCount = 0
+            database = FirebaseDatabase.getInstance()
+            val myRef = database.getReference(infoType.toString())
+            CoroutineScope(Dispatchers.IO).launch {
+                myRef.addValueEventListener(object: ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        runBlocking {
+                            for(shot in snapshot.children) {
+                                if(shot.key.toString() == lineName){
+                                    strLikeCount = shot.child(infoNum.toString()).child("likeCount").value.toString()
+                                    intLikeCount = strLikeCount.toInt()
+                                }
+                            }
+                        }
+                        binding.infoPlusLikeCount.text = "추천 : ${strLikeCount}"
+                    }
+                    override fun onCancelled(error: DatabaseError) {}
+                })
+            }
             fetchInfoXML(contentId, contentTypeId)
+
+            binding.infoPlusLikeBtn.setOnClickListener {
+                if(likeCheck == false) {
+                    intLikeCount++
+                    myRef.child(lineName).child(infoNum.toString()).child("likeCount").setValue(intLikeCount)
+                    Toast.makeText(it.context, "추천되었습니다.", Toast.LENGTH_SHORT).show()
+                    binding.infoPlusLikeBtn.text = "추천취소"
+                    likeCheck = true
+                }
+                else {
+                    intLikeCount--
+                    myRef.child(lineName).child(infoNum.toString()).child("likeCount").setValue(intLikeCount)
+                    Toast.makeText(it.context, "추천이 취소 되었습니다.", Toast.LENGTH_SHORT).show()
+                    binding.infoPlusLikeBtn.text = "추천하기"
+                    likeCheck = false
+                }
+            }
         }
 
         binding.infoTitle.text = infoTitle
@@ -209,13 +275,19 @@ class InfomationPlusActivity : AppCompatActivity() {
             finish()
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        editor.putBoolean("추천 체크 ${lineName}/${infoNum}", likeCheck)
+        editor.apply()
+    }
 }
 
 // 뷰페이저 어댑터
 class InfoViewPagerAdapter(activity: FragmentActivity, lineArray: ArrayList<StationPositions>, lineName: String): FragmentStateAdapter(activity) {
     val fragments: List<Fragment>
     init {
-        fragments = listOf(InfoLineFragment(lineArray, lineName))
+        fragments = listOf(InfoLineFragment.newInstance(lineArray,lineName))
     }
     override fun getItemCount(): Int {
         return fragments.size

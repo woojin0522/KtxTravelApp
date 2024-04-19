@@ -53,13 +53,31 @@
             android:layout_height="200dp"
             android:layout_gravity="center"
             android:transitionName="imgTrans"/>
+        <LinearLayout
+            android:id="@+id/info_plus_like_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/info_plus_like_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="추천하기"/>
+            <TextView
+                android:id="@+id/info_plus_like_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:text="추천 : 0"
+                android:textSize="18dp" />
+        </LinearLayout>
         <TextView
             android:id="@+id/info_plus_name"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="5dp"
             android:text="역명 : "
-            android:textSize="18dp"/>
+            android:textSize="18dp" />
         <TextView
             android:id="@+id/info_plus_address"
             android:layout_width="match_parent"

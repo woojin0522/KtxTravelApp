@@ -8,8 +8,8 @@ data class TourData (
     val dist: Double, // 역에서 관광지까지의 거리
     val latitude: Double, // 관광지 y좌표
     val longitude: Double, // 관광지 x좌표
-    var infomation: String, // 관광지 정보
-    var homepageUrl: String, // 홈페이지 정보
+    val infomation: String, // 관광지 정보
+    val homepageUrl: String, // 홈페이지 정보
     val tel: String, // 관광지 전화번호
     var likeCount: Int, // 좋ㅇ요 수
     val contentId: Int, // 콘텐츠 ID
