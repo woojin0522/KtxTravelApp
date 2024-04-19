@@ -44,13 +44,7 @@ class TravelPlanActivity : AppCompatActivity() {
     lateinit var planEndDate: String
     lateinit var binding: ActivityTravelPlanBinding
     lateinit var db: PlanDB
-    lateinit var datas: MutableList<PlanDetailDatas>
-    lateinit var saveDatas: ArrayList<PlanDetailDatas>
-    var moveActivity = false
 
-    lateinit var saveStartDay: String
-    lateinit var saveEndDay: String
-    lateinit var saveDayRange: String
     // ------------------------ 변수 선언 영역
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,24 +69,10 @@ class TravelPlanActivity : AppCompatActivity() {
         binding.planStartCalendarDay.text = LocalDate.now().toString() + " ~ "
         binding.planEndCalendarDay.text = LocalDate.now().toString()
         binding.planDayRange.text = "당일치기"
-
-        if(savedInstanceState != null) {
-            binding.planStartCalendarDay.text = savedInstanceState.getString("startDay")
-            binding.planEndCalendarDay.text = savedInstanceState.getString("endDay")
-            binding.planDayRange.text = savedInstanceState.getString("dayRange")
-        }
-
-        fun saveDays() {
-            saveStartDay = binding.planStartCalendarDay.text.toString()
-            saveEndDay = binding.planEndCalendarDay.text.toString()
-            saveDayRange = binding.planDayRange.text.toString()
-        }
-        saveDays()
         // 캘린더뷰 설정
         val currentYear = Calendar.getInstance().get(Calendar.YEAR)
         val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
         val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
-
         binding.calendarView.state().edit()
             .setMinimumDate(CalendarDay.from(currentYear, currentMonth, currentDay))
             .setCalendarDisplayMode(CalendarMode.MONTHS)
@@ -111,8 +91,6 @@ class TravelPlanActivity : AppCompatActivity() {
                 dates[dates.size - 1].month - 1,
                 dates[dates.size - 1].day
             )
-
-            saveDays()
         }
         // 캘린더뷰 하루만 선택시
         binding.calendarView.setOnDateChangedListener { widget, date, selected ->
@@ -122,15 +100,11 @@ class TravelPlanActivity : AppCompatActivity() {
             // 최소날짜와 최대날짜를 여행 날짜 선택 범위 최소와 최대값으로 설정
             minDate.set(date.year, date.month - 1, date.day)
             maxDate.set(date.year, date.month - 1, date.day)
-
-            saveDays()
         }
-
         // ----------------------------------캘린더 영역 -----------------------------------
 
         // 여행계획 데이터
-        saveDatas = arrayListOf<PlanDetailDatas>()
-        datas = mutableListOf<PlanDetailDatas>()
+        val datas = mutableListOf<PlanDetailDatas>()
 
         // ----------------------------------값 전달받는 영역--------------------------------
         val returnPlanTitle = intent.getStringExtra("returnTitle")
@@ -187,13 +161,7 @@ class TravelPlanActivity : AppCompatActivity() {
                 }
             }
         } else {
-            planSeq = 1
-            datas.add(PlanDetailDatas(1, "계획 날짜 선택", "오후 12 : 00", "오후 1 : 00", ""))
-        }
-
-        if (savedInstanceState != null) {
-            datas = savedInstanceState.getSerializable("datas") as ArrayList<PlanDetailDatas>
-            planSeq = datas.size
+            datas.add(PlanDetailDatas(planSeq, "계획 날짜 선택", "오후 12 : 00", "오후 1 : 00", ""))
         }
 
         // -----------------------------------함수 영역 ------------------------------------
@@ -417,7 +385,7 @@ class TravelPlanActivity : AppCompatActivity() {
             // 캘린더뷰가 숨겨져있을경우 캘린더뷰를 띄우고 버튼 텍스트를 날짜 선택완료로 변경
             if (binding.calendarView.visibility == View.GONE) {
                 binding.calendarView.visibility = View.VISIBLE
-                binding.planCalanderBtn.text = "날짜 선택완료"
+                binding.planCalanderBtn.text = "날싸 선택완료"
 
                 val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(window.decorView.applicationWindowToken, 0)
@@ -434,50 +402,44 @@ class TravelPlanActivity : AppCompatActivity() {
             ActivityResultContracts.StartActivityForResult()){
             returnKtxLine = it.data?.getStringExtra("ktxLine").toString()
             returnInfoType = it.data?.getStringExtra("infoType").toString()
-            moveActivity = false
         }
 
         //지도 확인 버튼 클릭시
         binding.planMapBtn.setOnClickListener {
-            moveActivity = true
             val intent = Intent(it.context, MapActivity::class.java)
             intent.putExtra("ktxLine", returnKtxLine)
             intent.putExtra("infoType", returnInfoType)
             requestLauncher.launch(intent)
         }
+        /*binding.planShareBtn.setOnClickListener {
+            planTitle = binding.planTitle.text.toString()
+            planStartDate = binding.planStartCalendarDay.text.toString()
+            planEndDate = binding.planEndCalendarDay.text.toString()
+            val shareIntent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TITLE, "여행계획 공유")
+
+                type="text/plain"
+            }
+            startActivity(Intent.createChooser(shareIntent, title))
+        }*/
         // -----------------------------------버튼 작동 영역 --------------------------------
 
         // 리사이클러뷰 어댑터와 레이아웃 매니저 설정
         binding.planDetailRecyclerView.adapter = TravelPlanRecyclerAdapter(this, datas, db)
         binding.planDetailRecyclerView.layoutManager = LinearLayoutManager(this)
+
     }
 
     // 화면 전환간 애니메이션 제거
     override fun onPause() {
         super.onPause()
-        moveActivity = true
         // 만약 api34 이상일 경우 overrideActivityTransition 사용
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU){
             overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, 0, 0)
         }
         else {
             overridePendingTransition(0,0)
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
-        if(moveActivity == false) {
-            if(datas.size - 1 >= 0){
-                for(i in 0..datas.size - 1) {
-                    saveDatas.add(datas[i])
-                }
-                outState.putSerializable("datas", saveDatas)
-            }
-            outState.putString("startDay", saveStartDay)
-            outState.putString("endDay", saveEndDay)
-            outState.putString("dayRange", saveDayRange)
         }
     }
 }
