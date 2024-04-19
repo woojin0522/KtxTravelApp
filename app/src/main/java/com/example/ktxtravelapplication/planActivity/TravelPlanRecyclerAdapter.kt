@@ -34,6 +34,7 @@ class TravelPlanRecyclerAdapter(val context: Context, val datas: MutableList<Pla
         for(i in pos..datas.size - 1) {
             datas[i].sequence = datas[i].sequence - 1
         }
+
         notifyDataSetChanged()
     }
     // 뷰 홀더 선언부

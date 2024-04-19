@@ -10,6 +10,7 @@ import android.net.NetworkCapabilities
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -17,6 +18,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import com.bumptech.glide.Glide
 import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.ActivityMapBinding
@@ -60,11 +62,16 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var infoType: String
     lateinit var database: FirebaseDatabase
     lateinit var binding: ActivityMapBinding
+    lateinit var saveLineName: String
+    lateinit var saveInfoType: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 뷰 바인딩 선언
         binding = ActivityMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        saveLineName = ""
+        saveInfoType = ""
 
         // 액션바를 툴바로 교체
         setSupportActionBar(binding.mapToolbar)
@@ -624,6 +631,20 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString("lineName", line)
+        outState.putString("infoType", infoType)
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        saveLineName = ""
+        saveInfoType = ""
+        saveLineName = savedInstanceState.getString("lineName","")
+        saveInfoType = savedInstanceState.getString("infoType", "")
+        super.onRestoreInstanceState(savedInstanceState)
+    }
+
     fun stationMarkerSetting(lineName: String){
         val myRef = database.getReference("ktxLines")
         val lineList = mutableListOf<StationPositions>()
@@ -815,7 +836,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     val marker = overlay as Marker
 
                     for(i in 0..infoList.size - 1) {
-                        Log.d("test", infoList[i].toString())
                         if(marker.position == LatLng(infoList[i].latitude, infoList[i].longitude)){
                             binding.infoWindowName.text = infoName + infoList[i].title
                             binding.infoWindowAddress.text = "주소: " + infoList[i].addr1 + " " + infoList[i].addr2
@@ -894,10 +914,20 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
 
-        line = intent.getStringExtra("ktxLine").toString()
-        infoType = intent.getStringExtra("infoType").toString()
-        stationMarkerSetting(line)
-        infoMarkerSetting()
+        if(saveLineName.isNullOrEmpty() == false) {
+            line = saveLineName
+            stationMarkerSetting(line)
+            if(saveInfoType.isNullOrEmpty() == false){
+                infoType = saveInfoType
+                infoMarkerSetting()
+            }
+        }
+        else{
+            line = intent.getStringExtra("ktxLine").toString()
+            infoType = intent.getStringExtra("infoType").toString()
+            stationMarkerSetting(line)
+            infoMarkerSetting()
+        }
 
         var currentLine = "노선을 선택해주세요."
         when(line) {

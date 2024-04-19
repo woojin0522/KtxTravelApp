@@ -17,9 +17,22 @@ import com.example.ktxtravelapplication.mapActivity.ktxLinesData.StationPosition
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 
-class InfoLineFragment(val lineArray: ArrayList<StationPositions>, val lineName: String) : Fragment() {
+class InfoLineFragment: Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+    }
+
+    companion object {
+        fun newInstance(lineArray: ArrayList<StationPositions>, lineName: String): InfoLineFragment{
+            val fragment = InfoLineFragment()
+
+            val args = Bundle()
+            args.putSerializable("lineArray", lineArray)
+            args.putString("lineName", lineName)
+            fragment.arguments = args
+
+            return fragment
+        }
     }
 
     override fun onCreateView(
@@ -28,6 +41,8 @@ class InfoLineFragment(val lineArray: ArrayList<StationPositions>, val lineName:
     ): View? {
         // Inflate the layout for this fragment
         val binding = FragmentInfoLineBinding.inflate(inflater ,container, false)
+        val lineArray = arguments?.getSerializable("lineArray") as ArrayList<StationPositions>
+        val lineName = arguments?.getString("lineName") as String
 
         var line = ""
         when(lineName){

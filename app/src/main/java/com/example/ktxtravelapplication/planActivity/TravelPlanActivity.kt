@@ -44,7 +44,9 @@ class TravelPlanActivity : AppCompatActivity() {
     lateinit var planEndDate: String
     lateinit var binding: ActivityTravelPlanBinding
     lateinit var db: PlanDB
-
+    lateinit var datas: MutableList<PlanDetailDatas>
+    lateinit var saveDatas: ArrayList<PlanDetailDatas>
+    var moveActivity = false
     // ------------------------ 변수 선언 영역
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,6 +75,7 @@ class TravelPlanActivity : AppCompatActivity() {
         val currentYear = Calendar.getInstance().get(Calendar.YEAR)
         val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
         val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+
         binding.calendarView.state().edit()
             .setMinimumDate(CalendarDay.from(currentYear, currentMonth, currentDay))
             .setCalendarDisplayMode(CalendarMode.MONTHS)
@@ -104,7 +107,8 @@ class TravelPlanActivity : AppCompatActivity() {
         // ----------------------------------캘린더 영역 -----------------------------------
 
         // 여행계획 데이터
-        val datas = mutableListOf<PlanDetailDatas>()
+        saveDatas = arrayListOf<PlanDetailDatas>()
+        datas = mutableListOf<PlanDetailDatas>()
 
         // ----------------------------------값 전달받는 영역--------------------------------
         val returnPlanTitle = intent.getStringExtra("returnTitle")
@@ -161,7 +165,13 @@ class TravelPlanActivity : AppCompatActivity() {
                 }
             }
         } else {
-            datas.add(PlanDetailDatas(planSeq, "계획 날짜 선택", "오후 12 : 00", "오후 1 : 00", ""))
+            planSeq = 1
+            datas.add(PlanDetailDatas(1, "계획 날짜 선택", "오후 12 : 00", "오후 1 : 00", ""))
+        }
+
+        if (savedInstanceState != null) {
+            datas = savedInstanceState.getSerializable("datas") as ArrayList<PlanDetailDatas>
+            planSeq = datas.size
         }
 
         // -----------------------------------함수 영역 ------------------------------------
@@ -402,33 +412,22 @@ class TravelPlanActivity : AppCompatActivity() {
             ActivityResultContracts.StartActivityForResult()){
             returnKtxLine = it.data?.getStringExtra("ktxLine").toString()
             returnInfoType = it.data?.getStringExtra("infoType").toString()
+            moveActivity = false
         }
 
         //지도 확인 버튼 클릭시
         binding.planMapBtn.setOnClickListener {
+            moveActivity = true
             val intent = Intent(it.context, MapActivity::class.java)
             intent.putExtra("ktxLine", returnKtxLine)
             intent.putExtra("infoType", returnInfoType)
             requestLauncher.launch(intent)
         }
-        /*binding.planShareBtn.setOnClickListener {
-            planTitle = binding.planTitle.text.toString()
-            planStartDate = binding.planStartCalendarDay.text.toString()
-            planEndDate = binding.planEndCalendarDay.text.toString()
-            val shareIntent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_TITLE, "여행계획 공유")
-
-                type="text/plain"
-            }
-            startActivity(Intent.createChooser(shareIntent, title))
-        }*/
         // -----------------------------------버튼 작동 영역 --------------------------------
 
         // 리사이클러뷰 어댑터와 레이아웃 매니저 설정
         binding.planDetailRecyclerView.adapter = TravelPlanRecyclerAdapter(this, datas, db)
         binding.planDetailRecyclerView.layoutManager = LinearLayoutManager(this)
-
     }
 
     // 화면 전환간 애니메이션 제거
@@ -440,6 +439,19 @@ class TravelPlanActivity : AppCompatActivity() {
         }
         else {
             overridePendingTransition(0,0)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        if(moveActivity == false) {
+            if(datas.size - 1 >= 1){
+                for(i in 0..datas.size - 1) {
+                    saveDatas.add(datas[i])
+                }
+                outState.putSerializable("datas", saveDatas)
+            }
         }
     }
 }

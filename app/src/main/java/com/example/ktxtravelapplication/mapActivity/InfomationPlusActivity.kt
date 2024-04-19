@@ -14,6 +14,7 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentFactory
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.bumptech.glide.Glide
 import com.example.ktxtravelapplication.R
@@ -166,7 +167,6 @@ class InfomationPlusActivity : AppCompatActivity() {
             binding.infoAllTab.visibility = View.VISIBLE
             val lineArray = intent.getSerializableExtra("lineList") as ArrayList<StationPositions>
             lineArray.sortBy { it.stationNum }
-            Log.d("test", lineArray.toString())
 
             binding.infoTabViewPager2.adapter = InfoViewPagerAdapter(this, lineArray, lineName.toString())
         }
@@ -215,7 +215,7 @@ class InfomationPlusActivity : AppCompatActivity() {
 class InfoViewPagerAdapter(activity: FragmentActivity, lineArray: ArrayList<StationPositions>, lineName: String): FragmentStateAdapter(activity) {
     val fragments: List<Fragment>
     init {
-        fragments = listOf(InfoLineFragment(lineArray, lineName))
+        fragments = listOf(InfoLineFragment.newInstance(lineArray,lineName))
     }
     override fun getItemCount(): Int {
         return fragments.size
