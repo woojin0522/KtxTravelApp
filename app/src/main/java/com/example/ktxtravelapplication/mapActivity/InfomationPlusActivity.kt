@@ -15,7 +15,6 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentFactory
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.bumptech.glide.Glide
 import com.example.ktxtravelapplication.R

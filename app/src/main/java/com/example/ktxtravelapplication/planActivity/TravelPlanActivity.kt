@@ -8,7 +8,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import android.os.Parcelable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
@@ -24,6 +24,7 @@ import com.example.ktxtravelapplication.planActivity.planRoomDB.PlanEntity
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.CalendarMode
 import kotlinx.coroutines.runBlocking
+import kotlinx.parcelize.Parcelize
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Calendar
@@ -51,6 +52,7 @@ class TravelPlanActivity : AppCompatActivity() {
     lateinit var saveStartDay: String
     lateinit var saveEndDay: String
     lateinit var saveDayRange: String
+    var moveActivity = false
     // ------------------------ 변수 선언 영역
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,6 +76,12 @@ class TravelPlanActivity : AppCompatActivity() {
         binding.planStartCalendarDay.text = LocalDate.now().toString() + " ~ "
         binding.planEndCalendarDay.text = LocalDate.now().toString()
         binding.planDayRange.text = "당일치기"
+
+        if(savedInstanceState != null){
+            binding.planStartCalendarDay.text = savedInstanceState.getString("startDay")
+            binding.planEndCalendarDay.text = savedInstanceState.getString("endDay")
+            binding.planDayRange.text = savedInstanceState.getString("dayRange")
+        }
 
         fun saveDay() {
             saveStartDay = binding.planStartCalendarDay.text.toString()
@@ -186,17 +194,8 @@ class TravelPlanActivity : AppCompatActivity() {
         }
 
         if(savedInstanceState != null) {
-            saveDatas = savedInstanceState.getSerializable("datas") as ArrayList<PlanDetailDatas>
-            datas = mutableListOf()
-            for(i in 0..saveDatas.size - 1){
-                datas.add(saveDatas[i])
-            }
-
-            binding.planStartCalendarDay.text = savedInstanceState.getString("startDay")
-            binding.planEndCalendarDay.text = savedInstanceState.getString("endDay")
-            binding.planDayRange.text = savedInstanceState.getString("dayRange")
-
-            saveDay()
+            datas = savedInstanceState.getParcelableArrayList("datas")!!
+            planSeq = datas.size
         }
 
         // -----------------------------------함수 영역 ------------------------------------
@@ -437,10 +436,12 @@ class TravelPlanActivity : AppCompatActivity() {
             ActivityResultContracts.StartActivityForResult()){
             returnKtxLine = it.data?.getStringExtra("ktxLine").toString()
             returnInfoType = it.data?.getStringExtra("infoType").toString()
+            moveActivity = false
         }
 
         //지도 확인 버튼 클릭시
         binding.planMapBtn.setOnClickListener {
+            moveActivity = true
             val intent = Intent(it.context, MapActivity::class.java)
             intent.putExtra("ktxLine", returnKtxLine)
             intent.putExtra("infoType", returnInfoType)
@@ -451,7 +452,6 @@ class TravelPlanActivity : AppCompatActivity() {
         // 리사이클러뷰 어댑터와 레이아웃 매니저 설정
         binding.planDetailRecyclerView.adapter = TravelPlanRecyclerAdapter(this, datas, db)
         binding.planDetailRecyclerView.layoutManager = LinearLayoutManager(this)
-
     }
 
     // 화면 전환간 애니메이션 제거
@@ -470,11 +470,14 @@ class TravelPlanActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
 
         saveDatas = arrayListOf()
-        for(i in 0..datas.size-1) {
-            saveDatas.add(datas[i])
+        if(moveActivity == false){
+            if(datas.size - 1 >= 0){
+                for(i in 0..datas.size-1) {
+                    saveDatas.add(datas[i])
+                }
+                outState.putParcelableArrayList("datas", saveDatas)
+            }
         }
-        Log.d("test", saveDatas.toString())
-        outState.putSerializable("datas", saveDatas)
         outState.putString("startDay", saveStartDay)
         outState.putString("endDay", saveEndDay)
         outState.putString("dayRange", saveDayRange)
@@ -482,10 +485,11 @@ class TravelPlanActivity : AppCompatActivity() {
 }
 
 // -------------------------------------여행계획 데이터 클래스-------------------------------------
+@Parcelize
 data class PlanDetailDatas(
     var sequence: Int,
     var selectedDate: String,
     var startTime: String,
     var endTime: String,
     var planDetail: String,
-)
+): Parcelable

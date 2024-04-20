@@ -10,7 +10,6 @@ import android.net.NetworkCapabilities
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -18,7 +17,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.os.bundleOf
 import com.bumptech.glide.Glide
 import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.ActivityMapBinding
@@ -902,6 +900,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     // 네이버 지도 객체 준비
     @UiThread
     override fun onMapReady(naverMap: NaverMap) {
+        val dialog = LoadingDialog(this@MapActivity)
+        dialog.show()
+
         this.naverMap = naverMap
         naverMap.locationSource = locationSource
 
@@ -953,6 +954,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             "foodshopDatas" -> currentInfoType = "■ 음식점마커 삭제하기"
         }
         binding.markerDeleteBtn.text = currentInfoType
+
+        dialog.dismiss()
     }
 
     companion object {
