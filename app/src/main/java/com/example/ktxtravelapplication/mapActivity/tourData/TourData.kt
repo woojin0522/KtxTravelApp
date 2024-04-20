@@ -1,5 +1,7 @@
 package com.example.ktxtravelapplication.mapActivity.tourData
 
+import java.io.Serializable
+
 data class TourData (
     val title: String, // 관광지 이름
     val addr1: String, // 관광지 주소 1
@@ -14,4 +16,4 @@ data class TourData (
     var likeCount: Int, // 좋ㅇ요 수
     val contentId: Int, // 콘텐츠 ID
     val contentTypeId: Int // 콘텐츠 타입 ID
-)
+) : Serializable
