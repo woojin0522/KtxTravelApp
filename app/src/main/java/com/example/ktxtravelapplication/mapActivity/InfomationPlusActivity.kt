@@ -231,11 +231,19 @@ class InfomationPlusActivity : AppCompatActivity() {
                     likeCheck = true
                 }
                 else {
-                    intLikeCount--
-                    myRef.child(lineName).child(infoNum.toString()).child("likeCount").setValue(intLikeCount)
-                    Toast.makeText(it.context, "추천이 취소 되었습니다.", Toast.LENGTH_SHORT).show()
-                    binding.infoPlusLikeBtn.text = "추천하기"
-                    likeCheck = false
+                    if(intLikeCount>=1) {
+                        intLikeCount--
+                        myRef.child(lineName).child(infoNum.toString()).child("likeCount")
+                            .setValue(intLikeCount)
+                        Toast.makeText(it.context, "추천이 취소 되었습니다.", Toast.LENGTH_SHORT).show()
+                        binding.infoPlusLikeBtn.text = "추천하기"
+                        likeCheck = false
+                    }
+                    else{
+                        Toast.makeText(it.context, "추천수가 0일 경우 추천취소가 불가능합니다.", Toast.LENGTH_SHORT).show()
+                        binding.infoPlusLikeBtn.text = "추천하기"
+                        likeCheck = false
+                    }
                 }
             }
         }

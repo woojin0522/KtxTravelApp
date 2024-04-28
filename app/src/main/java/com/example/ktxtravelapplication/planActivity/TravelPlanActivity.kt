@@ -432,10 +432,12 @@ class TravelPlanActivity : AppCompatActivity() {
 
         var returnKtxLine = ""
         var returnInfoType = ""
+        var returnMaxDist = 0
         val requestLauncher: ActivityResultLauncher<Intent> = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()){
             returnKtxLine = it.data?.getStringExtra("ktxLine").toString()
             returnInfoType = it.data?.getStringExtra("infoType").toString()
+            returnMaxDist = it.data?.getIntExtra("maxDist",0)!!
             moveActivity = false
         }
 
@@ -445,6 +447,7 @@ class TravelPlanActivity : AppCompatActivity() {
             val intent = Intent(it.context, MapActivity::class.java)
             intent.putExtra("ktxLine", returnKtxLine)
             intent.putExtra("infoType", returnInfoType)
+            intent.putExtra("maxDist", returnMaxDist)
             requestLauncher.launch(intent)
         }
         // -----------------------------------버튼 작동 영역 --------------------------------

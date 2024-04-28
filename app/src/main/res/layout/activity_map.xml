@@ -77,6 +77,28 @@
                         android:layout_marginRight="5dp"
                         android:textSize="17dp" />
                 </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="마커 거리 조절(500m단위)"
+                        android:textColor="@color/white"/>
+                    <SeekBar
+                        android:id="@+id/map_seekBar"
+                        android:layout_width="200dp"
+                        android:layout_height="match_parent"
+                        android:progressBackgroundTint="@color/white"
+                        android:max="4"/>
+                    <TextView
+                        android:id="@+id/map_max_dist_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0m"
+                        android:textColor="@color/white"/>
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.appbar.AppBarLayout>
         <RelativeLayout

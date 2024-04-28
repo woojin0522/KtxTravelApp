@@ -12,6 +12,9 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.SeekBar
+import android.widget.SeekBar.OnSeekBarChangeListener
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.UiThread
@@ -61,6 +64,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var binding: ActivityMapBinding
     lateinit var saveLineName: String
     lateinit var saveInfoType: String
+    var maxDist = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 뷰 바인딩 선언
@@ -104,6 +108,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             val returnIntent = Intent() // 인텐트 생성
             returnIntent.putExtra("ktxLine", line) // 선택된 ktx노선 값을 넘김
             returnIntent.putExtra("infoType", infoType) // 선택된 정보타입 값을 넘김
+            returnIntent.putExtra("maxDist", maxDist)
             setResult(Activity.RESULT_OK, returnIntent)
             finish()
         }
@@ -536,7 +541,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     drawClose()
                     infoType="tourDatas"
                     //tourMarkerSetting(12)
-                    infoMarkerSetting()
+                    infoMarkerSetting(maxDist)
                     binding.markerDeleteBtn.text = "■ 관광지마커 삭제하기"
                 }
             }
@@ -555,7 +560,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     infoType="festivalDatas"
                     //tourMarkerSetting(15)
-                    infoMarkerSetting()
+                    infoMarkerSetting(maxDist)
                     binding.markerDeleteBtn.text = "■ 축제마커 삭제하기"
                 }
             }
@@ -574,7 +579,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     infoType="accommodationDatas"
                     //tourMarkerSetting(32)
-                    infoMarkerSetting()
+                    infoMarkerSetting(maxDist)
                     binding.markerDeleteBtn.text = "■ 숙박마커 삭제하기"
                 }
             }
@@ -593,7 +598,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     infoType="foodshopDatas"
                     //tourMarkerSetting(39)
-                    infoMarkerSetting()
+                    infoMarkerSetting(maxDist)
                     binding.markerDeleteBtn.text = "■ 음식점마커 삭제하기"
                 }
             }
@@ -610,6 +615,23 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 binding.markerDeleteBtn.text = "■ 표시 마커  없음"
             }
         }
+
+        binding.mapSeekBar.setOnSeekBarChangeListener(object: OnSeekBarChangeListener{
+            override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
+                maxDist = p1 * 500
+            }
+
+            override fun onStartTrackingTouch(p0: SeekBar?) {
+            }
+
+            override fun onStopTrackingTouch(p0: SeekBar?) {
+                for(i in 0..tour_markers.size - 1) {
+                    tour_markers[i].map = null
+                }
+                binding.mapMaxDistText.text = "${maxDist}m"
+                infoMarkerSetting(maxDist)
+            }
+        })
 
         // 권한 가져오기
         var permissions = arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION,
@@ -631,6 +653,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString("lineName", line)
         outState.putString("infoType", infoType)
+        outState.putInt("maxDist", maxDist)
         super.onSaveInstanceState(outState)
     }
 
@@ -639,6 +662,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         saveInfoType = ""
         saveLineName = savedInstanceState.getString("lineName","")
         saveInfoType = savedInstanceState.getString("infoType", "")
+        maxDist = savedInstanceState.getInt("maxDist", 0)
         super.onRestoreInstanceState(savedInstanceState)
     }
 
@@ -756,7 +780,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         })
     }
 
-    fun infoMarkerSetting(){
+    fun infoMarkerSetting(markerMaxDist: Int){
         val myRef = database.getReference(infoType)
         val infoList = mutableListOf<TourData>()
         // 파이어베이스에서 데이터 호출
@@ -786,9 +810,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                                 homepageUrl3 = homepageUrl2[1]
                             }
 
-                            infoList.add(TourData(title, addr, addr2, imageUri, dist.toDouble(),
-                                latitude.toDouble(), longitude.toDouble(), infomation,homepageUrl3, tel,
-                                likeCount.toInt(), contentId.toInt(), contentTypeId.toInt()))
+                            if(dist.toDouble() <= markerMaxDist){
+                                infoList.add(TourData(title, addr, addr2, imageUri, dist.toDouble(),
+                                    latitude.toDouble(), longitude.toDouble(), infomation,homepageUrl3, tel,
+                                    likeCount.toInt(), contentId.toInt(), contentTypeId.toInt()))
+                            }
                         }
                     }
                 }
@@ -923,14 +949,20 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             stationMarkerSetting(line)
             if(saveInfoType.isNullOrEmpty() == false){
                 infoType = saveInfoType
-                infoMarkerSetting()
+                infoMarkerSetting(maxDist)
             }
+            findViewById<TextView>(R.id.map_max_dist_text).text = "${maxDist}m"
         }
         else{
             line = intent.getStringExtra("ktxLine").toString()
             infoType = intent.getStringExtra("infoType").toString()
+            maxDist = intent.getIntExtra("maxDist", 0)
+            if(maxDist != 0){
+                findViewById<SeekBar>(R.id.map_seekBar).progress = maxDist / 500
+                findViewById<TextView>(R.id.map_max_dist_text).text = "${maxDist}m"
+            }
             stationMarkerSetting(line)
-            infoMarkerSetting()
+            infoMarkerSetting(maxDist)
         }
 
         var currentLine = "노선을 선택해주세요."
