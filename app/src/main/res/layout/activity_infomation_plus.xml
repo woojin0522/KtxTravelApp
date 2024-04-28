@@ -134,6 +134,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="노선" />
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="주변관광지 추천" />
             </com.google.android.material.tabs.TabLayout>
             <View
                 android:layout_width="match_parent"

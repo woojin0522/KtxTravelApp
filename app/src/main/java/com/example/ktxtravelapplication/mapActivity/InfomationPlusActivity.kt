@@ -20,6 +20,7 @@ import com.bumptech.glide.Glide
 import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.ActivityInfomationPlusBinding
 import com.example.ktxtravelapplication.mapActivity.ktxLinesData.StationPositions
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -189,6 +190,13 @@ class InfomationPlusActivity : AppCompatActivity() {
 
             binding.infoPlusLikeLayout.visibility = View.GONE
             binding.infoTabViewPager2.adapter = InfoViewPagerAdapter(this, lineArray, lineName)
+
+            TabLayoutMediator(binding.infoTabLayout, binding.infoTabViewPager2) { tab, position ->
+                when(position) {
+                    0 -> tab.text = "노선"
+                    1 -> tab.text = "주변관광지 추천"
+                }
+            }.attach()
         }
         else{                                                        // 상세 정보창이 관광지, 음식점등의 정보일 경우 실행
             binding.infoPlusLikeLayout.visibility = View.VISIBLE
@@ -295,7 +303,7 @@ class InfomationPlusActivity : AppCompatActivity() {
 class InfoViewPagerAdapter(activity: FragmentActivity, lineArray: ArrayList<StationPositions>, lineName: String): FragmentStateAdapter(activity) {
     val fragments: List<Fragment>
     init {
-        fragments = listOf(InfoLineFragment.newInstance(lineArray,lineName))
+        fragments = listOf(InfoLineFragment.newInstance(lineArray,lineName), RecommendInfoFragment.newInstance())
     }
     override fun getItemCount(): Int {
         return fragments.size
