@@ -44,6 +44,10 @@ import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.widget.LocationButtonView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedReader
@@ -217,7 +221,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         firebaseInsert(KtxLinesList().donghaeLine)*/
         //---------------------------api 파싱 후 파이어베이스로 데이터 전달-----------------------
         // 관광지 정보 저장
-        fun fetchXML(url: String, contentNumber: Int) {
+        fun fetchXML(url: String, contentNumber: Int, nearStation: String) {
             lateinit var page : String // url 주소 통해 전달받은 내용 저장할 변수
             //xml 데이터 가져와서 파싱
             // 외부에서 데이터 가져올 때 화면 계속 동작하도록 AsyncTask 이용
@@ -303,7 +307,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                                 title = xpp.text
                                 tagTitle = false
 
-                                tourList.add(TourData(title, addr1, addr2, firstimage, dist, mapy, mapx,infomation,"",tel,likeCount, contentId, contentTypeId))
+                                tourList.add(TourData(title, addr1, addr2, firstimage, dist, mapy, mapx,infomation,"",tel,likeCount, contentId, contentTypeId, nearStation))
                             }
                             else if(tagAddr1) {
                                 addr1 = xpp.text
@@ -366,6 +370,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                         val homepage = tourList[i].homepageUrl
                         val contentId = tourList[i].contentId
                         val contentTypeId = tourList[i].contentTypeId
+                        val nearStationName = tourList[i].nearStation
 
                         myRef.child(lineName).child(i.toString()).child("title").setValue(title)
                         myRef.child(lineName).child(i.toString()).child("addr1").setValue(addr1)
@@ -380,6 +385,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                         myRef.child(lineName).child(i.toString()).child("contentId").setValue(contentId)
                         myRef.child(lineName).child(i.toString()).child("contentTypeId").setValue(contentTypeId)
                         myRef.child(lineName).child(i.toString()).child("homepage").setValue(homepage)
+                        myRef.child(lineName).child(i.toString()).child("nearStation").setValue(nearStationName)
                     }
                 }
             }
@@ -410,6 +416,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             for(i in 0..tour_line.size - 1) {
                 val mapx = tour_line[i].longitude.toString()
                 val mapy = tour_line[i].latitude.toString()
+                val stationName = tour_line[i].stationName
 
                 val requestUrl = serviceUrl +
                         "?numOfRows=" + num_of_rows +
@@ -425,7 +432,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                         "&contentTypeId=" + contentTypeId +
                         "&serviceKey=" + serviceKey
 
-                fetchXML(requestUrl, contentNumber)
+                fetchXML(requestUrl, contentNumber, stationName)
             }
         }
 
@@ -756,7 +763,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                             binding.infoWindowLayout.setOnClickListener{
                                 val intent = Intent(this@MapActivity, InfomationPlusActivity::class.java)
                                 intent.putExtra("infoTitle", "역 상세정보")
-                                intent.putExtra("infoName", "역명 : " + lineList[i].stationName + "역")
+                                intent.putExtra("infoName", lineList[i].stationName)
                                 intent.putExtra("infoAddress", "주소 : " + lineList[i].stationAddress)
                                 intent.putExtra("infoDescription", lineList[i].stationInfomation)
                                 intent.putExtra("infoImage", intentURL)
@@ -802,6 +809,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                             val homepage = info.child("homepage").value.toString()
                             val contentId = info.child("contentId").value.toString()
                             val contentTypeId = info.child("contentTypeId").value.toString()
+                            val nearStation = info.child("nearStation").value.toString()
 
                             var homepageUrl = homepage.split("href=")
                             var homepageUrl3 = ""
@@ -813,7 +821,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                             if(dist.toDouble() <= markerMaxDist){
                                 infoList.add(TourData(title, addr, addr2, imageUri, dist.toDouble(),
                                     latitude.toDouble(), longitude.toDouble(), infomation,homepageUrl3, tel,
-                                    likeCount.toInt(), contentId.toInt(), contentTypeId.toInt()))
+                                    likeCount.toInt(), contentId.toInt(), contentTypeId.toInt(), nearStation))
                             }
                         }
                     }

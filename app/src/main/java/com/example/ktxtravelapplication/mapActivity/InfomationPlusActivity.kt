@@ -10,8 +10,10 @@ import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
+import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -185,11 +187,12 @@ class InfomationPlusActivity : AppCompatActivity() {
             binding.infoPlusHomepage.isVisible = false
             binding.infoPlusDescription.isVisible = false
             binding.infoAllTab.visibility = View.VISIBLE
+            binding.infoPlusName.text = "역명 : " + infoName + "역"
             val lineArray = intent.getSerializableExtra("lineList") as ArrayList<StationPositions>
             lineArray.sortBy { it.stationNum }
 
             binding.infoPlusLikeLayout.visibility = View.GONE
-            binding.infoTabViewPager2.adapter = InfoViewPagerAdapter(this, lineArray, lineName)
+            binding.infoTabViewPager2.adapter = InfoViewPagerAdapter(this, lineArray, lineName, infoName.toString())
 
             TabLayoutMediator(binding.infoTabLayout, binding.infoTabViewPager2) { tab, position ->
                 when(position) {
@@ -200,6 +203,7 @@ class InfomationPlusActivity : AppCompatActivity() {
         }
         else{                                                        // 상세 정보창이 관광지, 음식점등의 정보일 경우 실행
             binding.infoPlusLikeLayout.visibility = View.VISIBLE
+            binding.infoPlusName.text = infoName
 
             val infoType = intent.getStringExtra("infoType")
             infoNum = intent.getIntExtra("infoNum", 0)
@@ -257,7 +261,6 @@ class InfomationPlusActivity : AppCompatActivity() {
         }
 
         binding.infoTitle.text = infoTitle
-        binding.infoPlusName.text = infoName
         binding.infoPlusTel.text = infoTel
         binding.infoPlusAddress.text = infoAddress
         binding.infoPlusDescription.movementMethod = ScrollingMovementMethod.getInstance()
@@ -287,9 +290,13 @@ class InfomationPlusActivity : AppCompatActivity() {
             val opt = ActivityOptions.makeSceneTransitionAnimation(this, it, "imgTrans")
             startActivity(intent, opt.toBundle())
         }
-        binding.infoBackBtn.setOnClickListener {
-            finish()
+        val recommendInfoState = intent.getBooleanExtra("recommendInfoState", false)
+        if(recommendInfoState == false){
+            binding.infoBackBtn.setOnClickListener {
+                finish()
+            }
         }
+        else{ }
     }
 
     override fun onDestroy() {
@@ -300,10 +307,10 @@ class InfomationPlusActivity : AppCompatActivity() {
 }
 
 // 뷰페이저 어댑터
-class InfoViewPagerAdapter(activity: FragmentActivity, lineArray: ArrayList<StationPositions>, lineName: String): FragmentStateAdapter(activity) {
+class InfoViewPagerAdapter(activity: FragmentActivity, lineArray: ArrayList<StationPositions>, lineName: String, stationName: String): FragmentStateAdapter(activity) {
     val fragments: List<Fragment>
     init {
-        fragments = listOf(InfoLineFragment.newInstance(lineArray,lineName), RecommendInfoFragment.newInstance())
+        fragments = listOf(InfoLineFragment.newInstance(lineArray,lineName), RecommendInfoFragment.newInstance(stationName, lineName))
     }
     override fun getItemCount(): Int {
         return fragments.size

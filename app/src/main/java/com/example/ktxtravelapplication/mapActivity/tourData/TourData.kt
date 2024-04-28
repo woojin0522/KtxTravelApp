@@ -15,5 +15,6 @@ data class TourData (
     val tel: String, // 관광지 전화번호
     var likeCount: Int, // 좋ㅇ요 수
     val contentId: Int, // 콘텐츠 ID
-    val contentTypeId: Int // 콘텐츠 타입 ID
+    val contentTypeId: Int, // 콘텐츠 타입 ID
+    val nearStation: String
 ) : Serializable

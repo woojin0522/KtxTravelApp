@@ -116,7 +116,7 @@ class InfoRecyclerAdapter(val datas: ArrayList<StationPositions>, val lineName: 
                 }.addOnFailureListener{}
 
                 intent.putExtra("infoTitle", "역 상세정보")
-                intent.putExtra("infoName", "역명 : " + datas[pos].stationName + "역")
+                intent.putExtra("infoName", datas[pos].stationName)
                 intent.putExtra("infoAddress", "주소 : " + datas[pos].stationAddress)
                 intent.putExtra("infoDescription", datas[pos].stationInfomation)
                 intent.putExtra("infoImage", intentURL)
