@@ -39,12 +39,16 @@ class RecommendInfoFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(stationName: String, lineName: String) : RecommendInfoFragment{
+        fun newInstance(stationName: String, lineName: String, lineList: ArrayList<StationPositions>,
+                        stationAddress: String, stationImage: String) : RecommendInfoFragment{
             val fragment = RecommendInfoFragment()
 
             val args = Bundle()
             args.putString("stationName", stationName)
             args.putString("lineName", lineName)
+            args.putSerializable("lineList", lineList)
+            args.putString("stationAddress", stationAddress)
+            args.putString("stationImage", stationImage)
             fragment.arguments = args
 
             return fragment
@@ -60,6 +64,9 @@ class RecommendInfoFragment : Fragment() {
 
         val nearStationName = arguments?.getString("stationName")
         val lineName = arguments?.getString("lineName")
+        val nearStationAddress = arguments?.getString("stationAddress")
+        val lineList = arguments?.getSerializable("lineList") as ArrayList<StationPositions>
+        val stationImage = arguments?.getString("stationImage")
 
         database = FirebaseDatabase.getInstance()
         val myRef = database.getReference("tourDatas")
@@ -110,7 +117,8 @@ class RecommendInfoFragment : Fragment() {
                     infoNumArray.sortBy{it.likeCount}
                     infoNumArray.reverse()
 
-                    binding.tourInfoRecyclerview.adapter = TourRecyclerAdapter(infoList, infoNumArray, lineName.toString())
+                    binding.tourInfoRecyclerview.adapter = TourRecyclerAdapter(infoList, infoNumArray, lineName.toString(),
+                        nearStationName.toString(), nearStationAddress.toString(), lineList, stationImage.toString())
                     binding.tourInfoRecyclerview.layoutManager = LinearLayoutManager(context)
                 }
                 override fun onCancelled(error: DatabaseError) {}
@@ -121,7 +129,8 @@ class RecommendInfoFragment : Fragment() {
     }
 }
 
-class TourRecyclerAdapter(val datas: MutableList<TourData>,val numArray: ArrayList<IndexData>, val lineName: String) : RecyclerView.Adapter<TourRecyclerAdapter.ViewHolder>(){
+class TourRecyclerAdapter(val datas: MutableList<TourData>,val numArray: ArrayList<IndexData>, val lineName: String, val stationName: String, val stationAddress: String,
+                          val lineList: ArrayList<StationPositions>, val stationImage: String) : RecyclerView.Adapter<TourRecyclerAdapter.ViewHolder>(){
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -157,19 +166,21 @@ class TourRecyclerAdapter(val datas: MutableList<TourData>,val numArray: ArrayLi
                 val activity = it.context as InfomationPlusActivity
                 val intent = Intent(it.context, InfomationPlusActivity::class.java)
 
-                intent.putExtra("infoTitle", "관광지 상세정보")
-                intent.putExtra("infoName", "관광지명 : " + datas[pos].title)
-                intent.putExtra("infoAddress", "주소 : " + datas[pos].addr1 + datas[pos].addr2)
-                intent.putExtra("infoTel", "전화번호 : " + datas[pos].tel)
-                intent.putExtra("infoDist", datas[pos].dist.toInt())
-                intent.putExtra("infoDescription", datas[pos].infomation)
-                intent.putExtra("infoContentId", datas[pos].contentId)
-                intent.putExtra("infoContentTypeId", datas[pos].contentTypeId)
-                intent.putExtra("infoImage", datas[pos].imageUri)
-                intent.putExtra("lineName", lineName)
-                intent.putExtra("infoNum", numArray[pos].index)
-                intent.putExtra("infoType", "tourDatas")
-                intent.putExtra("recommendInfoState", true)
+                intent.putExtra("infoTitle", "관광지 상세정보")               // 타이틀
+                intent.putExtra("infoName", "관광지명 : " + datas[pos].title)   // 관광지명
+                intent.putExtra("infoAddress", "주소 : " + datas[pos].addr1 + datas[pos].addr2)   // 관광지 주소
+                intent.putExtra("infoTel", "전화번호 : " + datas[pos].tel)    // 관광지 전화번호
+                intent.putExtra("infoDist", datas[pos].dist.toInt())      // 역에서 관광지까지의 거리
+                intent.putExtra("infoContentId", datas[pos].contentId)    // 관광지 컨텐츠ID
+                intent.putExtra("infoContentTypeId", datas[pos].contentTypeId)   // 관광지 컨텐츠 타입 ID == 12
+                intent.putExtra("infoImage", datas[pos].imageUri)  // 이미지 url
+                intent.putExtra("lineName", lineName)   // 노선 이름
+                intent.putExtra("infoType", "tourDatas")  // infoType
+                intent.putExtra("recommendInfoState", true)   // 추천에서 탭 이동
+                intent.putExtra("stationName", stationName)    // 역 이름 전송
+                intent.putExtra("stationAddress", stationAddress)   // 역 주소 전송
+                intent.putExtra("lineList", lineList) // 노선 역 리스트 전송
+                intent.putExtra("stationImage", stationImage) // 역 이미지 주소 전송
 
                 it.context.startActivity(intent)
                 activity.finish()

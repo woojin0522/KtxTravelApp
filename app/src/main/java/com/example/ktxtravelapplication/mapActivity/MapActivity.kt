@@ -894,10 +894,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                                 intent.putExtra("infoContentTypeId", infoList[i].contentTypeId)
                                 intent.putExtra("infoType", infoType)
                                 intent.putExtra("lineName", line)
-                                intent.putExtra("infoNum", i)
                                 val tourImage = infoList[i].imageUri
                                 intent.putExtra("infoImage", tourImage)
-                                Log.d("test", i.toString())
                                 startActivity(intent)
                             }
                         }
