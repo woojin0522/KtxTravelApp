@@ -40,8 +40,10 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.MultipartPathOverlay
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
+import com.naver.maps.map.overlay.PathOverlay
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.widget.LocationButtonView
 import kotlinx.coroutines.CoroutineScope
@@ -54,6 +56,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.StringReader
 import java.net.URL
+import kotlin.io.path.Path
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var locationSource: FusedLocationSource
@@ -62,6 +65,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var markers: MutableList<Marker>
     lateinit var tour_markers: MutableList<Marker>
     lateinit var tourList: MutableList<TourData>
+    lateinit var pathList: MutableList<PathOverlay>
     lateinit var line: String
     lateinit var infoType: String
     lateinit var database: FirebaseDatabase
@@ -443,6 +447,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             binding.mapNavView.isActivated = false
         }
 
+        pathList = mutableListOf()
         // 네비게이션 항목 선택시
         binding.mapNavView.setNavigationItemSelectedListener {
             // 네비게이션에서 ktx노선 항목 클릭시
@@ -458,72 +463,64 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                             lineChecked = checked
                             // 경부선을 선택
                             if(checked == 0) {
-                                for(i in 0..tour_markers.size - 1) {
-                                    tour_markers[i].map = null
-                                }
+                                for(i in 0..tour_markers.size - 1) { tour_markers[i].map = null }
+                                for(i in 0..pathList.size - 1){ pathList[i].map = null}
                                 tour_line = KtxLinesList().gyeongbuLine
                                 line = "gyeongbuLine"
                                 stationMarkerSetting(line)
                             }
                             // 호남선을 선택
                             else if(checked == 1) {
-                                for(i in 0..tour_markers.size - 1) {
-                                    tour_markers[i].map = null
-                                }
+                                for(i in 0..tour_markers.size - 1) { tour_markers[i].map = null }
+                                for(i in 0..pathList.size - 1){ pathList[i].map = null}
                                 tour_line = KtxLinesList().honamLine
                                 line = "honamLine"
                                 stationMarkerSetting(line)
                             }
                             // 경전선을 선택
                             else if(checked == 2) {
-                                for(i in 0..tour_markers.size - 1) {
-                                    tour_markers[i].map = null
-                                }
+                                for(i in 0..tour_markers.size - 1) { tour_markers[i].map = null }
+                                for(i in 0..pathList.size - 1){ pathList[i].map = null}
                                 tour_line = KtxLinesList().gyeongjeonLine
                                 line = "gyeongjeonLine"
                                 stationMarkerSetting("gyeongjeonLine")
                             }
                             // 전라선을 선택
                             else if(checked == 3){
-                                for(i in 0..tour_markers.size - 1) {
-                                    tour_markers[i].map = null
-                                }
+                                for(i in 0..tour_markers.size - 1) { tour_markers[i].map = null }
+                                for(i in 0..pathList.size - 1){ pathList[i].map = null}
                                 tour_line = KtxLinesList().jeollaLine
                                 line = "jeollaLine"
                                 stationMarkerSetting("jeollaLine")
                             }
                             // 강릉선을 선택
                             else if(checked == 4){
-                                for(i in 0..tour_markers.size - 1) {
-                                    tour_markers[i].map = null
-                                }
+                                for(i in 0..tour_markers.size - 1) { tour_markers[i].map = null }
+                                for(i in 0..pathList.size - 1){ pathList[i].map = null}
                                 tour_line = KtxLinesList().gangneungLine
                                 line = "gangneungLine"
                                 stationMarkerSetting("gangneungLine")
                             }
                             // 중앙선을 선택
                             else if(checked == 5){
-                                for(i in 0..tour_markers.size - 1) {
-                                    tour_markers[i].map = null
-                                }
+                                for(i in 0..tour_markers.size - 1) { tour_markers[i].map = null }
+                                for(i in 0..pathList.size - 1){ pathList[i].map = null}
                                 tour_line = KtxLinesList().jungangLine
                                 line = "jungangLine"
                                 stationMarkerSetting("jungangLine")
                             }
                             // 중부내륙선을 선택
                             else if(checked == 6){
-                                for(i in 0..tour_markers.size - 1) {
-                                    tour_markers[i].map = null
-                                }
+                                for(i in 0..tour_markers.size - 1) { tour_markers[i].map = null }
+                                for(i in 0..pathList.size - 1){ pathList[i].map = null}
                                 tour_line = KtxLinesList().jungbuNaeryukLine
                                 line = "jungbuNaeryukLine"
                                 stationMarkerSetting("jungbuNaeryukLine")
                             }
                             // 동해선을 선택
                             else if(checked == 7){
-                                for(i in 0..tour_markers.size - 1) {
-                                    tour_markers[i].map = null
-                                }
+                                for(i in 0..tour_markers.size - 1) { tour_markers[i].map = null }
+                                for(i in 0..pathList.size - 1){ pathList[i].map = null}
                                 tour_line = KtxLinesList().donghaeLine
                                 line = "donghaeLine"
                                 stationMarkerSetting("donghaeLine")
@@ -673,6 +670,161 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onRestoreInstanceState(savedInstanceState)
     }
 
+    fun stationLineFun(lineName: String, lineList: MutableList<StationPositions>) {
+        val gpsList = mutableListOf<LatLng>()
+
+        fun initStationLine(){ // 처음 경로 세팅
+            pathList.add(PathOverlay())
+            pathList[0].coords = gpsList
+            pathList[0].map = naverMap
+        }
+
+        fun SrtStationLine(SrtStationEndNum: Int){ //SRT 경로 세팅
+            pathList.add(PathOverlay())
+            pathList[1].coords = listOf(
+                LatLng(lineList[2].latitude, lineList[2].longitude),
+                LatLng(lineList[3].latitude, lineList[3].longitude),
+                LatLng(lineList[4].latitude, lineList[4].longitude),
+                LatLng(lineList[SrtStationEndNum].latitude, lineList[SrtStationEndNum].longitude),
+            )
+            pathList[1].map = naverMap
+        }
+
+        when(lineName){
+            "donghaeLine" -> {
+                for(i in 0..lineList.size - 1){
+                    if(i >= 2 && i <=4){ }
+                    else { gpsList.add(LatLng(lineList[i].latitude, lineList[i].longitude))}
+                }
+                initStationLine()
+                SrtStationLine(6)
+            }
+            "gangneungLine" -> {
+                for(i in 0..lineList.size - 1) {
+                    if(i != 12){
+                        gpsList.add(LatLng(lineList[i].latitude, lineList[i].longitude))
+                    }
+                }
+                initStationLine()
+
+                pathList.add(PathOverlay())
+                pathList.add(PathOverlay())
+                pathList[2].coords = listOf(
+                    LatLng(lineList[11].latitude, lineList[11].longitude),
+                    LatLng(lineList[12].latitude, lineList[12].longitude)
+                )
+                pathList[2].map = naverMap
+            }
+            "gyeongbuLine" -> {
+                for(i in 0..lineList.size -1){
+                    if((i >= 2 && i <=4) || i == 7 || i == 12 || (i >= 16 && i <= 18)){ }
+                    else { gpsList.add(LatLng(lineList[i].latitude, lineList[i].longitude))}
+                }
+                initStationLine()
+                SrtStationLine(8)
+
+                pathList.add(PathOverlay())
+                pathList[2].coords = listOf(
+                    LatLng(lineList[6].latitude, lineList[6].longitude),
+                    LatLng(lineList[7].latitude, lineList[7].longitude),
+                    LatLng(lineList[8].latitude, lineList[8].longitude)
+                )
+                pathList[2].map = naverMap
+
+                pathList.add(PathOverlay())
+                pathList[3].coords = listOf(
+                    LatLng(lineList[11].latitude, lineList[11].longitude),
+                    LatLng(lineList[12].latitude, lineList[12].longitude),
+                    LatLng(lineList[13].latitude, lineList[13].longitude)
+                )
+                pathList[3].map = naverMap
+
+                pathList.add(PathOverlay())
+                pathList[4].coords = listOf(
+                    LatLng(lineList[13].latitude, lineList[13].longitude),
+                    LatLng(lineList[16].latitude, lineList[16].longitude),
+                    LatLng(lineList[17].latitude, lineList[17].longitude),
+                    LatLng(lineList[18].latitude, lineList[18].longitude),
+                    LatLng(lineList[19].latitude, lineList[19].longitude),
+                )
+                pathList[4].map = naverMap
+            }
+            "gyeongjeonLine" -> {
+                for(i in 0..lineList.size - 1) {
+                    if(i == 10 || (i >= 2 && i <= 4)){ }
+                    else {gpsList.add(LatLng(lineList[i].latitude, lineList[i].longitude))}
+                }
+                initStationLine()
+                SrtStationLine(6)
+
+                pathList.add(PathOverlay())
+                pathList[2].coords = listOf(
+                    LatLng(lineList[9].latitude, lineList[9].longitude),
+                    LatLng(lineList[10].latitude, lineList[10].longitude),
+                    LatLng(lineList[11].latitude, lineList[11].longitude)
+                )
+                pathList[2].map = naverMap
+            }
+            "honamLine" -> {
+                for(i in 0..lineList.size - 1) {
+                    if((i >= 2 && i <= 4) || (i >= 10 && i <= 12)){}
+                    else { gpsList.add(LatLng(lineList[i].latitude, lineList[i].longitude)) }
+                }
+                initStationLine()
+                SrtStationLine(7)
+
+                pathList.add(PathOverlay())
+                pathList[2].coords = listOf(
+                    LatLng(lineList[8].latitude, lineList[8].longitude),
+                    LatLng(lineList[10].latitude, lineList[10].longitude),
+                    LatLng(lineList[11].latitude, lineList[11].longitude),
+                    LatLng(lineList[12].latitude, lineList[12].longitude),
+                    LatLng(lineList[13].latitude, lineList[13].longitude),
+                )
+                pathList[2].map = naverMap
+            }
+            "jeollaLine" -> {
+                for(i in 0..lineList.size - 1) {
+                    if((i >= 2 && i <= 4) || (i >= 10 && i <= 12)){}
+                    else { gpsList.add(LatLng(lineList[i].latitude, lineList[i].longitude)) }
+                }
+                initStationLine()
+                SrtStationLine(7)
+
+                pathList.add(PathOverlay())
+                pathList[2].coords = listOf(
+                    LatLng(lineList[8].latitude, lineList[8].longitude),
+                    LatLng(lineList[10].latitude, lineList[10].longitude),
+                    LatLng(lineList[11].latitude, lineList[11].longitude),
+                    LatLng(lineList[12].latitude, lineList[12].longitude),
+                    LatLng(lineList[13].latitude, lineList[13].longitude),
+                )
+                pathList[2].map = naverMap
+            }
+            "jungangLine" -> {
+                for(i in 0..lineList.size - 1) {
+                    gpsList.add(LatLng(lineList[i].latitude, lineList[i].longitude))
+                }
+                pathList.add(PathOverlay())
+                pathList[0].coords = gpsList
+                pathList[0].map = naverMap
+            }
+            "jungbuNaeryukLine" -> {
+                for(i in 0..lineList.size - 1) {
+                    gpsList.add(LatLng(lineList[i].latitude, lineList[i].longitude))
+                }
+                pathList.add(PathOverlay())
+                pathList[0].coords = gpsList
+                pathList[0].map = naverMap
+            }
+            else -> {}
+        }
+        for(i in 0..pathList.size - 1) {
+            if(i == 1) pathList[i].color = Color.RED
+            else pathList[i].color = Color.GREEN
+        }
+    }
+
     fun stationMarkerSetting(lineName: String){
         val myRef = database.getReference("ktxLines")
         val lineList = mutableListOf<StationPositions>()
@@ -703,12 +855,35 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     }
                 }
 
+                var stationLineState = false
+                binding.stationLineBtn.setOnClickListener {
+                    if(markers.size <= 0){
+                        Toast.makeText(it.context, "노선을 선택해주세요.", Toast.LENGTH_SHORT).show()
+                    }
+                    else{
+                        if(stationLineState == false) {
+                            lineList.sortBy { it.stationNum }
+                            stationLineFun(lineName, lineList)
+                            stationLineState = true
+                            binding.stationLineBtn.text = "■ 노선 경로 표시 지우기"
+                        }
+                        else {
+                            for(i in 0..pathList.size - 1){
+                                pathList[i].map = null
+                            }
+                            stationLineState = false
+                            binding.stationLineBtn.text = "■ 노선 경로 표시하기"
+                        }
+                    }
+                }
+
                 // 기존에 지도에 남아있던 마커 제거
                 for(i in 0..markers.size - 1) {
                     markers[i].map = null
                 }
                 val dialog = LoadingDialog(this@MapActivity)
                 dialog.show()
+
                 // 매개변수로 받은 노선에 맞는 역에 해당하는 마커를 표시
                 for(i in 0..lineList.size - 1) {
                     markers.add(Marker())

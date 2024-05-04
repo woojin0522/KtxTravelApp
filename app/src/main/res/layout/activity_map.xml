@@ -77,6 +77,15 @@
                         android:layout_marginRight="5dp"
                         android:textSize="17dp" />
                 </LinearLayout>
+                <TextView
+                    android:id="@+id/station_line_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="■ 노선 경로 표시하기"
+                    android:textSize="17dp"
+                    android:layout_marginHorizontal="5dp"
+                    android:textColor="@color/white"
+                    android:layout_gravity="end"/>
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

@@ -106,6 +106,7 @@ public class KtxLinesList {
         StationPositions(18,"Guryegu","구례구","전라남도 순천시 황전면 섬진강로 217",35.163456236, 127.452653892,"",0),
         StationPositions(19,"Suncheon","순천","전라남도 순천시 팔마로 191",34.945738921, 127.503278376,"",0),
         StationPositions(20,"Yeocheon","여천","전라남도 여수시 여천동 900-32",34.779132134, 127.664182999,"",0),
+        StationPositions(21,"Yeosu EXPO","여수엑스포","전라남도 여수시 망양로 2가",34.753069239, 127.748693665,"",0),
     )
     // 강릉선
     val gangneungLine = mutableListOf<StationPositions>(
