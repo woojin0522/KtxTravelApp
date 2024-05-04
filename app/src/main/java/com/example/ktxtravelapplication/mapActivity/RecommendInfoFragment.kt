@@ -153,7 +153,6 @@ class TourRecyclerAdapter(val datas: MutableList<TourData>,val numArray: ArrayLi
             binding.tourItemAddress.text = datas[pos].addr1 + datas[pos].addr2
             binding.tourItemLikeCount.text = "추천수 : ${datas[pos].likeCount}"
             binding.tourItemNumber.text = "${pos + 1}번"
-            Log.d("test", datas[pos].likeCount.toString())
 
             Glide.with(binding.root)
                 .load(datas[pos].imageUri)

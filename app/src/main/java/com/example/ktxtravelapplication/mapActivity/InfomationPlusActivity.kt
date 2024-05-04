@@ -1,6 +1,7 @@
 package com.example.ktxtravelapplication.mapActivity
 
 import android.app.ActivityOptions
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
@@ -27,6 +28,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.snapshots
+import com.google.firebase.database.snapshots
+import com.google.firebase.database.values
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -216,12 +220,12 @@ class InfomationPlusActivity : AppCompatActivity() {
             var intLikeCount = 0
             database = FirebaseDatabase.getInstance()
             val myRef = database.getReference(infoType.toString())
-            CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(Dispatchers.IO).launch {      // 추천수를 불러옴. 추가로 추천수 변동시 재호출함.
                 myRef.addValueEventListener(object: ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
                         runBlocking {
                             for(shot in snapshot.children) {
-                                if(shot.key.toString() == lineName){
+                                //if(shot.key.toString() == lineName){
                                     for(shotChild in shot.children){
                                         if(shotChild.child("contentId").value.toString() == contentId.toString()){
                                             strLikeCount = shotChild.child("likeCount").value.toString()
@@ -229,10 +233,9 @@ class InfomationPlusActivity : AppCompatActivity() {
                                             strInfoNum = shotChild.key.toString()
                                         }
                                     }
-                                }
                             }
                         }
-                        likeCheck = pref.getBoolean("추천 체크 ${lineName}/${strInfoNum}", false)
+                        likeCheck = pref.getBoolean("추천 체크 ${contentId}", false)
                         if(likeCheck) binding.infoPlusLikeBtn.text = "추천취소"
                         else binding.infoPlusLikeBtn.text = "추천하기"
 
@@ -243,35 +246,44 @@ class InfomationPlusActivity : AppCompatActivity() {
             }
             fetchInfoXML(contentId, contentTypeId)
 
+            fun dataInsert(check: Boolean, toastText: String, context: Context){    //추천하기 버튼을 클릭하였을 때 작동하는 함수
+                likeCheck = check
+
+                editor.putBoolean("추천 체크 ${contentId}", likeCheck)
+                editor.apply()
+
+                myRef.addListenerForSingleValueEvent(object: ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        for(shot in snapshot.children){
+                            for(tourData in shot.children){
+                                if(tourData.child("contentId").value.toString() == contentId.toString()){
+                                    myRef.child(shot.key.toString()).child(tourData.key.toString()).child("likeCount").setValue(intLikeCount)
+                                }
+                            }
+                        }
+                    }
+                    override fun onCancelled(error: DatabaseError) {}
+                })
+
+                Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
+                if(check) binding.infoPlusLikeBtn.text = "추천취소"
+                else binding.infoPlusLikeBtn.text = "추천하기"
+            }
+
             binding.infoPlusLikeBtn.setOnClickListener {
                 if(likeCheck == false) {
                     intLikeCount++
 
-                    likeCheck = true
-                    editor.putBoolean("추천 체크 ${lineName}/${strInfoNum}", likeCheck)
-                    editor.apply()
-
-                    myRef.child(lineName).child(strInfoNum).child("likeCount").setValue(intLikeCount)
-                    Toast.makeText(it.context, "추천되었습니다.", Toast.LENGTH_SHORT).show()
-                    binding.infoPlusLikeBtn.text = "추천취소"
+                    dataInsert(true, "추천되었습니다.", it.context)
                 }
                 else {
                     if(intLikeCount>=1) {
                         intLikeCount--
 
-                        likeCheck = false
-                        editor.putBoolean("추천 체크 ${lineName}/${strInfoNum}", likeCheck)
-                        editor.apply()
-
-                        myRef.child(lineName).child(strInfoNum).child("likeCount")
-                            .setValue(intLikeCount)
-                        Toast.makeText(it.context, "추천이 취소 되었습니다.", Toast.LENGTH_SHORT).show()
-                        binding.infoPlusLikeBtn.text = "추천하기"
+                        dataInsert(false, "추천이 취소 되었습니다.", it.context)
                     }
                     else{
                         likeCheck = false
-                        editor.putBoolean("추천 체크 ${lineName}/${strInfoNum}", likeCheck)
-                        editor.apply()
 
                         Toast.makeText(it.context, "추천수가 0일 경우 추천취소가 불가능합니다.", Toast.LENGTH_SHORT).show()
                         binding.infoPlusLikeBtn.text = "추천하기"
