@@ -29,6 +29,7 @@ class PlanRecyclerAdapter(val context: Context, val datas: MutableList<planData>
             binding.title.text = datas[pos].planTitle
             binding.planStartDate.text = datas[pos].planStartDate
             binding.planEndDate.text = datas[pos].planEndDate
+            binding.planDeleteCheckbox.isChecked = false
 
             // 리사이클러뷰 각 항목을 클릭하였을 경우 작동
             itemView.setOnClickListener {

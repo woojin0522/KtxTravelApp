@@ -447,6 +447,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             binding.mapNavView.isActivated = false
         }
 
+        fun markerInit(){
+            for(i in 0..tour_markers.size - 1) { tour_markers[i].map = null }
+            for(i in 0..pathList.size - 1){ pathList[i].map = null}
+        }
+
         pathList = mutableListOf()
         // 네비게이션 항목 선택시
         binding.mapNavView.setNavigationItemSelectedListener {
@@ -463,64 +468,56 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                             lineChecked = checked
                             // 경부선을 선택
                             if(checked == 0) {
-                                for(i in 0..tour_markers.size - 1) { tour_markers[i].map = null }
-                                for(i in 0..pathList.size - 1){ pathList[i].map = null}
+                                markerInit()
                                 tour_line = KtxLinesList().gyeongbuLine
                                 line = "gyeongbuLine"
                                 stationMarkerSetting(line)
                             }
                             // 호남선을 선택
                             else if(checked == 1) {
-                                for(i in 0..tour_markers.size - 1) { tour_markers[i].map = null }
-                                for(i in 0..pathList.size - 1){ pathList[i].map = null}
+                                markerInit()
                                 tour_line = KtxLinesList().honamLine
                                 line = "honamLine"
                                 stationMarkerSetting(line)
                             }
                             // 경전선을 선택
                             else if(checked == 2) {
-                                for(i in 0..tour_markers.size - 1) { tour_markers[i].map = null }
-                                for(i in 0..pathList.size - 1){ pathList[i].map = null}
+                                markerInit()
                                 tour_line = KtxLinesList().gyeongjeonLine
                                 line = "gyeongjeonLine"
                                 stationMarkerSetting("gyeongjeonLine")
                             }
                             // 전라선을 선택
                             else if(checked == 3){
-                                for(i in 0..tour_markers.size - 1) { tour_markers[i].map = null }
-                                for(i in 0..pathList.size - 1){ pathList[i].map = null}
+                                markerInit()
                                 tour_line = KtxLinesList().jeollaLine
                                 line = "jeollaLine"
                                 stationMarkerSetting("jeollaLine")
                             }
                             // 강릉선을 선택
                             else if(checked == 4){
-                                for(i in 0..tour_markers.size - 1) { tour_markers[i].map = null }
-                                for(i in 0..pathList.size - 1){ pathList[i].map = null}
+                                markerInit()
                                 tour_line = KtxLinesList().gangneungLine
                                 line = "gangneungLine"
                                 stationMarkerSetting("gangneungLine")
                             }
                             // 중앙선을 선택
                             else if(checked == 5){
-                                for(i in 0..tour_markers.size - 1) { tour_markers[i].map = null }
-                                for(i in 0..pathList.size - 1){ pathList[i].map = null}
+                                markerInit()
                                 tour_line = KtxLinesList().jungangLine
                                 line = "jungangLine"
                                 stationMarkerSetting("jungangLine")
                             }
                             // 중부내륙선을 선택
                             else if(checked == 6){
-                                for(i in 0..tour_markers.size - 1) { tour_markers[i].map = null }
-                                for(i in 0..pathList.size - 1){ pathList[i].map = null}
+                                markerInit()
                                 tour_line = KtxLinesList().jungbuNaeryukLine
                                 line = "jungbuNaeryukLine"
                                 stationMarkerSetting("jungbuNaeryukLine")
                             }
                             // 동해선을 선택
                             else if(checked == 7){
-                                for(i in 0..tour_markers.size - 1) { tour_markers[i].map = null }
-                                for(i in 0..pathList.size - 1){ pathList[i].map = null}
+                                markerInit()
                                 tour_line = KtxLinesList().donghaeLine
                                 line = "donghaeLine"
                                 stationMarkerSetting("donghaeLine")

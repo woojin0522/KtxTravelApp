@@ -139,6 +139,7 @@ class TravelPlanActivity : AppCompatActivity() {
         returnState = intent.getStringExtra("returnState").toString()
         val returnPlanNumber = intent.getIntExtra("returnPlanNumber", 0)
         returnPos = intent.getIntExtra("returnPos", 0)
+        val returnIndex = intent.getIntExtra("returnIndex", 0)
 
         // 전달받은 값이 null일 경우 아무 동작도 취하지 않음
         planNum = returnPlanNumber
@@ -304,8 +305,7 @@ class TravelPlanActivity : AppCompatActivity() {
                                     )
                                 }
                             }
-                        } else {
-                        }
+                        } else { }
                     }
                 }
             }
@@ -318,6 +318,7 @@ class TravelPlanActivity : AppCompatActivity() {
             returnIntent.putExtra("returnState", state)
             returnIntent.putExtra("returnPlanNumber", returnPlanNumber)
             returnIntent.putExtra("returnPos", planPos)
+            returnIntent.putExtra("returnIndex", returnIndex)
             setResult(Activity.RESULT_OK, returnIntent)
             // 이전화면으로 값 넘겨주기
             finish()

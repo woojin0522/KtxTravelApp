@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -77,6 +78,7 @@ class PlanActivity : AppCompatActivity() {
             val returnState = it.data?.getStringExtra("returnState")
             val returnPos = it.data?.getIntExtra("returnPos", 0)
             val returnPlanNumber = it.data?.getIntExtra("returnPlanNumber", 0)
+            val returnIndex = it.data?.getIntExtra("returnIndex", 0)
 
             if(returnTitle != null) {
                 // returnState가 저장(추가)일 때 리사이클러 항목 추가
@@ -85,11 +87,11 @@ class PlanActivity : AppCompatActivity() {
                     planNumber = planNumber + 1
                 }
                 // returnState가 수정일 때 해당 리사이클러 항목 수정
-                else{
-                    datas[returnPlanNumber!!].planPos = returnPos
-                    datas[returnPlanNumber!!].planTitle = returnTitle.toString()
-                    datas[returnPlanNumber!!].planStartDate = returnStartDate.toString()
-                    datas[returnPlanNumber!!].planEndDate = returnEndDate.toString()
+                else{       //=================================================== 여기 수정해야됨 ! !
+                    datas[returnIndex!!].planPos = returnPos
+                    datas[returnIndex!!].planTitle = returnTitle.toString()
+                    datas[returnIndex!!].planStartDate = returnStartDate.toString()
+                    datas[returnIndex!!].planEndDate = returnEndDate.toString()
                     binding.planRecyclerView.adapter?.notifyDataSetChanged()
                 }
 
@@ -104,6 +106,7 @@ class PlanActivity : AppCompatActivity() {
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             intent.putExtra("returnState", "저장")
             intent.putExtra("returnPlanNumber", planNumber)
+            intent.putExtra("returnIndex", datas.size)
             requestLauncher.launch(intent)
         }
 
@@ -133,11 +136,13 @@ class PlanActivity : AppCompatActivity() {
                     while (true) {
                         for (i in 0..datas.size - 1) {
                             if (datas[i].deleteChecked == true) {
+                                Log.d("test", datas[i].planNumber.toString())
                                 db.getDao().allDeletePlan(datas[i].planNumber!!.toInt())
 
                                 datas.removeAt(i)
                                 binding.planRecyclerView.adapter?.notifyItemRemoved(i)
 
+                                Log.d("test", planNumber.toString())
                                 whileStop = false
                                 break
                             } else {
