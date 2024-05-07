@@ -8,8 +8,10 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
 import com.example.ktxtravelapplication.databinding.ActivityPlanBinding
@@ -59,6 +61,16 @@ class PlanActivity : AppCompatActivity() {
             }
         }
 
+        fun planNotTextCheck(){
+            if(datas.size > 0){
+                binding.planNotPlanText.visibility = View.GONE
+            }
+            else {
+                binding.planNotPlanText.visibility = View.VISIBLE
+            }
+        }
+        planNotTextCheck()
+
         setSupportActionBar(binding.planToolbar)
         supportActionBar?.setTitle("")
 
@@ -96,6 +108,7 @@ class PlanActivity : AppCompatActivity() {
                 }
 
             }
+            planNotTextCheck()
             binding.planRecyclerView.adapter?.notifyItemInserted(datas.size)
         }
 
@@ -108,6 +121,7 @@ class PlanActivity : AppCompatActivity() {
             intent.putExtra("returnPlanNumber", planNumber)
             intent.putExtra("returnIndex", datas.size)
             requestLauncher.launch(intent)
+            planNotTextCheck()
         }
 
         //
@@ -153,6 +167,7 @@ class PlanActivity : AppCompatActivity() {
                                 editor.remove("저장횟수")
                                 editor.apply()
                             }
+                            planNotTextCheck()
                             break
                         }
                     }
