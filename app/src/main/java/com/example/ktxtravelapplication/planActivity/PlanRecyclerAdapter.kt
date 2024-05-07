@@ -50,7 +50,6 @@ class PlanRecyclerAdapter(val context: Context, val datas: MutableList<planData>
             binding.planDeleteCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
                 if (isChecked){ datas[bindingAdapterPosition].deleteChecked = true}
                 else { datas[bindingAdapterPosition].deleteChecked = false }
-                Log.d("test", "checked: ${datas[bindingAdapterPosition].deleteChecked}")
             }
         }
     }

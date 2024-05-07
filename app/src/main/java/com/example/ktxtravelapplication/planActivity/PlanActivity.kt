@@ -136,13 +136,11 @@ class PlanActivity : AppCompatActivity() {
                     while (true) {
                         for (i in 0..datas.size - 1) {
                             if (datas[i].deleteChecked == true) {
-                                Log.d("test", datas[i].planNumber.toString())
                                 db.getDao().allDeletePlan(datas[i].planNumber!!.toInt())
 
                                 datas.removeAt(i)
                                 binding.planRecyclerView.adapter?.notifyItemRemoved(i)
 
-                                Log.d("test", planNumber.toString())
                                 whileStop = false
                                 break
                             } else {
