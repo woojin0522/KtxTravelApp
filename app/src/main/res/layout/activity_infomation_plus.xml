@@ -107,6 +107,22 @@
             android:text="역에서의 거리 : "
             android:textSize="18dp"/>
         <TextView
+            android:id="@+id/info_plus_festival_nearStation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:text="주변역 : "
+            android:textSize="18dp"
+            android:visibility="gone"/>
+        <TextView
+            android:id="@+id/info_plus_festival_dates"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:text="축제/공연/행사 기간 :  ~  "
+            android:textSize="18dp"
+            android:visibility="gone"/>
+        <TextView
             android:id="@+id/info_plus_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

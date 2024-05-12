@@ -216,6 +216,21 @@ class InfomationPlusActivity : AppCompatActivity() {
 
             val infoType = intent.getStringExtra("infoType")
 
+            if(infoType == "festivalDatas"){
+                binding.infoPlusDist.visibility = View.GONE
+                binding.infoPlusFestivalDates.visibility = View.VISIBLE
+                binding.infoPlusLikeBtn.visibility = View.GONE
+                binding.infoPlusLikeCount.visibility = View.GONE
+                binding.infoPlusFestivalNearStation.visibility =View.VISIBLE
+
+                val eventStartDate = intent.getIntExtra("festivalStartDate", 0)
+                val eventEndDate = intent.getIntExtra("festivalEndDate", 0)
+                val nearStation = intent.getStringExtra("festivalNearStation")
+
+                binding.infoPlusFestivalDates.text = "축제/공연/행사 기간 : ${eventStartDate} ~ ${eventEndDate}"
+                binding.infoPlusFestivalNearStation.text = "주변 역 : ${nearStation}역"
+            }
+
             var strLikeCount = ""
             var intLikeCount = 0
             database = FirebaseDatabase.getInstance()

@@ -65,7 +65,6 @@
             android:layout_height="wrap_content"
             android:text="여행계획이 없습니다. \n 상단바에 + 버튼을 눌러 추가해주세요."
             android:textSize="20dp"
-            android:textColor="@color/black"
             android:layout_marginTop="5dp"
             android:textAlignment="center"/>
         <androidx.recyclerview.widget.RecyclerView

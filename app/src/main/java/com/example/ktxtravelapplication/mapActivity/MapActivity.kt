@@ -11,6 +11,7 @@ import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
@@ -974,25 +975,16 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                             val latitude = info.child("latitude").value.toString()
                             val longitude = info.child("longitude").value.toString()
                             val dist = info.child("dist").value.toString()
-                            val infomation = info.child("infomation").value.toString()
                             val imageUri = info.child("imageUri").value.toString()
                             val tel = info.child("tel").value.toString()
                             var likeCount = info.child("likeCount").value.toString()
-                            val homepage = info.child("homepage").value.toString()
                             val contentId = info.child("contentId").value.toString()
                             val contentTypeId = info.child("contentTypeId").value.toString()
                             val nearStation = info.child("nearStation").value.toString()
 
-                            var homepageUrl = homepage.split("href=")
-                            var homepageUrl3 = ""
-                            if(homepageUrl.size > 1) {
-                                var homepageUrl2 = homepageUrl[1].split('"')
-                                homepageUrl3 = homepageUrl2[1]
-                            }
-
                             if(dist.toDouble() <= markerMaxDist){
                                 infoList.add(TourData(title, addr, addr2, imageUri, dist.toDouble(),
-                                    latitude.toDouble(), longitude.toDouble(), infomation,homepageUrl3, tel,
+                                    latitude.toDouble(), longitude.toDouble(), "","", tel,
                                     likeCount.toInt(), contentId.toInt(), contentTypeId.toInt(), nearStation))
                             }
                         }
@@ -1172,3 +1164,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
     }
 }
+
+data class festivalDateDatas(
+    val eventStartDate: Int,
+    val eventEndDate: Int,
+)
