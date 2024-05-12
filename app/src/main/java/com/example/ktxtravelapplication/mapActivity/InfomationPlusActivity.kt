@@ -11,7 +11,6 @@ import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -28,9 +27,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.snapshots
-import com.google.firebase.database.snapshots
-import com.google.firebase.database.values
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -47,6 +43,7 @@ class InfomationPlusActivity : AppCompatActivity() {
     lateinit var editor: SharedPreferences.Editor
     lateinit var lineName: String
     lateinit var strInfoNum: String
+    lateinit var festivalDescription: String
     var likeCheck = false
     companion object{
         lateinit var pref: SharedPreferences
@@ -72,6 +69,7 @@ class InfomationPlusActivity : AppCompatActivity() {
         val contentTypeId = intent.getIntExtra("infoContentTypeId", 0)
         lineName = intent.getStringExtra("lineName").toString()
         strInfoNum = ""
+        festivalDescription = ""
 
         // 관광지 설명과 홈페이지 불러오기
         fun fetchInfoXML(contentId: Int, contentTypeId: Int) {
@@ -179,8 +177,10 @@ class InfomationPlusActivity : AppCompatActivity() {
                         binding.infoPlusHomepage.text = "홈페이지를 찾을 수 없습니다."
                     }
 
-                    binding.infoPlusDescription.text = overview.replace("<br>","")
+                    festivalDescription = overview.replace("<br>","")
                         .replace("<br />","")
+                    binding.infoPlusDescription.text = festivalDescription
+
                     dialog.dismiss()
                 }
             }
@@ -201,7 +201,8 @@ class InfomationPlusActivity : AppCompatActivity() {
             lineArray.sortBy { it.stationNum }
 
             binding.infoPlusLikeLayout.visibility = View.GONE
-            binding.infoTabViewPager2.adapter = InfoViewPagerAdapter(this, lineArray, lineName, infoName.toString(), infoAddress.toString(), infoImage.toString())
+            binding.infoTabViewPager2.adapter = InfoViewPagerAdapter(this, lineArray, lineName, infoName.toString(),
+                infoAddress.toString(), infoImage.toString())
 
             TabLayoutMediator(binding.infoTabLayout, binding.infoTabViewPager2) { tab, position ->
                 when(position) {
@@ -215,6 +216,8 @@ class InfomationPlusActivity : AppCompatActivity() {
             binding.infoPlusName.text = infoName
 
             val infoType = intent.getStringExtra("infoType")
+
+            fetchInfoXML(contentId, contentTypeId)
 
             if(infoType == "festival"){
                 binding.infoPlusDist.visibility = View.GONE
@@ -261,7 +264,6 @@ class InfomationPlusActivity : AppCompatActivity() {
                     override fun onCancelled(error: DatabaseError) {}
                 })
             }
-            fetchInfoXML(contentId, contentTypeId)
 
             fun dataInsert(check: Boolean, toastText: String, context: Context){    //추천하기 버튼을 클릭하였을 때 작동하는 함수
                 likeCheck = check
@@ -376,7 +378,8 @@ class InfomationPlusActivity : AppCompatActivity() {
 }
 
 // 뷰페이저 어댑터
-class InfoViewPagerAdapter(activity: FragmentActivity, lineArray: ArrayList<StationPositions>, lineName: String, stationName: String, stationAddress: String, stationImage: String): FragmentStateAdapter(activity) {
+class InfoViewPagerAdapter(activity: FragmentActivity, lineArray: ArrayList<StationPositions>, lineName: String,
+                           stationName: String, stationAddress: String, stationImage: String): FragmentStateAdapter(activity) {
     val fragments: List<Fragment>
     init {
         fragments = listOf(InfoLineFragment.newInstance(lineArray,lineName), RecommendInfoFragment.newInstance(stationName, lineName, lineArray, stationAddress, stationImage))
