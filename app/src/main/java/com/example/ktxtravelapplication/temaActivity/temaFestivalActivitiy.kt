@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.bumptech.glide.Glide
 import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.ActivityTemaFestivalActivitiyBinding
@@ -70,13 +69,13 @@ class temaFestivalActivitiy : AppCompatActivity() {
             val mobile_os = "AND"
             val mobile_app = "AppTest"
             val type = ""
-            val num_of_rows = 50
+            val num_of_rows = 100
             val page_no = 1
             val listYN = "Y"
             val arrange = "D"
             val currentTime = System.currentTimeMillis()
-            val AllowEventEndDate = SimpleDateFormat("yyyyMMdd").format(currentTime).toString().toInt()
-            val eventStartDate = "20240101"
+            val AllowEventDate = SimpleDateFormat("yyyyMMdd").format(currentTime).toString().toInt()
+            val eventStartDate = "20230101"
             val serviceKey = "e46t%2FAlWggwGsJUF83Wf0XJ3VQijD7S8SNd%2Fs7TcbccStSNHqy1aQfXBRwMkttdlcNu7Aob3cDOGLa11VzRf7Q%3D%3D"
             val serviceUrl = "https://apis.data.go.kr/B551011/KorService1/searchFestival1"
 
@@ -202,7 +201,7 @@ class temaFestivalActivitiy : AppCompatActivity() {
                             else if(tagTitle) {
                                 title = xpp.text
 
-                                if(eventEndDate - AllowEventEndDate >= 1){
+                                if(eventEndDate - AllowEventDate >= 1 && eventStartDate - AllowEventDate <= 100){
                                     for(i in 0..stationList.size - 1){
                                         if((mapx - stationList[i].longitude > -0.03 && mapx - stationList[i].longitude < 0.03) &&
                                             (mapy - stationList[i].latitude > -0.03 && mapy - stationList[i].latitude < 0.03)){
