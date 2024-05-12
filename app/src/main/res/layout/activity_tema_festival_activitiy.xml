@@ -31,7 +31,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="축제 목록"
+                    android:text="현재 진행중인 축제 목록"
                     android:textColor="@color/white"
                     android:textSize="25dp" />
             </androidx.appcompat.widget.Toolbar>

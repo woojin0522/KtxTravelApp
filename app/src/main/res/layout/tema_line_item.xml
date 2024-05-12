@@ -15,8 +15,8 @@
             android:text="경부선"
             android:textSize="20dp"
             android:textStyle="bold"
-            android:paddingVertical="5dp"
+            android:paddingVertical="10dp"
             android:textColor="@color/black"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

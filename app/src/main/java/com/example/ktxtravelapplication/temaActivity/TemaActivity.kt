@@ -34,7 +34,7 @@ class TemaActivity : AppCompatActivity() {
             when(position) {
                 0 -> tab.text = "계절"
                 1 -> tab.text = "추천코스"
-                2 -> tab.text = "축제"
+                2 -> tab.text = "현재 진행중인 축제"
             }
         }.attach()
     }
