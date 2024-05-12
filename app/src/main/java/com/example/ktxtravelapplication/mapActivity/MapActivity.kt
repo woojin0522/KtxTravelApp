@@ -441,6 +441,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
+
+
         //----------------------------------------------------------------------------------
 
         fun drawClose(){
@@ -542,6 +544,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     }
                     drawClose()
                     infoType="tourDatas"
+
                     //tourMarkerSetting(12)
                     infoMarkerSetting(maxDist)
                     binding.markerDeleteBtn.text = "■ 관광지마커 삭제하기"
@@ -561,6 +564,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     drawClose()
 
                     infoType="festivalDatas"
+
                     //tourMarkerSetting(15)
                     infoMarkerSetting(maxDist)
                     binding.markerDeleteBtn.text = "■ 축제마커 삭제하기"
@@ -580,6 +584,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     drawClose()
 
                     infoType="accommodationDatas"
+
                     //tourMarkerSetting(32)
                     infoMarkerSetting(maxDist)
                     binding.markerDeleteBtn.text = "■ 숙박마커 삭제하기"
@@ -599,6 +604,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     drawClose()
 
                     infoType="foodshopDatas"
+
                     //tourMarkerSetting(39)
                     infoMarkerSetting(maxDist)
                     binding.markerDeleteBtn.text = "■ 음식점마커 삭제하기"

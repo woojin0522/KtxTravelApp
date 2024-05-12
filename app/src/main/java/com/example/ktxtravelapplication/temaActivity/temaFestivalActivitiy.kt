@@ -203,8 +203,8 @@ class temaFestivalActivitiy : AppCompatActivity() {
 
                                 if(eventEndDate - AllowEventDate >= 1 && eventStartDate - AllowEventDate <= 100){
                                     for(i in 0..stationList.size - 1){
-                                        if((mapx - stationList[i].longitude > -0.02 && mapx - stationList[i].longitude < 0.02) &&
-                                            (mapy - stationList[i].latitude > -0.02 && mapy - stationList[i].latitude < 0.02)){
+                                        if((mapx - stationList[i].longitude > -0.03 && mapx - stationList[i].longitude < 0.03) &&
+                                            (mapy - stationList[i].latitude > -0.03 && mapy - stationList[i].latitude < 0.03)){
                                             festivalList.add(festivalDatas(addr1 + addr2, contentId, contentTypeId,
                                                 eventStartDate, eventEndDate, firstImage, mapx, mapy, tel, title, stationList[i].stationName))
                                         }
