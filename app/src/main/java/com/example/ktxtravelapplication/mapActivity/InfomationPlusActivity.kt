@@ -216,7 +216,7 @@ class InfomationPlusActivity : AppCompatActivity() {
 
             val infoType = intent.getStringExtra("infoType")
 
-            if(infoType == "festivalDatas"){
+            if(infoType == "festival"){
                 binding.infoPlusDist.visibility = View.GONE
                 binding.infoPlusFestivalDates.visibility = View.VISIBLE
                 binding.infoPlusLikeBtn.visibility = View.GONE

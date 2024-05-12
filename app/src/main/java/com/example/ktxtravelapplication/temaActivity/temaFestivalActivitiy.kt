@@ -290,7 +290,7 @@ class festivalAdapter(val datas: MutableList<festivalDatas>, val lineName: Strin
                 intent.putExtra("infoTel", "전화번호 : " + datas[pos].tel)
                 intent.putExtra("infoContentId", datas[pos].contentId)
                 intent.putExtra("infoContentTypeId", datas[pos].contentTypeId)
-                intent.putExtra("infoType", "festivalDatas")
+                intent.putExtra("infoType", "festival")
                 intent.putExtra("festivalStartDate", datas[pos].eventStartDate)
                 intent.putExtra("festivalEndDate", datas[pos].eventEndDate)
                 intent.putExtra("infoImage", datas[pos].firstImage)
