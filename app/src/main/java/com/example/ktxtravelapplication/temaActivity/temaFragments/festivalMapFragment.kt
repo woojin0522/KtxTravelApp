@@ -10,21 +10,27 @@ import androidx.annotation.Nullable
 import androidx.annotation.UiThread
 import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.FragmentFestivalMapBinding
+import com.example.ktxtravelapplication.mapActivity.MapActivity
 import com.example.ktxtravelapplication.temaActivity.festivalMapData
 import com.google.firebase.database.collection.LLRBNode
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.CameraUpdate
+import com.naver.maps.map.LocationSource
+import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.util.MarkerIcons
 import java.io.Serializable
 
 class festivalMapFragment : Fragment() {
     private lateinit var mapView: MapView
+    lateinit var locationSource: FusedLocationSource
+    lateinit var binding: FragmentFestivalMapBinding
     companion object {
         fun newInstance(mapDataList: MutableList<festivalMapData>) : festivalMapFragment{
             val fragment = festivalMapFragment()
@@ -35,6 +41,8 @@ class festivalMapFragment : Fragment() {
 
             return fragment
         }
+
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +64,8 @@ class festivalMapFragment : Fragment() {
         mapView = view.findViewById(R.id.festival_map_view)
         mapView.onCreate(savedInstanceState)
 
+        val binding = FragmentFestivalMapBinding.inflate(layoutInflater)
+
         val mapDataList = arguments?.getSerializable("mapDataList") as MutableList<festivalMapData>
         val festivalName = mapDataList[0].festivalName
         val festivalMapx = mapDataList[0].festivalMapx
@@ -65,6 +75,8 @@ class festivalMapFragment : Fragment() {
         val stationMapy = mapDataList[0].stationMapy
 
         mapView.getMapAsync {
+            locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
+
             val marker = Marker()
             marker.position = LatLng(stationMapy, stationMapx)
             marker.captionText = stationName + "역"
@@ -83,6 +95,12 @@ class festivalMapFragment : Fragment() {
 
             val cameraUpdate = CameraUpdate.scrollAndZoomTo(LatLng((festivalMapy + stationMapy)/2.0, (festivalMapx + stationMapx)/2.0), 13.0)
             it.moveCamera(cameraUpdate)
+
+            val uiSettings = it.uiSettings
+            uiSettings.isCompassEnabled = true
+            uiSettings.isLocationButtonEnabled = true
+
+            it.locationSource = locationSource
         }
     }
 
