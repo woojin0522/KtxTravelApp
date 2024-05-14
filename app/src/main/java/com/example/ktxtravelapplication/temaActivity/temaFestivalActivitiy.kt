@@ -203,8 +203,8 @@ class temaFestivalActivitiy : AppCompatActivity() {
 
                                 if(eventEndDate - AllowEventDate >= 1 && eventStartDate - AllowEventDate <= 100){
                                     for(i in 0..stationList.size - 1){
-                                        if((mapx - stationList[i].longitude > -0.03 && mapx - stationList[i].longitude < 0.03) &&
-                                            (mapy - stationList[i].latitude > -0.03 && mapy - stationList[i].latitude < 0.03)){
+                                        if((mapx - stationList[i].longitude > -0.02 && mapx - stationList[i].longitude < 0.02) &&
+                                            (mapy - stationList[i].latitude > -0.02 && mapy - stationList[i].latitude < 0.02)){
                                             festivalList.add(festivalDatas(addr1 + addr2, contentId, contentTypeId,
                                                 eventStartDate, eventEndDate, firstImage, mapx, mapy, tel, title, stationList[i].stationName))
                                         }
@@ -272,7 +272,7 @@ class festivalAdapter(val datas: MutableList<festivalDatas>, val lineName: Strin
         fun bind(pos: Int){
             binding.festivalName.text = datas[pos].title
             binding.festivalAddr.text = "주소 : ${datas[pos].addr}"
-            binding.festivalNearStation.text = "주변역 : ${datas[pos].nearStation}역"
+            binding.festivalNearStation.text = "주변 KTX역 : ${datas[pos].nearStation}역"
 
             Glide.with(itemView.context)
                 .load(datas[pos].firstImage)
@@ -282,19 +282,20 @@ class festivalAdapter(val datas: MutableList<festivalDatas>, val lineName: Strin
                 .into(binding.festivalImage)
 
             itemView.setOnClickListener {
-                val intent = Intent(it.context, InfomationPlusActivity::class.java)
-                intent.putExtra("infoTitle", "축제/공연/행사 상세정보")
-                intent.putExtra("infoName", "축제/공연/행사명 : " + datas[pos].title)
-                intent.putExtra("infoAddress", "주소 : " + datas[pos].addr)
-                intent.putExtra("infoTel", "전화번호 : " + datas[pos].tel)
-                intent.putExtra("infoContentId", datas[pos].contentId)
-                intent.putExtra("infoContentTypeId", datas[pos].contentTypeId)
+                val intent = Intent(it.context, festivalInfomationActivity::class.java)
+                intent.putExtra("festivalName", datas[pos].title)
+                intent.putExtra("festivalAddr", datas[pos].addr)
+                intent.putExtra("festivalTel", datas[pos].tel)
+                intent.putExtra("contentId", datas[pos].contentId)
+                intent.putExtra("contentTypeId", datas[pos].contentTypeId)
                 intent.putExtra("infoType", "festival")
-                intent.putExtra("festivalStartDate", datas[pos].eventStartDate)
-                intent.putExtra("festivalEndDate", datas[pos].eventEndDate)
-                intent.putExtra("infoImage", datas[pos].firstImage)
+                intent.putExtra("startDate", datas[pos].eventStartDate)
+                intent.putExtra("endDate", datas[pos].eventEndDate)
+                intent.putExtra("imageUrl", datas[pos].firstImage)
                 intent.putExtra("lineName", lineName)
-                intent.putExtra("festivalNearStation", datas[pos].nearStation)
+                intent.putExtra("nearStation", datas[pos].nearStation)
+                intent.putExtra("mapx", datas[pos].mapx)
+                intent.putExtra("mapy", datas[pos].mapy)
                 itemView.context.startActivity(intent)
             }
         }

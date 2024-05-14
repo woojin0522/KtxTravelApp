@@ -197,6 +197,7 @@ class InfomationPlusActivity : AppCompatActivity() {
             binding.infoPlusDescription.isVisible = false
             binding.infoAllTab.visibility = View.VISIBLE
             binding.infoPlusName.text = "역명 : " + infoName + "역"
+            binding.infoPlusLine.visibility = View.GONE
             val lineArray = intent.getSerializableExtra("lineList") as ArrayList<StationPositions>
             lineArray.sortBy { it.stationNum }
 
@@ -218,23 +219,6 @@ class InfomationPlusActivity : AppCompatActivity() {
             val infoType = intent.getStringExtra("infoType")
 
             fetchInfoXML(contentId, contentTypeId)
-
-            if(infoType == "festival"){
-                binding.infoPlusDist.visibility = View.GONE
-                binding.infoPlusFestivalDates.visibility = View.VISIBLE
-                binding.infoPlusLikeBtn.visibility = View.GONE
-                binding.infoPlusLikeCount.visibility = View.GONE
-                binding.infoPlusFestivalNearStation.visibility =View.VISIBLE
-
-                var eventStartDate = intent.getIntExtra("festivalStartDate", 0).toString()
-                var eventEndDate = intent.getIntExtra("festivalEndDate", 0).toString()
-                val nearStation = intent.getStringExtra("festivalNearStation")
-                eventStartDate = eventStartDate.slice(0..3) + "." + eventStartDate.slice(4..5) + "." + eventStartDate.slice(6..7)
-                eventEndDate = eventEndDate.slice(0..3) + "." + eventEndDate.slice(4..5) + "." + eventEndDate.slice(6..7)
-
-                binding.infoPlusFestivalDates.text = "축제/공연/행사 기간 : ${eventStartDate} ~ ${eventEndDate}"
-                binding.infoPlusFestivalNearStation.text = "주변 역 : ${nearStation}역"
-            }
 
             var strLikeCount = ""
             var intLikeCount = 0
