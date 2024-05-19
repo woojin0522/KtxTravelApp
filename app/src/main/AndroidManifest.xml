@@ -25,9 +25,17 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".temaActivity.festivalInfomationActivity"
+            android:name=".temaActivity.courseInfomationActivity"
             android:exported="false"
             android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".temaActivity.temaCourseActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".temaActivity.festivalInfomationActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".temaActivity.temaFestivalActivitiy"
             android:exported="false"
@@ -47,22 +55,6 @@
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name=".temaActivity.temaSeasons.TemaWinterActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".temaActivity.temaSeasons.TemaFallActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".temaActivity.temaSeasons.TemaSummerActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".temaActivity.temaSeasons.TemaSpringActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
         <activity
             android:name=".planActivity.TravelPlanActivity"
             android:configChanges="orientation|screenSize"

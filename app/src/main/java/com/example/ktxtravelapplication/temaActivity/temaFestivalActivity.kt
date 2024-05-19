@@ -10,9 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.ktxtravelapplication.R
-import com.example.ktxtravelapplication.databinding.ActivityTemaFestivalActivitiyBinding
+import com.example.ktxtravelapplication.databinding.ActivityTemaFestivalBinding
 import com.example.ktxtravelapplication.databinding.FestivalItemBinding
-import com.example.ktxtravelapplication.mapActivity.InfomationPlusActivity
 import com.example.ktxtravelapplication.mapActivity.LoadingDialog
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -36,7 +35,7 @@ class temaFestivalActivitiy : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding = ActivityTemaFestivalActivitiyBinding.inflate(layoutInflater)
+        val binding = ActivityTemaFestivalBinding.inflate(layoutInflater)
 
         setSupportActionBar(binding.temaToolbar)
         supportActionBar?.setTitle("")
@@ -65,7 +64,6 @@ class temaFestivalActivitiy : AppCompatActivity() {
             val dialog = LoadingDialog(this@temaFestivalActivitiy)
             dialog.show()
 
-            // 관광지 정보 수집
             val mobile_os = "AND"
             val mobile_app = "AppTest"
             val type = ""
