@@ -47,13 +47,6 @@
             android:text="상세 페이지입니다."
             android:textSize="20dp"
             android:layout_gravity="center"/>
-        <ImageView
-            android:id="@+id/festival_info_image"
-            android:src="@drawable/notimage"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_gravity="center"
-            android:transitionName="imgTrans"/>
         <LinearLayout
             android:id="@+id/festival_info_all_tab"
             android:layout_width="match_parent"

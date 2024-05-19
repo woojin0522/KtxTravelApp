@@ -185,7 +185,7 @@ class festivalInfomationActivity : AppCompatActivity() {
                     festivalInfoList.add(homepageUrl3)
                     festivalInfoList.add(overview)
 
-                    binding.festivalInfoTabViewPager2.adapter = FestivalInfoViewPagerAdapter(this@festivalInfomationActivity, festivalInfoList, festivalMapDataList)
+                    binding.festivalInfoTabViewPager2.adapter = FestivalInfoViewPagerAdapter(this@festivalInfomationActivity, festivalInfoList, festivalMapDataList, imageUrl)
                     binding.festivalInfoTabViewPager2.isUserInputEnabled = false
 
                     TabLayoutMediator(binding.festivalInfoTabLayout, binding.festivalInfoTabViewPager2) { tab, position ->
@@ -202,7 +202,7 @@ class festivalInfomationActivity : AppCompatActivity() {
 
         binding.festivalInfoTitle.text = title
 
-        // glide 라이브러리를 이용한 url 이미지 불러오기
+        /*// glide 라이브러리를 이용한 url 이미지 불러오기
         Glide.with(this)
             .load(imageUrl) // 불러올 이미지 url
             .placeholder(getDrawable(R.drawable.loading)) // 이미지 로딩 시작하기 전 표시할 이미지
@@ -228,15 +228,15 @@ class festivalInfomationActivity : AppCompatActivity() {
             }
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabReselected(tab: TabLayout.Tab?) {}
-        })
+        })*/
     }
 }
 
 // 뷰페이저 어댑터
-class FestivalInfoViewPagerAdapter(activity: FragmentActivity, festivalInfoList: ArrayList<String>, festivalMapDataList: MutableList<festivalMapData>): FragmentStateAdapter(activity) {
+class FestivalInfoViewPagerAdapter(activity: FragmentActivity, festivalInfoList: ArrayList<String>, festivalMapDataList: MutableList<festivalMapData>, imageUrl: String): FragmentStateAdapter(activity) {
     val fragments: List<Fragment>
     init {
-        fragments = listOf(festivalDescriptionFragment.newInstance(festivalInfoList), festivalMapFragment.newInstance(festivalMapDataList))
+        fragments = listOf(festivalDescriptionFragment.newInstance(festivalInfoList, imageUrl), festivalMapFragment.newInstance(festivalMapDataList))
     }
     override fun getItemCount(): Int {
         return fragments.size

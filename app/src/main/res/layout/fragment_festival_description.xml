@@ -8,6 +8,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+        <ImageView
+            android:id="@+id/festival_info_image"
+            android:src="@drawable/notimage"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:transitionName="imgTrans"
+            android:layout_margin="10dp"/>
         <TextView
             android:id="@+id/festival_info_name"
             android:layout_width="wrap_content"

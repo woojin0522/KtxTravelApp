@@ -1,5 +1,6 @@
 package com.example.ktxtravelapplication.temaActivity.temaFragments
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Paint
@@ -11,8 +12,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import com.bumptech.glide.Glide
 import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.FragmentFestivalDescriptionBinding
+import com.example.ktxtravelapplication.mapActivity.InfoFullImageActivity
 import com.example.ktxtravelapplication.mapActivity.InfoLineFragment
 import com.example.ktxtravelapplication.mapActivity.LoadingDialog
 import com.example.ktxtravelapplication.temaActivity.festivalInfomationActivity
@@ -25,11 +29,12 @@ import java.net.URL
 
 class festivalDescriptionFragment : Fragment() {
     companion object {
-        fun newInstance(festivalInfoList: ArrayList<String>): festivalDescriptionFragment {
+        fun newInstance(festivalInfoList: ArrayList<String>, imageUrl: String): festivalDescriptionFragment {
             val fragment = festivalDescriptionFragment()
 
             val args = Bundle()
             args.putStringArrayList("festivalInfoList", festivalInfoList)
+            args.putString("imageUrl", imageUrl)
             fragment.arguments = args
 
             return fragment
@@ -47,6 +52,7 @@ class festivalDescriptionFragment : Fragment() {
         // Inflate the layout for this fragment
         val binding = FragmentFestivalDescriptionBinding.inflate(inflater, container, false)
         val festivalInfoList = arguments?.getStringArrayList("festivalInfoList")
+        val imageUrl = arguments?.getString("imageUrl")
 
         val festivalName = festivalInfoList?.get(0)
         val festivalAddr = festivalInfoList?.get(1)
@@ -83,6 +89,21 @@ class festivalDescriptionFragment : Fragment() {
 
         binding.festivalInfoDescription.text = description?.replace("<br>","")
             ?.replace("<br />","")
+
+        // glide 라이브러리를 이용한 url 이미지 불러오기
+        Glide.with(this)
+            .load(imageUrl) // 불러올 이미지 url
+            .placeholder(getDrawable(context!!.applicationContext, R.drawable.loading)) // 이미지 로딩 시작하기 전 표시할 이미지
+            .error(getDrawable(context!!.applicationContext, R.drawable.notimage)) // 로딩 에러 발생 시 표시할 이미지
+            .fallback(getDrawable(context!!.applicationContext, R.drawable.notimage)) // 로드할 때 url이 비어있을 경우 표시할 이미지
+            .into(binding.festivalInfoImage) // 이미지를 넣을 뷰
+
+        // 이미지 클릭시 확대
+        binding.festivalInfoImage.setOnClickListener {
+            val intent = Intent(it.context, InfoFullImageActivity::class.java)
+            intent.putExtra("imageUrl", imageUrl)
+            startActivity(intent)
+        }
 
         return binding.root
     }

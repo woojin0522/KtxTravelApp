@@ -1,5 +1,6 @@
 package com.example.ktxtravelapplication.temaActivity.temaFragments
 
+import android.app.ActivityOptions
 import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
@@ -14,8 +15,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import com.bumptech.glide.Glide
 import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.FragmentCourseDescriptionBinding
+import com.example.ktxtravelapplication.mapActivity.InfoFullImageActivity
 import com.example.ktxtravelapplication.mapActivity.LoadingDialog
 import com.example.ktxtravelapplication.temaActivity.courseDatas
 import com.example.ktxtravelapplication.temaActivity.courseInfomationActivity
@@ -237,6 +241,20 @@ class courseDescriptionFragment : Fragment() {
             val intent = Intent(
                 Intent.ACTION_VIEW,
                 Uri.parse("https://korean.visitkorea.or.kr/search/search_list.do?keyword=${courseDataList[0].title}"))
+            startActivity(intent)
+        }
+
+        // glide 라이브러리를 이용한 url 이미지 불러오기
+        Glide.with(this)
+            .load(courseDataList[0].firstImage) // 불러올 이미지 url
+            .placeholder(getDrawable(context!!.applicationContext,R.drawable.loading)) // 이미지 로딩 시작하기 전 표시할 이미지
+            .error(getDrawable(context!!.applicationContext,R.drawable.notimage)) // 로딩 에러 발생 시 표시할 이미지
+            .fallback(getDrawable(context!!.applicationContext,R.drawable.notimage)) // 로드할 때 url이 비어있을 경우 표시할 이미지
+            .into(binding.courseInfoImage) // 이미지를 넣을 뷰
+        // 이미지 클릭시 확대
+        binding.courseInfoImage.setOnClickListener {
+            val intent = Intent(it.context, InfoFullImageActivity::class.java)
+            intent.putExtra("imageUrl", courseDataList[0].firstImage)
             startActivity(intent)
         }
 
