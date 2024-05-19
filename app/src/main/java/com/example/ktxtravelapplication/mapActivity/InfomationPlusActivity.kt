@@ -212,6 +212,28 @@ class InfomationPlusActivity : AppCompatActivity() {
                 }
             }.attach()
         }
+        else if(infoTitle == "여행코스 상세정보"){
+            binding.infoPlusLikeLayout.visibility = View.GONE
+            binding.infoPlusDist.visibility = View.GONE
+            binding.infoPlusTel.visibility = View.GONE
+            binding.infoPlusName.text = infoName
+
+            val homepage = intent.getStringExtra("infoHomepage")
+            val description = intent.getStringExtra("infoDescription")
+
+            if(homepage != "") {
+                binding.infoPlusHomepage.text = "홈페이지 이동하기"
+                binding.infoPlusHomepage.setOnClickListener {
+                    binding.infoPlusHomepage.setTextColor(Color.BLUE)
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(homepage))
+                    startActivity(intent)
+                }
+            }
+            else {
+                binding.infoPlusHomepage.text = "홈페이지를 찾을 수 없습니다."
+            }
+            binding.infoPlusDescription.text = description
+        }
         else{                                                        // 상세 정보창이 관광지, 음식점등의 정보일 경우 실행
             binding.infoPlusLikeLayout.visibility = View.VISIBLE
             binding.infoPlusName.text = infoName

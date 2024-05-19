@@ -1,5 +1,6 @@
 package com.example.ktxtravelapplication.temaActivity.temaFragments
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.AsyncTask
 import android.os.Bundle
@@ -18,7 +19,9 @@ import com.bumptech.glide.Glide
 import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.FragmentCourseMapBinding
 import com.example.ktxtravelapplication.databinding.FragmentFestivalMapBinding
+import com.example.ktxtravelapplication.mapActivity.InfomationPlusActivity
 import com.example.ktxtravelapplication.temaActivity.CourseInfoViewPagerAdapter
+import com.example.ktxtravelapplication.temaActivity.courseInfomationActivity
 import com.example.ktxtravelapplication.temaActivity.festivalMapData
 import com.example.ktxtravelapplication.temaActivity.stationDatas
 import com.example.ktxtravelapplication.temaActivity.subCourseDatas
@@ -27,6 +30,7 @@ import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.overlay.Align
+import com.naver.maps.map.overlay.ArrowheadPathOverlay
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.PathOverlay
@@ -45,6 +49,7 @@ import java.io.InputStreamReader
 import java.io.Serializable
 import java.io.StringReader
 import java.net.URL
+import kotlin.io.path.Path
 
 class courseMapFragment : Fragment() {
     private lateinit var mapView: MapView
@@ -81,6 +86,7 @@ class courseMapFragment : Fragment() {
         val dataList = arguments?.getSerializable("subCourseDataList") as MutableList<subCourseDatas>
         val stationList = arguments?.getSerializable("stationList") as MutableList<stationDatas>
 
+        val pathList = mutableListOf<LatLng>()
         binding.courseMapView.getMapAsync{
             locationSource = FusedLocationSource(this, courseMapFragment.LOCATION_PERMISSION_REQUEST_CODE)
             it.locationSource = locationSource
@@ -96,7 +102,7 @@ class courseMapFragment : Fragment() {
 
             val markers = mutableListOf<Marker>()
 
-            fun fetchInfoXML(contentId: Int) {
+            fun fetchInfoXML(contentId: Int, index: Int) {
                 // 관광지 정보 수집
                 val mobile_os = "AND"
                 val mobile_app = "AppTest"
@@ -238,11 +244,28 @@ class courseMapFragment : Fragment() {
                             markers.add(Marker())
                             markers[i].position = LatLng(contentList[i - 1].mapy, contentList[i - 1].mapx)
                             markers[i].map = it
-                            markers[i].captionText = contentList[i - 1].title
+                            markers[i].captionText = "${i}번. ${contentList[i - 1].title}"
                             markers[i].captionColor = Color.BLUE
                             markers[i].setCaptionAligns(Align.Top)
                             markers[i].icon = MarkerIcons.BLACK
                             markers[i].iconTintColor = Color.RED
+
+                            val cameraUpdate = CameraUpdate.scrollAndZoomTo(LatLng((markers[0].position.latitude + markers[1].position.latitude)/2.0,
+                                (markers[0].position.longitude + markers[1].position.longitude)/2.0), 13.0)
+                            it.moveCamera(cameraUpdate)
+
+                            if(index == dataList.size - 1){
+                                pathList.add(markers[i].position)
+                            }
+                        }
+
+                        if(pathList.size >= 2){
+                            val arrowheadPath = ArrowheadPathOverlay()
+                            arrowheadPath.coords = pathList
+                            arrowheadPath.width = 15
+                            arrowheadPath.headSizeRatio = 3f
+                            arrowheadPath.color = Color.GREEN
+                            arrowheadPath.map = it
                         }
 
                         it.setOnMapClickListener { pointF, latLng ->
@@ -263,6 +286,19 @@ class courseMapFragment : Fragment() {
                                         .error(getDrawable(context!!.applicationContext,R.drawable.notimage)) // 로딩 에러 발생 시 표시할 이미지
                                         .fallback(getDrawable(context!!.applicationContext,R.drawable.notimage)) // 로드할 때 url이 비어있을 경우 표시할 이미지
                                         .into(binding.courseInfoWindowImage) // 이미지를 넣을 뷰
+
+                                    binding.courseInfoWindowLayout.setOnClickListener{
+                                        val intent = Intent(this@courseMapFragment.context, InfomationPlusActivity::class.java)
+                                        intent.putExtra("infoTitle", "여행코스 상세정보")
+                                        intent.putExtra("infoName", "관광지명 : ${contentList[i - 1].title}")
+                                        intent.putExtra("infoAddress", "주소 : ${contentList[i - 1].addr}")
+                                        intent.putExtra("infoContentId", contentList[i - 1].contentId)
+                                        intent.putExtra("infoContentTypeId", contentTypeId)
+                                        intent.putExtra("infoImage", contentList[i - 1].firstImage)
+                                        intent.putExtra("infoDescription", contentList[i - 1].description)
+                                        intent.putExtra("infoHomepage", contentList[i - 1].homepage)
+                                        startActivity(intent)
+                                    }
                                 }
                             }
                             binding.courseInfoWindowLogoview.visibility = View.VISIBLE
@@ -285,11 +321,13 @@ class courseMapFragment : Fragment() {
                     markers[0].captionText = "${dataList[0].nearStation}역"
                     markers[0].captionColor = Color.BLUE
                     markers[0].setCaptionAligns(Align.Top)
+
+                    pathList.add(markers[0].position)
                 }
             }
 
             for(i in 0..dataList.size - 1){
-                fetchInfoXML(dataList[i].contentId)
+                fetchInfoXML(dataList[i].contentId, i)
             }
         }
 
