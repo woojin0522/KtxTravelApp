@@ -26,6 +26,7 @@ import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.io.Serializable
 import java.io.StringReader
 import java.net.URL
 import java.text.SimpleDateFormat
@@ -171,7 +172,7 @@ class temaCourseActivity : AppCompatActivity() {
                             eventType = xpp.next()
                         }
                         if(i == stationList.size - 1){
-                            binding.courseRecyclerView.adapter = CourseAdapter(courseList, linePath)
+                            binding.courseRecyclerView.adapter = CourseAdapter(courseList, linePath, stationList)
                             binding.courseRecyclerView.layoutManager = LinearLayoutManager(this@temaCourseActivity)
 
                             dialog.dismiss()
@@ -206,7 +207,7 @@ class temaCourseActivity : AppCompatActivity() {
     }
 }
 
-class CourseAdapter(val datas: MutableList<courseDatas>, val lineName: String) : RecyclerView.Adapter<CourseAdapter.ViewHolder>(){
+class CourseAdapter(val datas: MutableList<courseDatas>, val lineName: String, val stationList: MutableList<stationDatas>) : RecyclerView.Adapter<CourseAdapter.ViewHolder>(){
     override fun getItemCount(): Int {
         return datas.size
     }
@@ -244,6 +245,7 @@ class CourseAdapter(val datas: MutableList<courseDatas>, val lineName: String) :
                 intent.putExtra("mapY", datas[pos].mapy)
                 intent.putExtra("lineName", lineName)
                 intent.putExtra("nearStation", datas[pos].nearStation)
+                intent.putExtra("stationList", stationList as Serializable)
                 itemView.context.startActivity(intent)
             }
         }

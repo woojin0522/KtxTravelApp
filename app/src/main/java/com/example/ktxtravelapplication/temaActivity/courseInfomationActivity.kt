@@ -10,8 +10,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.View
+import android.view.WindowManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.bumptech.glide.Glide
 import com.example.ktxtravelapplication.R
@@ -29,11 +31,13 @@ import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.io.Serializable
 import java.io.StringReader
 import java.net.URL
 
 class courseInfomationActivity : AppCompatActivity() {
     lateinit var courseDataList: MutableList<courseDatas>
+    lateinit var subCourseDataList: MutableList<subCourseDatas>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityCourseInfomationBinding.inflate(layoutInflater)
@@ -43,6 +47,7 @@ class courseInfomationActivity : AppCompatActivity() {
         supportActionBar!!.setTitle("")
 
         courseDataList = mutableListOf()
+        subCourseDataList = mutableListOf()
 
         binding.courseInfoBackBtn.setOnClickListener {
             finish()
@@ -56,18 +61,111 @@ class courseInfomationActivity : AppCompatActivity() {
         val mapy = intent.getDoubleExtra("mapY", 0.0)
         val lineName = intent.getStringExtra("lineName").toString()
         val nearStation = intent.getStringExtra("nearStation").toString()
+        val stationList = intent.getSerializableExtra("stationList") as MutableList<stationDatas>
 
         courseDataList.add(courseDatas(courseName, contentId, imageUrl, mapx, mapy, nearStation))
 
-        binding.courseInfoTabViewPager2.adapter = CourseInfoViewPagerAdapter(this@courseInfomationActivity, courseDataList)
-        binding.courseInfoTabViewPager2.isUserInputEnabled = false
+        fun fetchInfoXML(contentId: Int, contentTypeId: Int, nearStation: String) {
+            // 관광지 정보 수집
+            val mobile_os = "AND"
+            val mobile_app = "AppTest"
+            val type = ""
+            val num_of_rows = 20
+            val page_no = 1
+            val serviceKey = "e46t%2FAlWggwGsJUF83Wf0XJ3VQijD7S8SNd%2Fs7TcbccStSNHqy1aQfXBRwMkttdlcNu7Aob3cDOGLa11VzRf7Q%3D%3D"
+            val serviceUrl = "https://apis.data.go.kr/B551011/KorService1/detailInfo1"
 
-        TabLayoutMediator(binding.courseInfoTabLayout, binding.courseInfoTabViewPager2) { tab, position ->
-            when(position){
-                0 -> tab.text = "설명"
-                1 -> tab.text = "코스 지도"
+            val requestUrl = serviceUrl + "?MobileOS=" + mobile_os + "&MobileApp=" + mobile_app +
+                    "&_type=" + type + "&contentId=" + contentId + "&contentTypeId=" + contentTypeId +
+                    "&numOfRows=" + num_of_rows + "&pageNo=" + page_no + "&serviceKey=" + serviceKey
+
+            lateinit var page : String // url 주소 통해 전달받은 내용 저장할 변수
+
+            class getDangerGrade: AsyncTask<Void, Void, Void>() {
+                override fun doInBackground(vararg p0: Void?): Void? {
+
+                    // 데이터 스트림 형태로 가져오기
+                    val stream = URL(requestUrl).openStream()
+                    val bufReader = BufferedReader(InputStreamReader(stream, "UTF-8"))
+
+                    //한줄씩 읽어서 스트링 형태로 바꾼 후 page에 저장
+                    page = ""
+                    var line = bufReader.readLine()
+                    while(line != null){
+                        page += line
+                        line = bufReader.readLine()
+                    }
+
+                    return null
+                }
+
+                override fun onPostExecute(result: Void?) {
+                    super.onPostExecute(result)
+
+                    var tagSubNum = false
+                    var tagSubContentId = false
+                    var tagSubName = false
+
+                    var subNum = 0
+                    var subContentId = 0
+                    var subName = ""
+
+                    var factory = XmlPullParserFactory.newInstance() // 파서 생성
+                    factory.isNamespaceAware = true // 파서 설정
+                    var xpp = factory.newPullParser() // xml 파서
+
+                    // 파싱하기
+                    xpp.setInput(StringReader(page))
+
+                    // 파싱 진행
+                    var eventType = xpp.eventType
+                    while(eventType != XmlPullParser.END_DOCUMENT) {
+                        if (eventType == XmlPullParser.START_DOCUMENT){}
+                        else if(eventType == XmlPullParser.START_TAG) {
+                            var tagName = xpp.name
+
+                            if(tagName.equals("subnum")) tagSubNum = true
+                            else if(tagName.equals("subcontentid")) tagSubContentId = true
+                            else if(tagName.equals("subname")) tagSubName = true
+                        }
+
+                        if(eventType == XmlPullParser.TEXT) {
+                            if(tagSubNum) {
+                                subNum = xpp.text.toString().toInt()
+                                tagSubNum = false
+                            }
+                            else if(tagSubContentId) {
+                                subContentId = xpp.text.toString().toInt()
+                                tagSubContentId = false
+                            }
+                            else if(tagSubName) {
+                                subName = xpp.text
+
+                                subCourseDataList.add(subCourseDatas(subNum, subContentId, subName, nearStation))
+
+                                tagSubName = false
+                            }
+                        }
+                        if(eventType == XmlPullParser.END_TAG){}
+
+                        eventType = xpp.next()
+                    }
+                    subCourseDataList.sortBy { it.subNum }
+                    binding.courseInfoTabViewPager2.adapter = CourseInfoViewPagerAdapter(this@courseInfomationActivity, courseDataList, subCourseDataList, stationList)
+
+                    binding.courseInfoTabViewPager2.isUserInputEnabled = false
+
+                    TabLayoutMediator(binding.courseInfoTabLayout, binding.courseInfoTabViewPager2) { tab, position ->
+                        when(position){
+                            0 -> tab.text = "설명"
+                            1 -> tab.text = "코스 지도"
+                        }
+                    }.attach()
+                }
             }
-        }.attach()
+            getDangerGrade().execute()
+        }
+        fetchInfoXML(contentId, 25, nearStation)
 
         binding.courseInfoTitle.text = title
 
@@ -101,10 +199,15 @@ class courseInfomationActivity : AppCompatActivity() {
 }
 
 // 뷰페이저 어댑터
-class CourseInfoViewPagerAdapter(activity: FragmentActivity, courseDataList: MutableList<courseDatas>): FragmentStateAdapter(activity) {
+class CourseInfoViewPagerAdapter(
+    activity: FragmentActivity,
+    courseDataList: MutableList<courseDatas>,
+    subCourseDataList: MutableList<subCourseDatas>,
+    stationList: MutableList<stationDatas>
+): FragmentStateAdapter(activity) {
     val fragments: List<Fragment>
     init {
-        fragments = listOf(courseDescriptionFragment.newInstance(courseDataList), courseMapFragment.newInstance())
+        fragments = listOf(courseDescriptionFragment.newInstance(courseDataList), courseMapFragment.newInstance(subCourseDataList, stationList))
     }
     override fun getItemCount(): Int {
         return fragments.size
@@ -114,3 +217,10 @@ class CourseInfoViewPagerAdapter(activity: FragmentActivity, courseDataList: Mut
         return fragments[position]
     }
 }
+
+data class subCourseDatas(
+    val subNum: Int,
+    val contentId: Int,
+    val title: String,
+    val nearStation: String
+) : Serializable

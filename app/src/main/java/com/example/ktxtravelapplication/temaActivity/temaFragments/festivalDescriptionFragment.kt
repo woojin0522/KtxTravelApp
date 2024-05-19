@@ -81,7 +81,8 @@ class festivalDescriptionFragment : Fragment() {
         endDate = endDate?.slice(0..3) + "." + endDate?.slice(4..5) + "." + endDate?.slice(6..7)
         binding.festivalInfoDates.text = "축제/공연/행사 기간 : ${startDate} ~ ${endDate}"
 
-        binding.festivalInfoDescription.text = description
+        binding.festivalInfoDescription.text = description?.replace("<br>","")
+            ?.replace("<br />","")
 
         return binding.root
     }

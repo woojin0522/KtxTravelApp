@@ -137,7 +137,8 @@ class courseDescriptionFragment : Fragment() {
 
                         eventType = xpp.next()
                     }
-                    binding.courseInfoDescription.text = overview
+                    binding.courseInfoDescription.text = overview.replace("<br>","")
+                        .replace("<br />","")
                     binding.courseInfoDescription.movementMethod = ScrollingMovementMethod.getInstance()
                 }
             }
