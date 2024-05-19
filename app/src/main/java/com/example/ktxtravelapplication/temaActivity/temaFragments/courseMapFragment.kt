@@ -20,6 +20,7 @@ import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.FragmentCourseMapBinding
 import com.example.ktxtravelapplication.databinding.FragmentFestivalMapBinding
 import com.example.ktxtravelapplication.mapActivity.InfomationPlusActivity
+import com.example.ktxtravelapplication.mapActivity.LoadingDialog
 import com.example.ktxtravelapplication.temaActivity.CourseInfoViewPagerAdapter
 import com.example.ktxtravelapplication.temaActivity.courseInfomationActivity
 import com.example.ktxtravelapplication.temaActivity.festivalMapData
