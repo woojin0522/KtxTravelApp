@@ -231,7 +231,8 @@ class courseInfomationActivity : AppCompatActivity() {
         binding.courseInfoHomepage.paintFlags = Paint.UNDERLINE_TEXT_FLAG
         binding.courseInfoHomepage.setOnClickListener {
             binding.courseInfoHomepage.setTextColor(Color.BLUE)
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://korean.visitkorea.or.kr/search/search_list.do?keyword=${courseName}"))
+            val intent = Intent(Intent.ACTION_VIEW,
+                Uri.parse("https://korean.visitkorea.or.kr/search/search_list.do?keyword=${courseName}"))
             startActivity(intent)
         }
     }
