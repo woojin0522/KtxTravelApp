@@ -8,6 +8,7 @@ import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -19,6 +20,7 @@ import com.example.ktxtravelapplication.mapActivity.InfoViewPagerAdapter
 import com.example.ktxtravelapplication.mapActivity.LoadingDialog
 import com.example.ktxtravelapplication.temaActivity.temaFragments.festivalDescriptionFragment
 import com.example.ktxtravelapplication.temaActivity.temaFragments.festivalMapFragment
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -215,6 +217,18 @@ class festivalInfomationActivity : AppCompatActivity() {
             val opt = ActivityOptions.makeSceneTransitionAnimation(this, it, "imgTrans")
             startActivity(intent, opt.toBundle())
         }
+
+        binding.festivalInfoTabLayout.addOnTabSelectedListener(object :
+            TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                when(tab?.position){
+                    0 -> binding.festivalInfoImage.visibility = View.VISIBLE
+                    1 -> binding.festivalInfoImage.visibility = View.GONE
+                }
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
     }
 }
 

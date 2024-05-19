@@ -54,7 +54,6 @@
             android:layout_height="200dp"
             android:layout_gravity="center"
             android:transitionName="imgTrans"/>
-
         <LinearLayout
             android:id="@+id/festival_info_all_tab"
             android:layout_width="match_parent"

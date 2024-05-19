@@ -240,6 +240,8 @@ class CourseAdapter(val datas: MutableList<courseDatas>, val lineName: String) :
                 intent.putExtra("courseName", datas[pos].title)
                 intent.putExtra("contentId", datas[pos].contentId)
                 intent.putExtra("imageUrl", datas[pos].firstImage)
+                intent.putExtra("mapX", datas[pos].mapx)
+                intent.putExtra("mapY", datas[pos].mapy)
                 intent.putExtra("lineName", lineName)
                 intent.putExtra("nearStation", datas[pos].nearStation)
                 itemView.context.startActivity(intent)
@@ -247,12 +249,3 @@ class CourseAdapter(val datas: MutableList<courseDatas>, val lineName: String) :
         }
     }
 }
-
-data class courseDatas(
-    val title: String,
-    val contentId: Int,
-    val firstImage: String,
-    val mapx: Double,
-    val mapy: Double,
-    val nearStation: String
-)

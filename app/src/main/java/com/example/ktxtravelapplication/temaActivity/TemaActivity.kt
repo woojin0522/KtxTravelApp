@@ -31,7 +31,7 @@ class TemaActivity : AppCompatActivity() {
         //탭 레이아웃에서 탭을 선택할 때 이벤트 리스너
         TabLayoutMediator(binding.temaTabLayout, binding.temaTabViewPager2) { tab, position ->
             when(position) {
-                0 -> tab.text = "추천코스"
+                0 -> tab.text = "여행코스"
                 1 -> tab.text = "현재 진행중인 축제"
             }
         }.attach()
