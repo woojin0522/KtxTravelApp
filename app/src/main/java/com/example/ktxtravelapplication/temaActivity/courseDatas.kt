@@ -8,5 +8,5 @@ data class courseDatas(
     val firstImage: String,
     val mapx: Double,
     val mapy: Double,
-    val nearStation: String
+    val nearStation: String,
 ) : Serializable

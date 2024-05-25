@@ -27,7 +27,7 @@
         <activity
             android:name=".temaActivity.courseInfomationActivity"
             android:exported="false"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".temaActivity.temaCourseActivity"
             android:exported="false"

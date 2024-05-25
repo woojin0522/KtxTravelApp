@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -75,7 +76,7 @@ class temaFestivalActivitiy : AppCompatActivity() {
             val AllowEventDate = SimpleDateFormat("yyyyMMdd").format(currentTime).toString().toInt()
             val eventStartDate = "20230101"
             val serviceKey = "e46t%2FAlWggwGsJUF83Wf0XJ3VQijD7S8SNd%2Fs7TcbccStSNHqy1aQfXBRwMkttdlcNu7Aob3cDOGLa11VzRf7Q%3D%3D"
-            val serviceUrl = "https://apis.data.go.kr/B551011/KorService1/searchFestival1"
+            val serviceUrl = "http://apis.data.go.kr/B551011/KorService1/searchFestival1"
 
             val requestUrl = serviceUrl + "?numOfRows=" + num_of_rows + "&pageNo=" + page_no +
                     "&MobileOS=" + mobile_os + "&MobileApp=" + mobile_app +
@@ -237,8 +238,12 @@ class temaFestivalActivitiy : AppCompatActivity() {
                             var stationNum = shot.child("stationNum").value.toString().toInt()
                             stationList.add(stationDatas(stationName, latitude, longitude, stationNum))
                         }
+                        stationList.sortBy{it.stationNum}
+
+                        for(i in 0..stationList.size - 1){
+                            Log.d("test", "리스트 : ${stationList[i]} \n")
+                        }
                     }
-                    stationList.sortBy{it.stationNum}
 
                     fetchInfoXML(stationList)
                 }

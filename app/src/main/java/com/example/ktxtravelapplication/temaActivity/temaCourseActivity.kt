@@ -12,16 +12,11 @@ import com.bumptech.glide.Glide
 import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.ActivityTemaCourseBinding
 import com.example.ktxtravelapplication.databinding.CourseItemBinding
-import com.example.ktxtravelapplication.databinding.FestivalItemBinding
 import com.example.ktxtravelapplication.mapActivity.LoadingDialog
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedReader
@@ -29,7 +24,6 @@ import java.io.InputStreamReader
 import java.io.Serializable
 import java.io.StringReader
 import java.net.URL
-import java.text.SimpleDateFormat
 
 class temaCourseActivity : AppCompatActivity() {
     lateinit var stationList: MutableList<stationDatas>
@@ -63,10 +57,10 @@ class temaCourseActivity : AppCompatActivity() {
         else if(lineName == "동해선") linePath = "donghaeLine"
 
         fun fetchInfoXML(stationList: MutableList<stationDatas>) {
-            val dialog = LoadingDialog(this@temaCourseActivity)
+            val dialog = LoadingDialog(this)
             dialog.show()
 
-            for(i in 0..stationList.size - 1){
+            for(i in 0..stationList.size - 1) {
                 val num_of_rows = 10
                 val page_no = 1
                 val mobile_os = "AND"
@@ -74,12 +68,12 @@ class temaCourseActivity : AppCompatActivity() {
                 val type = ""
                 val listYN = "Y"
                 val arrange = "D"
-                val mapX = stationList[i].longitude
-                val mapY = stationList[i].latitude
-                val radius = 2000
-                val contentTypeId = 25
+                val mapX = stationList[i].longitude.toString()
+                val mapY = stationList[i].latitude.toString()
+                val radius = "2000"
+                val contentTypeId = "25"
                 val serviceKey = "e46t%2FAlWggwGsJUF83Wf0XJ3VQijD7S8SNd%2Fs7TcbccStSNHqy1aQfXBRwMkttdlcNu7Aob3cDOGLa11VzRf7Q%3D%3D"
-                val serviceUrl = "https://apis.data.go.kr/B551011/KorService1/locationBasedList1"
+                var serviceUrl = "https://apis.data.go.kr/B551011/KorService1/locationBasedList1"
 
                 val requestUrl = serviceUrl + "?numOfRows=" + num_of_rows + "&pageNo=" + page_no +
                         "&MobileOS=" + mobile_os + "&MobileApp=" + mobile_app +
@@ -184,26 +178,21 @@ class temaCourseActivity : AppCompatActivity() {
         }
 
         val myRef = database.getReference("ktxLines").child(linePath)
-        CoroutineScope(Dispatchers.IO).launch{
-            myRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    runBlocking {
-                        for(shot in snapshot.children){
-                            val stationName = shot.child("stationName").value.toString()
-                            val latitude = shot.child("latitude").value.toString().toDouble()
-                            val longitude = shot.child("longitude").value.toString().toDouble()
-                            var stationNum = shot.child("stationNum").value.toString().toInt()
-                            stationList.add(stationDatas(stationName, latitude, longitude, stationNum))
-                        }
-                    }
-                    stationList.sortBy{it.stationNum}
-
-                    fetchInfoXML(stationList)
+        myRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for(shot in snapshot.children){
+                    val stationName = shot.child("stationName").value.toString()
+                    val latitude = shot.child("latitude").value.toString().toDouble()
+                    val longitude = shot.child("longitude").value.toString().toDouble()
+                    var stationNum = shot.child("stationNum").value.toString().toInt()
+                    stationList.add(stationDatas(stationName, latitude, longitude, stationNum))
                 }
+                stationList.sortBy { it.stationNum }
 
-                override fun onCancelled(error: DatabaseError) {}
-            })
-        }
+                fetchInfoXML(stationList)
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        })
     }
 }
 
