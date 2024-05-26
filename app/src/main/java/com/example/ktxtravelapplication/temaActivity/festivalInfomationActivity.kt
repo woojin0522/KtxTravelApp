@@ -26,6 +26,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import org.json.JSONObject
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedReader
@@ -95,7 +96,7 @@ class festivalInfomationActivity : AppCompatActivity() {
             // 관광지 정보 수집
             val mobile_os = "AND"
             val mobile_app = "AppTest"
-            val type = ""
+            val type = "json"
             val defaultYN = "Y"
             val firstImageYN = "N"
             val areacodeYN = "N"
@@ -122,14 +123,7 @@ class festivalInfomationActivity : AppCompatActivity() {
                     // 데이터 스트림 형태로 가져오기
                     val stream = URL(requestUrl).openStream()
                     val bufReader = BufferedReader(InputStreamReader(stream, "UTF-8"))
-
-                    //한줄씩 읽어서 스트링 형태로 바꾼 후 page에 저장
-                    page = ""
-                    var line = bufReader.readLine()
-                    while(line != null){
-                        page += line
-                        line = bufReader.readLine()
-                    }
+                    page = bufReader.readLine()
 
                     return null
                 }
@@ -137,63 +131,40 @@ class festivalInfomationActivity : AppCompatActivity() {
                 override fun onPostExecute(result: Void?) {
                     super.onPostExecute(result)
 
-                    var tagHomepage = false
-                    var tagOverview = false
-                    var homepageUrl = ""
-                    var overview = ""
+                    val json = JSONObject(page).getJSONObject("response")
+                        .getJSONObject("body")
+                    if(json.get("items").toString() == ""){}
+                    else {
+                        val jsonArray = json.getJSONObject("items").getJSONArray("item")
+                        for(j in 0..jsonArray.length() - 1){
+                            val jsonObject = jsonArray.getJSONObject(j)
+                            var homepageUrl = jsonObject.getString("homepage")
+                            var overview = jsonObject.getString("overview")
 
-                    var factory = XmlPullParserFactory.newInstance() // 파서 생성
-                    factory.isNamespaceAware = true // 파서 설정
-                    var xpp = factory.newPullParser() // xml 파서
-
-                    // 파싱하기
-                    xpp.setInput(StringReader(page))
-
-                    // 파싱 진행
-                    var eventType = xpp.eventType
-                    while(eventType != XmlPullParser.END_DOCUMENT) {
-                        if (eventType == XmlPullParser.START_DOCUMENT){}
-                        else if(eventType == XmlPullParser.START_TAG) {
-                            var tagName = xpp.name
-
-                            if(tagName.equals("homepage")) tagHomepage = true
-                            else if(tagName.equals("overview")) tagOverview = true
-                        }
-
-                        if(eventType == XmlPullParser.TEXT) {
-                            if(tagHomepage) {
-                                homepageUrl = xpp.text
-                                tagHomepage = false
+                            var homepageUrl1 = homepageUrl.split("href=")
+                            var homepageUrl3 = ""
+                            if(homepageUrl1.size > 1) {
+                                var homepageUrl2 = homepageUrl1[1].split('"')
+                                homepageUrl3 = homepageUrl2[1]
                             }
-                            else if(tagOverview) {
-                                overview = xpp.text
-                                tagOverview = false
-                            }
-                        }
-                        if(eventType == XmlPullParser.END_TAG){}
 
-                        eventType = xpp.next()
-                    }
-                    var homepageUrl1 = homepageUrl.split("href=")
-                    var homepageUrl3 = ""
-                    if(homepageUrl1.size > 1) {
-                        var homepageUrl2 = homepageUrl1[1].split('"')
-                        homepageUrl3 = homepageUrl2[1]
+                            dialog.dismiss()
+                            festivalInfoList.add(homepageUrl3)
+                            festivalInfoList.add(overview)
+
+                            binding.festivalInfoTabViewPager2.adapter = FestivalInfoViewPagerAdapter(this@festivalInfomationActivity, festivalInfoList, festivalMapDataList, imageUrl)
+                            binding.festivalInfoTabViewPager2.isUserInputEnabled = false
+
+                            TabLayoutMediator(binding.festivalInfoTabLayout, binding.festivalInfoTabViewPager2) { tab, position ->
+                                when(position) {
+                                    0 -> tab.text = "설명"
+                                    1 -> tab.text = "개최 장소"
+                                }
+                            }.attach()
+                        }
                     }
 
-                    dialog.dismiss()
-                    festivalInfoList.add(homepageUrl3)
-                    festivalInfoList.add(overview)
 
-                    binding.festivalInfoTabViewPager2.adapter = FestivalInfoViewPagerAdapter(this@festivalInfomationActivity, festivalInfoList, festivalMapDataList, imageUrl)
-                    binding.festivalInfoTabViewPager2.isUserInputEnabled = false
-
-                    TabLayoutMediator(binding.festivalInfoTabLayout, binding.festivalInfoTabViewPager2) { tab, position ->
-                        when(position) {
-                            0 -> tab.text = "설명"
-                            1 -> tab.text = "개최 장소"
-                        }
-                    }.attach()
                 }
             }
             getDangerGrade().execute()
@@ -201,34 +172,6 @@ class festivalInfomationActivity : AppCompatActivity() {
         fetchInfoXML(contentId, contentTypeId)
 
         binding.festivalInfoTitle.text = title
-
-        /*// glide 라이브러리를 이용한 url 이미지 불러오기
-        Glide.with(this)
-            .load(imageUrl) // 불러올 이미지 url
-            .placeholder(getDrawable(R.drawable.loading)) // 이미지 로딩 시작하기 전 표시할 이미지
-            .error(getDrawable(R.drawable.notimage)) // 로딩 에러 발생 시 표시할 이미지
-            .fallback(getDrawable(R.drawable.notimage)) // 로드할 때 url이 비어있을 경우 표시할 이미지
-            .into(binding.festivalInfoImage) // 이미지를 넣을 뷰
-
-        // 이미지 클릭시 확대
-        binding.festivalInfoImage.setOnClickListener {
-            val intent = Intent(this, InfoFullImageActivity::class.java)
-            intent.putExtra("imageUrl", imageUrl)
-            val opt = ActivityOptions.makeSceneTransitionAnimation(this, it, "imgTrans")
-            startActivity(intent, opt.toBundle())
-        }
-
-        binding.festivalInfoTabLayout.addOnTabSelectedListener(object :
-            TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                when(tab?.position){
-                    0 -> binding.festivalInfoImage.visibility = View.VISIBLE
-                    1 -> binding.festivalInfoImage.visibility = View.GONE
-                }
-            }
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
-        })*/
     }
 }
 

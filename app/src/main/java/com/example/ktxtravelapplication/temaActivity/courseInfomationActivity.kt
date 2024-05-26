@@ -27,6 +27,7 @@ import com.example.ktxtravelapplication.temaActivity.temaFragments.festivalMapFr
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
+import org.json.JSONObject
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedReader
@@ -66,10 +67,13 @@ class courseInfomationActivity : AppCompatActivity() {
         courseDataList.add(courseDatas(courseName, contentId, imageUrl, mapx, mapy, nearStation))
 
         fun fetchInfoXML(contentId: Int, contentTypeId: Int, nearStation: String) {
+            val dialog = LoadingDialog(this)
+            dialog.show()
+
             // 관광지 정보 수집
             val mobile_os = "AND"
             val mobile_app = "AppTest"
-            val type = ""
+            val type = "json"
             val num_of_rows = 20
             val page_no = 1
             val serviceKey = "e46t%2FAlWggwGsJUF83Wf0XJ3VQijD7S8SNd%2Fs7TcbccStSNHqy1aQfXBRwMkttdlcNu7Aob3cDOGLa11VzRf7Q%3D%3D"
@@ -87,14 +91,7 @@ class courseInfomationActivity : AppCompatActivity() {
                     // 데이터 스트림 형태로 가져오기
                     val stream = URL(requestUrl).openStream()
                     val bufReader = BufferedReader(InputStreamReader(stream, "UTF-8"))
-
-                    //한줄씩 읽어서 스트링 형태로 바꾼 후 page에 저장
-                    page = ""
-                    var line = bufReader.readLine()
-                    while(line != null){
-                        page += line
-                        line = bufReader.readLine()
-                    }
+                    page = bufReader.readLine()
 
                     return null
                 }
@@ -102,65 +99,34 @@ class courseInfomationActivity : AppCompatActivity() {
                 override fun onPostExecute(result: Void?) {
                     super.onPostExecute(result)
 
-                    var tagSubNum = false
-                    var tagSubContentId = false
-                    var tagSubName = false
+                    val json = JSONObject(page).getJSONObject("response")
+                        .getJSONObject("body")
+                    if(json.get("items").toString() == ""){}
+                    else {
+                        val jsonArray = json.getJSONObject("items").getJSONArray("item")
+                        for(j in 0..jsonArray.length() - 1){
+                            val jsonObject = jsonArray.getJSONObject(j)
+                            var subNum = jsonObject.getString("subnum").toInt()
+                            var subContentId = jsonObject.getString("subcontentid").toInt()
+                            var subName = jsonObject.getString("subname")
 
-                    var subNum = 0
-                    var subContentId = 0
-                    var subName = ""
-
-                    var factory = XmlPullParserFactory.newInstance() // 파서 생성
-                    factory.isNamespaceAware = true // 파서 설정
-                    var xpp = factory.newPullParser() // xml 파서
-
-                    // 파싱하기
-                    xpp.setInput(StringReader(page))
-
-                    // 파싱 진행
-                    var eventType = xpp.eventType
-                    while(eventType != XmlPullParser.END_DOCUMENT) {
-                        if (eventType == XmlPullParser.START_DOCUMENT){}
-                        else if(eventType == XmlPullParser.START_TAG) {
-                            var tagName = xpp.name
-
-                            if(tagName.equals("subnum")) tagSubNum = true
-                            else if(tagName.equals("subcontentid")) tagSubContentId = true
-                            else if(tagName.equals("subname")) tagSubName = true
+                            subCourseDataList.add(subCourseDatas(subNum, subContentId, subName, nearStation))
                         }
 
-                        if(eventType == XmlPullParser.TEXT) {
-                            if(tagSubNum) {
-                                subNum = xpp.text.toString().toInt()
-                                tagSubNum = false
-                            }
-                            else if(tagSubContentId) {
-                                subContentId = xpp.text.toString().toInt()
-                                tagSubContentId = false
-                            }
-                            else if(tagSubName) {
-                                subName = xpp.text
+                        dialog.dismiss()
 
-                                subCourseDataList.add(subCourseDatas(subNum, subContentId, subName, nearStation))
+                        subCourseDataList.sortBy { it.subNum }
+                        binding.courseInfoTabViewPager2.adapter = CourseInfoViewPagerAdapter(this@courseInfomationActivity, courseDataList, subCourseDataList, stationList)
 
-                                tagSubName = false
+                        binding.courseInfoTabViewPager2.isUserInputEnabled = false
+
+                        TabLayoutMediator(binding.courseInfoTabLayout, binding.courseInfoTabViewPager2) { tab, position ->
+                            when(position){
+                                0 -> tab.text = "설명"
+                                1 -> tab.text = "코스 지도"
                             }
-                        }
-                        if(eventType == XmlPullParser.END_TAG){}
-
-                        eventType = xpp.next()
+                        }.attach()
                     }
-                    subCourseDataList.sortBy { it.subNum }
-                    binding.courseInfoTabViewPager2.adapter = CourseInfoViewPagerAdapter(this@courseInfomationActivity, courseDataList, subCourseDataList, stationList)
-
-                    binding.courseInfoTabViewPager2.isUserInputEnabled = false
-
-                    TabLayoutMediator(binding.courseInfoTabLayout, binding.courseInfoTabViewPager2) { tab, position ->
-                        when(position){
-                            0 -> tab.text = "설명"
-                            1 -> tab.text = "코스 지도"
-                        }
-                    }.attach()
                 }
             }
             getDangerGrade().execute()

@@ -23,6 +23,7 @@ import com.example.ktxtravelapplication.mapActivity.InfoFullImageActivity
 import com.example.ktxtravelapplication.mapActivity.LoadingDialog
 import com.example.ktxtravelapplication.temaActivity.courseDatas
 import com.example.ktxtravelapplication.temaActivity.courseInfomationActivity
+import org.json.JSONObject
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedReader
@@ -69,7 +70,7 @@ class courseDescriptionFragment : Fragment() {
             // 관광지 정보 수집
             val mobile_os = "AND"
             val mobile_app = "AppTest"
-            val type = ""
+            val type = "json"
             val defaultYN = "Y"
             val firstImageYN = "N"
             val areacodeYN = "N"
@@ -96,14 +97,7 @@ class courseDescriptionFragment : Fragment() {
                     // 데이터 스트림 형태로 가져오기
                     val stream = URL(requestUrl).openStream()
                     val bufReader = BufferedReader(InputStreamReader(stream, "UTF-8"))
-
-                    //한줄씩 읽어서 스트링 형태로 바꾼 후 page에 저장
-                    page = ""
-                    var line = bufReader.readLine()
-                    while(line != null){
-                        page += line
-                        line = bufReader.readLine()
-                    }
+                    page = bufReader.readLine()
 
                     return null
                 }
@@ -111,39 +105,20 @@ class courseDescriptionFragment : Fragment() {
                 override fun onPostExecute(result: Void?) {
                     super.onPostExecute(result)
 
-                    var tagOverview = false
-                    var overview = ""
-
-                    var factory = XmlPullParserFactory.newInstance() // 파서 생성
-                    factory.isNamespaceAware = true // 파서 설정
-                    var xpp = factory.newPullParser() // xml 파서
-
-                    // 파싱하기
-                    xpp.setInput(StringReader(page))
-
-                    // 파싱 진행
-                    var eventType = xpp.eventType
-                    while(eventType != XmlPullParser.END_DOCUMENT) {
-                        if (eventType == XmlPullParser.START_DOCUMENT){}
-                        else if(eventType == XmlPullParser.START_TAG) {
-                            var tagName = xpp.name
-
-                            if(tagName.equals("overview")) tagOverview = true
+                    val json = JSONObject(page).getJSONObject("response")
+                        .getJSONObject("body")
+                    if(json.get("items").toString() == ""){}
+                    else {
+                        var overview = ""
+                        val jsonArray = json.getJSONObject("items").getJSONArray("item")
+                        for (j in 0..jsonArray.length() - 1) {
+                            val jsonObject = jsonArray.getJSONObject(j)
+                            overview = jsonObject.getString("overview")
                         }
-
-                        if(eventType == XmlPullParser.TEXT) {
-                            if(tagOverview) {
-                                overview = xpp.text
-                                tagOverview = false
-                            }
-                        }
-                        if(eventType == XmlPullParser.END_TAG){}
-
-                        eventType = xpp.next()
+                        binding.courseInfoDescription.text = overview.replace("<br>","")
+                            .replace("<br />","")
+                        binding.courseInfoDescription.movementMethod = ScrollingMovementMethod.getInstance()
                     }
-                    binding.courseInfoDescription.text = overview.replace("<br>","")
-                        .replace("<br />","")
-                    binding.courseInfoDescription.movementMethod = ScrollingMovementMethod.getInstance()
                 }
             }
             getDangerGrade().execute()
@@ -154,7 +129,7 @@ class courseDescriptionFragment : Fragment() {
             // 관광지 정보 수집
             val mobile_os = "AND"
             val mobile_app = "AppTest"
-            val type = ""
+            val type = "json"
             val num_of_rows = 10
             val page_no = 1
             val serviceKey = "e46t%2FAlWggwGsJUF83Wf0XJ3VQijD7S8SNd%2Fs7TcbccStSNHqy1aQfXBRwMkttdlcNu7Aob3cDOGLa11VzRf7Q%3D%3D"
@@ -172,14 +147,7 @@ class courseDescriptionFragment : Fragment() {
                     // 데이터 스트림 형태로 가져오기
                     val stream = URL(requestUrl).openStream()
                     val bufReader = BufferedReader(InputStreamReader(stream, "UTF-8"))
-
-                    //한줄씩 읽어서 스트링 형태로 바꾼 후 page에 저장
-                    page = ""
-                    var line = bufReader.readLine()
-                    while(line != null){
-                        page += line
-                        line = bufReader.readLine()
-                    }
+                    page = bufReader.readLine()
 
                     return null
                 }
@@ -187,45 +155,21 @@ class courseDescriptionFragment : Fragment() {
                 override fun onPostExecute(result: Void?) {
                     super.onPostExecute(result)
 
-                    var tagDistance = false
-                    var distance = ""
-                    var tagTakeTime = false
-                    var takeTime = ""
-
-                    var factory = XmlPullParserFactory.newInstance() // 파서 생성
-                    factory.isNamespaceAware = true // 파서 설정
-                    var xpp = factory.newPullParser() // xml 파서
-
-                    // 파싱하기
-                    xpp.setInput(StringReader(page))
-
-                    // 파싱 진행
-                    var eventType = xpp.eventType
-                    while(eventType != XmlPullParser.END_DOCUMENT) {
-                        if (eventType == XmlPullParser.START_DOCUMENT){}
-                        else if(eventType == XmlPullParser.START_TAG) {
-                            var tagName = xpp.name
-
-                            if(tagName.equals("distance")) tagDistance = true
-                            else if(tagName.equals("taketime")) tagTakeTime = true
+                    val json = JSONObject(page).getJSONObject("response")
+                        .getJSONObject("body")
+                    if(json.get("items").toString() == ""){}
+                    else {
+                        var distance = ""
+                        var takeTime = ""
+                        val jsonArray = json.getJSONObject("items").getJSONArray("item")
+                        for (j in 0..jsonArray.length() - 1) {
+                            val jsonObject = jsonArray.getJSONObject(j)
+                            distance = jsonObject.getString("distance")
+                            takeTime = jsonObject.getString("taketime")
                         }
-
-                        if(eventType == XmlPullParser.TEXT) {
-                            if(tagDistance) {
-                                distance = xpp.text
-                                tagDistance = false
-                            }
-                            else if(tagTakeTime) {
-                                takeTime = xpp.text
-                                tagTakeTime = false
-                            }
-                        }
-                        if(eventType == XmlPullParser.END_TAG){}
-
-                        eventType = xpp.next()
+                        binding.courseInfoDistance.text = "코스 총 길이 : ${distance}"
+                        binding.courseInfoTakeTime.text = "코스 총 소요시간 : ${takeTime}"
                     }
-                    binding.courseInfoDistance.text = "코스 총 길이 : ${distance}"
-                    binding.courseInfoTakeTime.text = "코스 총 소요시간 : ${takeTime}"
                 }
             }
             binding.courseInfoLoading.visibility = View.GONE

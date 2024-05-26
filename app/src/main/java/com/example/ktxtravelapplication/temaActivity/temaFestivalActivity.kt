@@ -22,6 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.json.JSONObject
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedReader
@@ -67,7 +68,7 @@ class temaFestivalActivitiy : AppCompatActivity() {
 
             val mobile_os = "AND"
             val mobile_app = "AppTest"
-            val type = ""
+            val type = "json"
             val num_of_rows = 100
             val page_no = 1
             val listYN = "Y"
@@ -90,14 +91,7 @@ class temaFestivalActivitiy : AppCompatActivity() {
                     // 데이터 스트림 형태로 가져오기
                     val stream = URL(requestUrl).openStream()
                     val bufReader = BufferedReader(InputStreamReader(stream, "UTF-8"))
-
-                    //한줄씩 읽어서 스트링 형태로 바꾼 후 page에 저장
-                    page = ""
-                    var line = bufReader.readLine()
-                    while(line != null){
-                        page += line
-                        line = bufReader.readLine()
-                    }
+                    page = bufReader.readLine()
 
                     return null
                 }
@@ -105,122 +99,40 @@ class temaFestivalActivitiy : AppCompatActivity() {
                 override fun onPostExecute(result: Void?) {
                     super.onPostExecute(result)
 
-                    var tagAddr1 = false
-                    var tagAddr2 = false
-                    var tagContentId = false
-                    var tagContentTypeId = false
-                    var tagEventStartDate = false
-                    var tagEventEndDate = false
-                    var tagFirstImage = false
-                    var tagMapx = false
-                    var tagMapy = false
-                    var tagTel = false
-                    var tagTitle = false
+                    val json = JSONObject(page).getJSONObject("response")
+                        .getJSONObject("body")
+                    if(json.get("items").toString() == ""){}
+                    else {
+                        val jsonArray = json.getJSONObject("items").getJSONArray("item")
+                        for(j in 0..jsonArray.length() - 1){
+                            val jsonObject = jsonArray.getJSONObject(j)
+                            var addr1 = jsonObject.getString("addr1")
+                            var addr2 = jsonObject.getString("addr2")
+                            var contentId = jsonObject.getString("contentid").toInt()
+                            var contentTypeId = jsonObject.getString("contenttypeid").toInt()
+                            var eventStartDate = jsonObject.getString("eventstartdate").toInt()
+                            var eventEndDate = jsonObject.getString("eventenddate").toInt()
+                            var firstImage = jsonObject.getString("firstimage")
+                            var mapx = jsonObject.getString("mapx").toDouble()
+                            var mapy = jsonObject.getString("mapy").toDouble()
+                            var tel = jsonObject.getString("tel")
+                            var title = jsonObject.getString("title")
 
-                    var addr1 = ""
-                    var addr2 = ""
-                    var contentId = 0
-                    var contentTypeId = 0
-                    var eventStartDate = 0
-                    var eventEndDate = 0
-                    var firstImage = ""
-                    var mapx = 0.0
-                    var mapy = 0.0
-                    var tel = ""
-                    var title = ""
-
-                    var factory = XmlPullParserFactory.newInstance() // 파서 생성
-                    factory.isNamespaceAware = true // 파서 설정
-                    var xpp = factory.newPullParser() // xml 파서
-
-                    // 파싱하기
-                    xpp.setInput(StringReader(page))
-
-                    // 파싱 진행
-                    var eventType = xpp.eventType
-                    while(eventType != XmlPullParser.END_DOCUMENT) {
-                        if (eventType == XmlPullParser.START_DOCUMENT){}
-                        else if(eventType == XmlPullParser.START_TAG) {
-                            var tagName = xpp.name
-
-                            if(tagName.equals("addr1")) tagAddr1 = true
-                            else if(tagName.equals("addr2")) tagAddr2 = true
-                            else if(tagName.equals("contentid")) tagContentId = true
-                            else if(tagName.equals("contenttypeid")) tagContentTypeId = true
-                            else if(tagName.equals("eventstartdate")) tagEventStartDate = true
-                            else if(tagName.equals("eventenddate")) tagEventEndDate = true
-                            else if(tagName.equals("firstimage")) tagFirstImage = true
-                            else if(tagName.equals("mapx")) tagMapx = true
-                            else if(tagName.equals("mapy")) tagMapy = true
-                            else if(tagName.equals("tel")) tagTel = true
-                            else if(tagName.equals("title")) tagTitle = true
-                        }
-
-                        if(eventType == XmlPullParser.TEXT) {
-                            if(tagAddr1) {
-                                addr1 = xpp.text
-                                tagAddr1 = false
-                            }
-                            else if(tagAddr2) {
-                                addr2 = xpp.text
-                                tagAddr2 = false
-                            }
-                            else if(tagContentId) {
-                                contentId = xpp.text.toInt()
-                                tagContentId = false
-                            }
-                            else if(tagContentTypeId) {
-                                contentTypeId = xpp.text.toInt()
-                                tagContentTypeId = false
-                            }
-                            else if(tagEventStartDate) {
-                                eventStartDate = xpp.text.toInt()
-                                tagEventStartDate = false
-                            }
-                            else if(tagEventEndDate) {
-                                eventEndDate = xpp.text.toInt()
-                                tagEventEndDate = false
-                            }
-                            else if(tagFirstImage) {
-                                firstImage = xpp.text
-                                tagFirstImage = false
-                            }
-                            else if(tagMapx) {
-                                mapx = xpp.text.toDouble()
-                                tagMapx = false
-                            }
-                            else if(tagMapy) {
-                                mapy = xpp.text.toDouble()
-                                tagMapy = false
-                            }
-                            else if(tagTel) {
-                                tel = xpp.text
-                                tagTel = false
-                            }
-                            else if(tagTitle) {
-                                title = xpp.text
-
-                                if(eventEndDate - AllowEventDate >= 1 && eventStartDate - AllowEventDate <= 100){
-                                    for(i in 0..stationList.size - 1){
-                                        if((mapx - stationList[i].longitude > -0.03 && mapx - stationList[i].longitude < 0.03) &&
-                                            (mapy - stationList[i].latitude > -0.03 && mapy - stationList[i].latitude < 0.03)){
-                                            festivalList.add(festivalDatas(addr1 + addr2, contentId, contentTypeId,
-                                                eventStartDate, eventEndDate, firstImage, mapx, mapy, tel, title, stationList[i].stationName))
-                                        }
+                            if(eventEndDate - AllowEventDate >= 1 && eventStartDate - AllowEventDate <= 100){
+                                for(i in 0..stationList.size - 1){
+                                    if((mapx - stationList[i].longitude > -0.03 && mapx - stationList[i].longitude < 0.03) &&
+                                        (mapy - stationList[i].latitude > -0.03 && mapy - stationList[i].latitude < 0.03)){
+                                        festivalList.add(festivalDatas(addr1 + addr2, contentId, contentTypeId,
+                                            eventStartDate, eventEndDate, firstImage, mapx, mapy, tel, title, stationList[i].stationName))
                                     }
                                 }
-
-                                tagTitle = false
                             }
                         }
-                        if(eventType == XmlPullParser.END_TAG){}
+                        binding.festivalRecyclerView.adapter = festivalAdapter(festivalList, linePath)
+                        binding.festivalRecyclerView.layoutManager = LinearLayoutManager(this@temaFestivalActivitiy)
 
-                        eventType = xpp.next()
+                        dialog.dismiss()
                     }
-                    binding.festivalRecyclerView.adapter = festivalAdapter(festivalList, linePath)
-                    binding.festivalRecyclerView.layoutManager = LinearLayoutManager(this@temaFestivalActivitiy)
-
-                    dialog.dismiss()
                 }
             }
             getDangerGrade().execute()
