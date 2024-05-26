@@ -19,4 +19,13 @@
         android:textSize="30dp"
         android:layout_gravity="center"
         android:layout_marginTop="60dp" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="-Use- \n● 네이버지도 API \n● 한국관광공사 TourAPI"
+        android:textAlignment="center"
+        android:textSize="12dp"
+        android:layout_gravity="right|bottom"
+        android:layout_margin="5dp" />
+
 </FrameLayout>
