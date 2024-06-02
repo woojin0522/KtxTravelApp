@@ -20,7 +20,7 @@
                 android:layout_gravity="center"
                 android:theme="@style/AppTheme">
                 <androidx.appcompat.widget.AppCompatImageButton
-                    android:id="@+id/tema_backBtn"
+                    android:id="@+id/tema_festival_backBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"

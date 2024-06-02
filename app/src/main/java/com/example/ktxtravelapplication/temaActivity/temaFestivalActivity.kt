@@ -44,6 +44,10 @@ class temaFestivalActivitiy : AppCompatActivity() {
 
         setContentView(binding.root)
 
+        binding.temaFestivalBackBtn.setOnClickListener {
+            finish()
+        }
+
         festivalList = mutableListOf()
         stationList = mutableListOf()
 

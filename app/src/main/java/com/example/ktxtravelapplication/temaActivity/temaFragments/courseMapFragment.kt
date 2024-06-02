@@ -151,6 +151,7 @@ class courseMapFragment : Fragment() {
                         super.onPostExecute(result)
 
                         var tagTitle = false
+                        var tagTel = false
                         var tagHomepage = false
                         var tagFirstImage = false
                         var tagAddr1 = false
@@ -160,6 +161,7 @@ class courseMapFragment : Fragment() {
                         var tagOverview = false
 
                         var title = ""
+                        var tel = ""
                         var homepage = ""
                         var firstImage = ""
                         var addr1 = ""
@@ -183,6 +185,7 @@ class courseMapFragment : Fragment() {
                                 var tagName = xpp.name
 
                                 if(tagName.equals("title")) tagTitle = true
+                                else if(tagName.equals("tel")) tagTel = true
                                 else if(tagName.equals("homepage")) tagHomepage = true
                                 else if(tagName.equals("firstimage")) tagFirstImage = true
                                 else if(tagName.equals("addr1")) tagAddr1 = true
@@ -196,6 +199,10 @@ class courseMapFragment : Fragment() {
                                 if(tagTitle) {
                                     title = xpp.text
                                     tagTitle = false
+                                }
+                                else if(tagTel){
+                                    tel = xpp.text
+                                    tagTel = false
                                 }
                                 else if(tagHomepage) {
                                     homepage = xpp.text
@@ -232,7 +239,7 @@ class courseMapFragment : Fragment() {
                                         homepageUrl3 = homepageUrl2[1]
                                     }
 
-                                    contentList.add(contentDatas(title, contentId, homepageUrl3, firstImage,
+                                    contentList.add(contentDatas(title, tel, contentId, homepageUrl3, firstImage,
                                         mapx, mapy, addr1+addr2, overview.replace("<br>","")
                                             .replace("<br />","")))
                                 }
@@ -292,6 +299,7 @@ class courseMapFragment : Fragment() {
                                         val intent = Intent(this@courseMapFragment.context, InfomationPlusActivity::class.java)
                                         intent.putExtra("infoTitle", "여행코스 상세정보")
                                         intent.putExtra("infoName", "관광지명 : ${contentList[i - 1].title}")
+                                        intent.putExtra("infoTel", "전화번호 : ${contentList[i - 1].tel}")
                                         intent.putExtra("infoAddress", "주소 : ${contentList[i - 1].addr}")
                                         intent.putExtra("infoContentId", contentList[i - 1].contentId)
                                         intent.putExtra("infoContentTypeId", contentTypeId)
@@ -377,6 +385,7 @@ class courseMapFragment : Fragment() {
 
 data class contentDatas(
     val title: String,
+    val tel: String,
     val contentId: Int,
     val homepage: String,
     val firstImage: String,

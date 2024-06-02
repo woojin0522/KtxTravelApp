@@ -38,6 +38,10 @@ class temaCourseActivity : AppCompatActivity() {
         setSupportActionBar(binding.temaCourseToolbar)
         supportActionBar?.setTitle("")
 
+        binding.temaCourseBackBtn.setOnClickListener {
+            finish()
+        }
+
         setContentView(binding.root)
 
         stationList = mutableListOf()

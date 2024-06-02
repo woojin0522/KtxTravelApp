@@ -20,6 +20,7 @@ import com.example.ktxtravelapplication.mapActivity.InfoFullImageActivity
 import com.example.ktxtravelapplication.mapActivity.InfoLineFragment
 import com.example.ktxtravelapplication.mapActivity.LoadingDialog
 import com.example.ktxtravelapplication.temaActivity.festivalInfomationActivity
+import org.json.JSONObject
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedReader
@@ -57,6 +58,8 @@ class festivalDescriptionFragment : Fragment() {
         val festivalName = festivalInfoList?.get(0)
         val festivalAddr = festivalInfoList?.get(1)
         val festivalTel = festivalInfoList?.get(2)
+        val contentId = festivalInfoList?.get(3)
+        val contentTypeId = festivalInfoList?.get(4)
         var startDate = festivalInfoList?.get(5)
         var endDate = festivalInfoList?.get(6)
         val nearStation = festivalInfoList?.get(8)
@@ -104,6 +107,95 @@ class festivalDescriptionFragment : Fragment() {
             intent.putExtra("imageUrl", imageUrl)
             startActivity(intent)
         }
+
+        fun fetchInfoIntroXML(contentId: Int, contentTypeId: Int) {
+            // 관광지 정보 수집
+            val mobile_os = "AND"
+            val mobile_app = "AppTest"
+            val type = "json"
+            val num_of_rows = 10
+            val page_no = 1
+            val serviceKey = "e46t%2FAlWggwGsJUF83Wf0XJ3VQijD7S8SNd%2Fs7TcbccStSNHqy1aQfXBRwMkttdlcNu7Aob3cDOGLa11VzRf7Q%3D%3D"
+            val serviceUrl = "https://apis.data.go.kr/B551011/KorService1/detailIntro1"
+
+            val requestUrl = serviceUrl + "?MobileOS=" + mobile_os + "&MobileApp=" + mobile_app +
+                    "&_type=" + type + "&contentId=" + contentId + "&contentTypeId=" + contentTypeId +
+                    "&numOfRows=" + num_of_rows + "&pageNo=" + page_no + "&serviceKey=" + serviceKey
+
+            lateinit var page : String // url 주소 통해 전달받은 내용 저장할 변수
+
+            class getDangerGrade: AsyncTask<Void, Void, Void>() {
+                override fun doInBackground(vararg p0: Void?): Void? {
+
+                    // 데이터 스트림 형태로 가져오기
+                    val stream = URL(requestUrl).openStream()
+                    val bufReader = BufferedReader(InputStreamReader(stream, "UTF-8"))
+                    page = bufReader.readLine()
+
+                    return null
+                }
+
+                override fun onPostExecute(result: Void?) {
+                    super.onPostExecute(result)
+
+                    val json = JSONObject(page).getJSONObject("response")
+                        .getJSONObject("body")
+                    if(json.get("items").toString() == ""){}
+                    else {
+                        val jsonArray = json.getJSONObject("items").getJSONArray("item")
+                        for (j in 0..jsonArray.length() - 1) {
+                            val jsonObject = jsonArray.getJSONObject(j)
+                            if(jsonObject.getString("playtime").isNullOrEmpty() == false){
+                                binding.festivalInfoPlaytime.visibility = View.VISIBLE
+                                binding.festivalInfoPlaytime.text = "공연시간 : " + jsonObject.getString("playtime").replace("<br>","").replace("<br />","")
+                            }
+                            if(jsonObject.getString("eventplace").isNullOrEmpty() == false){
+                                binding.festivalInfoEventPlace.visibility = View.VISIBLE
+                                binding.festivalInfoEventPlace.text = "행사장 위치 : " + jsonObject.getString("eventplace").replace("<br>","").replace("<br />","")
+                            }
+                            if(jsonObject.getString("agelimit").isNullOrEmpty() == false){
+                                binding.festivalInfoAgelimit.visibility = View.VISIBLE
+                                binding.festivalInfoAgelimit.text = "관람 가능 연령 : " + jsonObject.getString("agelimit").replace("<br>","").replace("<br />","")
+                            }
+                            if(jsonObject.getString("bookingplace").isNullOrEmpty() == false){
+                                binding.festivalInfoBookingplace.visibility = View.VISIBLE
+                                binding.festivalInfoBookingplace.text = "예매처 : " + jsonObject.getString("bookingplace").replace("<br>","").replace("<br />","")
+                            }
+                            if(jsonObject.getString("placeinfo").isNullOrEmpty() == false){
+                                binding.festivalInfoPlaceinfo.visibility = View.VISIBLE
+                                binding.festivalInfoPlaceinfo.text = "행사장 위치 안내 : " + jsonObject.getString("placeinfo").replace("<br>","").replace("<br />","")
+                            }
+                            if(jsonObject.getString("subevent").isNullOrEmpty() == false){
+                                binding.festivalInfoSubevent.visibility = View.VISIBLE
+                                binding.festivalInfoSubevent.text = "부대행사 : " + jsonObject.getString("subevent").replace("<br>","").replace("<br />","")
+                            }
+                            if(jsonObject.getString("program").isNullOrEmpty() == false){
+                                binding.festivalInfoProgram.visibility = View.VISIBLE
+                                binding.festivalInfoProgram.text = "행사 프로그램 : " + jsonObject.getString("program").replace("<br>","").replace("<br />","")
+                            }
+                            if(jsonObject.getString("usetimefestival").isNullOrEmpty() == false){
+                                binding.festivalInfoUsetimefestival.visibility = View.VISIBLE
+                                binding.festivalInfoUsetimefestival.text = "이용 요금 : " + jsonObject.getString("usetimefestival").replace("<br>","").replace("<br />","")
+                            }
+                            if(jsonObject.getString("discountinfofestival").isNullOrEmpty() == false){
+                                binding.festivalInfoDiscountinfofestival.visibility = View.VISIBLE
+                                binding.festivalInfoDiscountinfofestival.text = "할인 정보 : " + jsonObject.getString("discountinfofestival").replace("<br>","").replace("<br />","")
+                            }
+                            if(jsonObject.getString("spendtimefestival").isNullOrEmpty() == false){
+                                binding.festivalInfoSpendtimefestival.visibility = View.VISIBLE
+                                binding.festivalInfoSpendtimefestival.text = "관람 소요시간 : " + jsonObject.getString("spendtimefestival").replace("<br>","").replace("<br />","")
+                            }
+                            if(jsonObject.getString("festivalgrade").isNullOrEmpty() == false){
+                                binding.festivalInfoFestivalgrade.visibility = View.VISIBLE
+                                binding.festivalInfoFestivalgrade.text = "축제 등급 : " + jsonObject.getString("festivalgrade").replace("<br>","").replace("<br />","")
+                            }
+                        }
+                    }
+                }
+            }
+            getDangerGrade().execute()
+        }
+        fetchInfoIntroXML(contentId!!.toInt(), contentTypeId!!.toInt())
 
         return binding.root
     }

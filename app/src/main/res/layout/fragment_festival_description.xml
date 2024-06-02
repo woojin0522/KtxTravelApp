@@ -30,49 +30,152 @@
             android:layout_marginHorizontal="5dp"
             android:text="주소 : "
             android:textSize="18dp"/>
-        <TextView
-            android:id="@+id/festival_info_tel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:text="전화번호 : "
-            android:textSize="18dp"/>
-        <TextView
-            android:id="@+id/festival_info_homepage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:text="홈페이지 : "
-            android:textSize="18dp"/>
-        <TextView
-            android:id="@+id/festival_info_nearStation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:text="주변역 : "
-            android:textSize="18dp" />
-        <TextView
-            android:id="@+id/festival_info_dates"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:text="축제/공연/행사 기간 :  ~  "
-            android:textSize="18dp" />
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/black"
             android:layout_marginTop="3dp"/>
-        <TextView
-            android:id="@+id/festival_info_description"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:layout_marginHorizontal="5dp"
-            android:text="설명"
-            android:textAlignment="textStart"
-            android:scrollbars="vertical"
-            android:autoLink="web"
-            android:textSize="16dp"/>
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/festival_info_tel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="전화번호 : "
+                    android:textSize="18dp"/>
+                <TextView
+                    android:id="@+id/festival_info_homepage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="홈페이지 : "
+                    android:textSize="18dp"/>
+                <TextView
+                    android:id="@+id/festival_info_nearStation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="주변역 : "
+                    android:textSize="18dp" />
+                <TextView
+                    android:id="@+id/festival_info_dates"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="축제/공연/행사 기간 :  ~  "
+                    android:textSize="18dp" />
+                <TextView
+                    android:id="@+id/festival_info_playtime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="공연시간 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/festival_info_eventPlace"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="행사장 위치 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/festival_info_agelimit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="관람 가능 연령 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/festival_info_bookingplace"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="예매처 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/festival_info_placeinfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="행사장 위치 안내 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/festival_info_subevent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="부대행사 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/festival_info_program"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="행사 프로그램 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/festival_info_usetimefestival"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="이용 요금 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/festival_info_discountinfofestival"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="할인 정보 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/festival_info_spendtimefestival"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="관람 소요시간 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/festival_info_festivalgrade"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="축제 등급 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/black"
+                    android:layout_marginTop="3dp"/>
+                <TextView
+                    android:id="@+id/festival_info_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="설명"
+                    android:textAlignment="textStart"
+                    android:scrollbars="vertical"
+                    android:autoLink="web"
+                    android:textSize="16dp"/>
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
 </FrameLayout>

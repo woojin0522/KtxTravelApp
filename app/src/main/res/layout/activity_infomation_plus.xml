@@ -86,60 +86,548 @@
             android:layout_marginHorizontal="5dp"
             android:text="주소 : "
             android:textSize="18dp"/>
-        <TextView
-            android:id="@+id/info_plus_tel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:text="전화번호 : "
-            android:textSize="18dp"/>
-        <TextView
-            android:id="@+id/info_plus_homepage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:text="홈페이지 : "
-            android:textSize="18dp"/>
-        <TextView
-            android:id="@+id/info_plus_dist"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:text="역에서의 거리 : "
-            android:textSize="18dp"/>
-        <TextView
-            android:id="@+id/info_plus_festival_nearStation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:text="주변역 : "
-            android:textSize="18dp"
-            android:visibility="gone"/>
-        <TextView
-            android:id="@+id/info_plus_festival_dates"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:text="축제/공연/행사 기간 :  ~  "
-            android:textSize="18dp"
-            android:visibility="gone"/>
         <View
-            android:id="@+id/info_plus_line"
+            android:id="@+id/info_plus_line1"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/black"
             android:layout_marginVertical="3dp"/>
-        <TextView
-            android:id="@+id/info_plus_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:text="역에 대한 설명"
-            android:textAlignment="textStart"
-            android:scrollbars="vertical"
-            android:autoLink="web"
-            android:textSize="16dp"/>
+        <ScrollView
+            android:id="@+id/info_scrollLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:scrollbars="vertical">
+                <TextView
+                    android:id="@+id/info_plus_tel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="전화번호 : "
+                    android:textSize="18dp"/>
+                <TextView
+                    android:id="@+id/info_plus_homepage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="홈페이지 : "
+                    android:textSize="18dp"/>
+                <TextView
+                    android:id="@+id/info_plus_dist"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="역에서의 거리 : "
+                    android:textSize="18dp"/>
+                <TextView
+                    android:id="@+id/info_plus_festival_nearStation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="주변역 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_festival_dates"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="축제/공연/행사 기간 :  ~  "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
 
+                <!-- 관광지 상세정보 영역 -->
+                <TextView
+                    android:id="@+id/info_plus_tour_useseason"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="이용시기 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_tour_usetime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="이용시간 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_tour_restdate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="휴무일 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_tour_parking"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="주차시설 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_tour_accomcount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="수용인원 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_tour_chkpet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="애완동물 동반 가능여부 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_tour_expguide"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="체험안내 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+
+                <!-- 축제 상세정보 영역 -->
+                <TextView
+                    android:id="@+id/info_plus_festival_playtime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="공연시간 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_festival_eventPlace"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="행사장 위치 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_festival_agelimit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="관람 가능 연령 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_festival_bookingplace"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="예매처 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_festival_placeinfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="행사장 위치 안내 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_festival_subevent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="부대행사 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_festival_program"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="행사 프로그램 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_festival_usetimefestival"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="이용 요금 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_festival_discountinfofestival"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="할인 정보 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_festival_spendtimefestival"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="관람 소요시간 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_festival_festivalgrade"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="축제 등급 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+
+                <!-- 숙소 상세정보 영역 -->
+                <TextView
+                    android:id="@+id/info_plus_accom_goodstay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="굿스테이 여부 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_benikia"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="베니키아 여부 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_hanok"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="한옥 여부 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_roomcount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="객실수 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_roomtype"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="객실유형 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_refundregulation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="환불규정 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_checkintime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="입실 시간 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_checkouttime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="퇴실 시간 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_chkcooking"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="객실내 취사 여부 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_seminar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="세미나실 여부 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_sports"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="스포츠 시설 여부 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_sauna"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="사우나 여부 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_beauty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="뷰티시설 여부 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_beverage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="식음료장 여부 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_karaoke"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="노래방 여부 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_barbecue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="바베큐장 여부 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_campfire"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="캠프파이어 여부 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_bicycle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="자전거 대여 여부 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_fitness"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="휘트니스 센터 여부 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_publicpc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="공용 PC실 여부 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_publicbath"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="공용 샤워실 여부 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_subfacility"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="부대시설 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_foodplace"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="식음료장 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_pickup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="픽업 서비스 여부 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_parkinglodging"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="주차시설 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_scalelodging"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="규모 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_accom_accomcountlodging"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="수용인원 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <!-- 음식점 상세정보 영역 -->
+                <TextView
+                    android:id="@+id/info_plus_food_seat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="좌석수 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_food_kidsfacility"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="어린이 놀이방 여부 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_food_firstmenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="대표메뉴 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_food_treatmenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="취급메뉴 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_food_smoking"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="흡연 가능 여부 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_food_packing"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="포장가능 여부 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_food_scalefood"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="규모 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_food_parkingfood"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="주차시설 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_food_opendatefood"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="개업일 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_food_opentimefood"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="영업시간 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_food_restdatefood"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="휴무일 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_food_discountinfofood"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="할인정보 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/info_plus_food_reservationfood"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="예약안내 : "
+                    android:textSize="18dp"
+                    android:visibility="gone"/>
+
+                <View
+                    android:id="@+id/info_plus_line2"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/black"
+                    android:layout_marginVertical="3dp"/>
+                <TextView
+                    android:id="@+id/info_plus_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="역에 대한 설명"
+                    android:textAlignment="textStart"
+                    android:scrollbars="vertical"
+                    android:autoLink="web"
+                    android:textSize="16dp"/>
+            </LinearLayout>
+        </ScrollView>
         <LinearLayout
             android:id="@+id/info_all_tab"
             android:layout_width="match_parent"
