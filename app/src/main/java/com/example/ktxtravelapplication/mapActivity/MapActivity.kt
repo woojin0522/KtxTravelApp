@@ -245,14 +245,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     // 데이터 스트림 형태로 가져오기
                     val stream = URL(url).openStream()
                     val bufReader = BufferedReader(InputStreamReader(stream, "UTF-8"))
-
-                    //한줄씩 읽어서 스트링 형태로 바꾼 후 page에 저장
+                    page = bufReader.readLine()
+                    /*//한줄씩 읽어서 스트링 형태로 바꾼 후 page에 저장
                     page = ""
                     var line = bufReader.readLine()
                     while(line != null){
                         page += line
                         line = bufReader.readLine()
-                    }
+                    }*/
 
                     return null
                 }
@@ -261,7 +261,30 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 override fun onPostExecute(result: Void?) {
                     super.onPostExecute(result)
 
-                    var tagTitle = false
+                    val json = JSONObject(page).getJSONObject("response")
+                        .getJSONObject("body")
+                    if(json.get("items").toString() == ""){}
+                    else {
+                        val jsonArray = json.getJSONObject("items").getJSONArray("item")
+                        for (j in 0..jsonArray.length() - 1) {
+                            val jsonObject = jsonArray.getJSONObject(j)
+                            var firstimage = jsonObject.getString("firstimage")
+                            var title = jsonObject.getString("title")
+                            var addr1 = jsonObject.getString("addr1")
+                            var addr2 = jsonObject.getString("addr2")
+                            var dist = jsonObject.getString("dist")
+                            var mapx = jsonObject.getString("mapx")
+                            var mapy = jsonObject.getString("mapy")
+                            var tel = jsonObject.getString("tel")
+                            var contentId = jsonObject.getString("contentid")
+                            var contentTypeId = jsonObject.getString("contenttypeid")
+
+                            tourList.add(TourData(title, addr1, addr2, firstimage, dist.toDouble(), mapy.toDouble(), mapx.toDouble(),
+                                "","", tel,0, contentId.toInt(), contentTypeId.toInt(), nearStation))
+                        }
+                    }
+
+                    /*var tagTitle = false
                     var tagAddr1 = false
                     var tagAddr2 = false
                     var tagImage = false
@@ -358,7 +381,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                         if(eventType == XmlPullParser.END_TAG){}
 
                         eventType = xpp.next()
-                    }
+                    }*/
 
                     //관광지 데이터를 파이어베이스에 저장
                     var myRef = database.getReference("")
@@ -411,13 +434,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             val page_no = 1
             val mobile_os = "AND"
             val mobile_app = "AppTest"
-            val type = ""
+            val type = "json"
             val list_yn = "Y"
-            var arrange = "A"
-            if(contentNumber == 15){
-                arrange = "D"
-            }
-            val radius = "2000"
+            var arrange = "D"
+            val radius = "3000"
             val contentTypeId = contentNumber.toString()
             val serviceKey = "e46t%2FAlWggwGsJUF83Wf0XJ3VQijD7S8SNd%2Fs7TcbccStSNHqy1aQfXBRwMkttdlcNu7Aob3cDOGLa11VzRf7Q%3D%3D"
             val serviceUrl = "https://apis.data.go.kr/B551011/KorService1/locationBasedList1"

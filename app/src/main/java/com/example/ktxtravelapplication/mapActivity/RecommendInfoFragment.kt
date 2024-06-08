@@ -101,13 +101,15 @@ class RecommendInfoFragment : Fragment() {
                                     homepageUrl3 = homepageUrl2[1]
                                 }
 
-                                infoList.add(
-                                    TourData(title, addr, addr2, imageUri, dist.toDouble(), latitude.toDouble(),
-                                        longitude.toDouble(), infomation,homepageUrl3, tel,
-                                        likeCount.toInt(), contentId.toInt(), contentTypeId.toInt(), nearStation)
-                                )
+                                if(dist.toDouble() <= 2000){
+                                    infoList.add(
+                                        TourData(title, addr, addr2, imageUri, dist.toDouble(), latitude.toDouble(),
+                                            longitude.toDouble(), infomation,homepageUrl3, tel,
+                                            likeCount.toInt(), contentId.toInt(), contentTypeId.toInt(), nearStation)
+                                    )
 
-                                infoNumArray.add(IndexData(i.toInt(), likeCount.toInt()))
+                                    infoNumArray.add(IndexData(i.toInt(), likeCount.toInt()))
+                                }
                             }
                         }
                     }
