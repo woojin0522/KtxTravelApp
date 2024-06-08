@@ -21,12 +21,17 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.ActivityMapBinding
 import com.example.ktxtravelapplication.mapActivity.ktxLinesData.KtxLinesList
 import com.example.ktxtravelapplication.mapActivity.ktxLinesData.StationPositions
 import com.example.ktxtravelapplication.mapActivity.tourData.TourData
+import com.example.ktxtravelapplication.temaActivity.festivalAdapter
+import com.example.ktxtravelapplication.temaActivity.festivalDatas
+import com.example.ktxtravelapplication.temaActivity.festivalInfomationActivity
+import com.example.ktxtravelapplication.temaActivity.stationDatas
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -51,12 +56,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.json.JSONObject
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.StringReader
 import java.net.URL
+import java.text.SimpleDateFormat
 import kotlin.io.path.Path
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -73,6 +80,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var binding: ActivityMapBinding
     lateinit var saveLineName: String
     lateinit var saveInfoType: String
+    lateinit var lineList: MutableList<StationPositions>
     var maxDist = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -441,8 +449,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
-
-
         //----------------------------------------------------------------------------------
 
         fun drawClose(){
@@ -566,7 +572,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     infoType="festivalDatas"
 
                     //tourMarkerSetting(15)
-                    infoMarkerSetting(maxDist)
+                    //infoMarkerSetting(maxDist)
+                    festivalMarkerSetting(maxDist)
                     binding.markerDeleteBtn.text = "■ 축제마커 삭제하기"
                 }
             }
@@ -620,7 +627,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     tour_markers[i].map = null
                 }
                 tourList.clear()
-                binding.markerDeleteBtn.text = "■ 표시 마커  없음"
+                binding.markerDeleteBtn.text = "■ 표시 마커 없음"
             }
         }
 
@@ -636,8 +643,18 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 for(i in 0..tour_markers.size - 1) {
                     tour_markers[i].map = null
                 }
+                if(binding.markerDeleteBtn.text == "■ 표시 마커 없음"){
+                    if(infoType == "tourDatas") binding.markerDeleteBtn.text = "■ 관광지마커 삭제하기"
+                    if(infoType == "festivalDatas") binding.markerDeleteBtn.text = "■ 축제마커 삭제하기"
+                    if(infoType == "accommodationDatas") binding.markerDeleteBtn.text = "■ 숙박마커 삭제하기"
+                    if(infoType == "foodshopDatas") binding.markerDeleteBtn.text = "■ 음식점마커 삭제하기"
+                }
                 binding.mapMaxDistText.text = "${maxDist}m"
-                infoMarkerSetting(maxDist)
+                if(maxDist == 0){
+                    binding.markerDeleteBtn.text = "■ 표시 마커 없음"
+                }
+                if(infoType == "festivalDatas") festivalMarkerSetting(maxDist)
+                else infoMarkerSetting(maxDist)
             }
         })
 
@@ -831,7 +848,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     fun stationMarkerSetting(lineName: String){
         val myRef = database.getReference("ktxLines")
-        val lineList = mutableListOf<StationPositions>()
+        lineList = mutableListOf<StationPositions>()
         var lineArray = arrayListOf<StationPositions>()
         // 파이어베이스에서 데이터 호출
         myRef.addListenerForSingleValueEvent(object: ValueEventListener {
@@ -964,6 +981,144 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             override fun onCancelled(error: DatabaseError) {}
         })
+    }
+
+    fun festivalMarkerSetting(markerMaxDist: Int){
+        val mobile_os = "AND"
+        val mobile_app = "AppTest"
+        val type = "json"
+        val num_of_rows = 100
+        val page_no = 1
+        val listYN = "Y"
+        val arrange = "D"
+        val currentTime = System.currentTimeMillis()
+        val AllowEventDate = SimpleDateFormat("yyyyMMdd").format(currentTime).toString().toInt()
+        val eventStartDate = "20230101"
+        val serviceKey = "e46t%2FAlWggwGsJUF83Wf0XJ3VQijD7S8SNd%2Fs7TcbccStSNHqy1aQfXBRwMkttdlcNu7Aob3cDOGLa11VzRf7Q%3D%3D"
+        val serviceUrl = "http://apis.data.go.kr/B551011/KorService1/searchFestival1"
+
+        val requestUrl = serviceUrl + "?numOfRows=" + num_of_rows + "&pageNo=" + page_no +
+                "&MobileOS=" + mobile_os + "&MobileApp=" + mobile_app +
+                "&_type=" + type + "&listYN=" + listYN + "&arrange=" + arrange +
+                "&eventStartDate=" + eventStartDate + "&serviceKey=" + serviceKey
+
+        lateinit var page : String // url 주소 통해 전달받은 내용 저장할 변수
+        val festivalList = mutableListOf<festivalDatas>()
+        val infoMarkerImage = OverlayImage.fromResource(R.drawable.festivalmarker_removebg)
+        //xml 데이터 가져와서 파싱
+        // 외부에서 데이터 가져올 때 화면 계속 동작하도록 AsyncTask 이용
+        class getDangerGrade: AsyncTask<Void, Void, Void>() {
+            override fun doInBackground(vararg p0: Void?): Void? {
+                // 데이터 스트림 형태로 가져오기
+                val stream = URL(requestUrl).openStream()
+                val bufReader = BufferedReader(InputStreamReader(stream, "UTF-8"))
+                page = bufReader.readLine()
+
+                return null
+            }
+
+            override fun onPostExecute(result: Void?) {
+                super.onPostExecute(result)
+
+                val json = JSONObject(page).getJSONObject("response")
+                    .getJSONObject("body")
+                if(json.get("items").toString() == ""){}
+                else {
+                    val jsonArray = json.getJSONObject("items").getJSONArray("item")
+                    for(j in 0..jsonArray.length() - 1){
+                        val jsonObject = jsonArray.getJSONObject(j)
+                        var addr1 = jsonObject.getString("addr1")
+                        var addr2 = jsonObject.getString("addr2")
+                        var contentId = jsonObject.getString("contentid").toInt()
+                        var contentTypeId = jsonObject.getString("contenttypeid").toInt()
+                        var eventStartDate = jsonObject.getString("eventstartdate").toInt()
+                        var eventEndDate = jsonObject.getString("eventenddate").toInt()
+                        var firstImage = jsonObject.getString("firstimage")
+                        var mapx = jsonObject.getString("mapx").toDouble()
+                        var mapy = jsonObject.getString("mapy").toDouble()
+                        var tel = jsonObject.getString("tel")
+                        var title = jsonObject.getString("title")
+
+                        if(eventEndDate - AllowEventDate >= 1 && eventStartDate - AllowEventDate <= 100){
+                            for(i in 0..lineList.size - 1){
+                                if((mapx - lineList[i].longitude > -(markerMaxDist * 0.00001) && mapx - lineList[i].longitude < (markerMaxDist * 0.00001)) &&
+                                    (mapy - lineList[i].latitude > -(markerMaxDist * 0.00001) && mapy - lineList[i].latitude < (markerMaxDist * 0.00001))){
+                                    festivalList.add(festivalDatas(addr1 + addr2, contentId, contentTypeId,
+                                        eventStartDate, eventEndDate, firstImage, mapx, mapy, tel, title, lineList[i].stationName))
+                                }
+                            }
+                        }
+                    }
+
+                    for(i in 0..festivalList.size - 1) {
+                        tour_markers.add(Marker())
+                        tour_markers[i].position = LatLng(festivalList[i].mapy, festivalList[i].mapx)
+                        tour_markers[i].map = naverMap
+                        tour_markers[i].icon = infoMarkerImage
+                        tour_markers[i].width = 100
+                        tour_markers[i].height = 120
+                    }
+
+                    // 마커 클릭시 정보창 표시
+                    naverMap.setOnMapClickListener { pointF, latLng ->
+                        binding.infoWindowLayout.visibility = View.GONE
+                        binding.infoWindowLogoview.visibility = View.INVISIBLE
+                    }
+                    // 마커 클릭 이벤트 리스너
+                    val listener = Overlay.OnClickListener {overlay ->
+                        val marker = overlay as Marker
+
+                        for(i in 0..festivalList.size - 1) {
+                            if(marker.position == LatLng(festivalList[i].mapy, festivalList[i].mapx)){
+                                binding.infoWindowName.text = "축제/공연/행사명 : " + festivalList[i].title
+                                binding.infoWindowAddress.text = "주소: " + festivalList[i].addr
+                                for(j in 0..lineList.size - 1) {
+                                    if(festivalList[i].nearStation == lineList[j].stationName){
+                                        binding.infoWindowDist.text = "역에서 거리: " +
+                                                ((festivalList[i].mapx - lineList[j].longitude)*100000).toString().slice(0..3).replace(".", "") + "m"
+                                    }
+                                }
+                                binding.infoWindowDist.visibility = View.VISIBLE
+                                //binding.infoWindowDist.text = "역에서 거리: " + festivalList[i].dist.toInt() + "m"
+
+                                Glide.with(this@MapActivity)
+                                    .load(festivalList[i].firstImage)
+                                    .placeholder(getDrawable(R.drawable.loading)) // 이미지 로딩 시작하기 전 표시할 이미지
+                                    .error(getDrawable(R.drawable.notimage)) // 로딩 에러 발생 시 표시할 이미지
+                                    .fallback(getDrawable(R.drawable.notimage)) // 로드할 때 url이 비어있을 경우 표시할 이미지
+                                    .into(binding.infoWindowImage) // 이미지를 넣을 뷰
+
+                                binding.infoWindowLayout.setOnClickListener{
+                                    val intent = Intent(this@MapActivity, festivalInfomationActivity::class.java)
+                                    intent.putExtra("festivalName", "축제/공연/행사명 : " + festivalList[i].title)
+                                    intent.putExtra("festivalAddr", "주소 : " + festivalList[i].addr)
+                                    intent.putExtra("festivalTel", "전화번호 : " + festivalList[i].tel)
+                                    intent.putExtra("contentId", festivalList[i].contentId)
+                                    intent.putExtra("contentTypeId", festivalList[i].contentTypeId)
+                                    intent.putExtra("startDate", festivalList[i].eventStartDate)
+                                    intent.putExtra("endDate", festivalList[i].eventEndDate)
+                                    intent.putExtra("nearStation", festivalList[i].nearStation)
+                                    intent.putExtra("mapx", festivalList[i].mapx)
+                                    intent.putExtra("mapy", festivalList[i].mapy)
+                                    intent.putExtra("lineName", line)
+                                    intent.putExtra("imageUrl", festivalList[i].firstImage)
+                                    startActivity(intent)
+                                }
+                            }
+                        }
+                        binding.infoWindowLogoview.visibility = View.VISIBLE
+                        binding.infoWindowLayout.visibility = View.VISIBLE
+
+                        true
+                    }
+                    // 각 마커에 리스너 연결!@!
+                    for(i in 0..tour_markers.size - 1) {
+                        tour_markers[i].onClickListener = listener
+                    }
+                }
+            }
+        }
+        getDangerGrade().execute()
     }
 
     fun infoMarkerSetting(markerMaxDist: Int){
