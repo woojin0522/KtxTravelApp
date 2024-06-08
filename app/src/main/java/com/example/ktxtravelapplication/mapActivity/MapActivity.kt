@@ -592,8 +592,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     infoType="festivalDatas"
 
                     //tourMarkerSetting(15)
-                    //infoMarkerSetting(maxDist)
-                    festivalMarkerSetting(maxDist)
+                    infoMarkerSetting(maxDist)
+                    //festivalMarkerSetting(maxDist)
                     binding.markerDeleteBtn.text = "■ 축제마커 삭제하기"
                 }
             }
@@ -673,8 +673,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 if(maxDist == 0){
                     binding.markerDeleteBtn.text = "■ 표시 마커 없음"
                 }
-                if(infoType == "festivalDatas") festivalMarkerSetting(maxDist)
-                else infoMarkerSetting(maxDist)
+                //if(infoType == "festivalDatas") festivalMarkerSetting(maxDist) else
+                infoMarkerSetting(maxDist)
             }
         })
 
