@@ -2,21 +2,16 @@ package com.example.ktxtravelapplication.mapActivity
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.bumptech.glide.Glide
 import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.FragmentRecommendInfoBinding
-import com.example.ktxtravelapplication.databinding.StationItemBinding
 import com.example.ktxtravelapplication.databinding.TourItemBinding
 import com.example.ktxtravelapplication.mapActivity.ktxLinesData.StationPositions
 import com.example.ktxtravelapplication.mapActivity.tourData.TourData
@@ -24,13 +19,10 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlin.contracts.contract
 
 class RecommendInfoFragment : Fragment() {
     lateinit var database : FirebaseDatabase

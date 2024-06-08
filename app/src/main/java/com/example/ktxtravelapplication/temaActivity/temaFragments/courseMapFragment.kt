@@ -4,45 +4,27 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.AsyncTask
 import android.os.Bundle
-import android.text.Layout
-import android.text.method.ScrollingMovementMethod
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
-import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.FragmentCourseMapBinding
-import com.example.ktxtravelapplication.databinding.FragmentFestivalMapBinding
 import com.example.ktxtravelapplication.mapActivity.InfomationPlusActivity
-import com.example.ktxtravelapplication.mapActivity.LoadingDialog
-import com.example.ktxtravelapplication.temaActivity.CourseInfoViewPagerAdapter
-import com.example.ktxtravelapplication.temaActivity.courseInfomationActivity
-import com.example.ktxtravelapplication.temaActivity.festivalMapData
 import com.example.ktxtravelapplication.temaActivity.stationDatas
 import com.example.ktxtravelapplication.temaActivity.subCourseDatas
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.MapView
-import com.naver.maps.map.NaverMap
 import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.ArrowheadPathOverlay
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
-import com.naver.maps.map.overlay.PathOverlay
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.util.MarkerIcons
 import com.naver.maps.map.widget.LocationButtonView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import okhttp3.internal.wait
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedReader
@@ -50,7 +32,6 @@ import java.io.InputStreamReader
 import java.io.Serializable
 import java.io.StringReader
 import java.net.URL
-import kotlin.io.path.Path
 
 class courseMapFragment : Fragment() {
     private lateinit var mapView: MapView

@@ -1,39 +1,20 @@
 package com.example.ktxtravelapplication.temaActivity
 
-import android.app.ActivityOptions
-import android.content.Intent
-import android.graphics.Color
-import android.graphics.Paint
-import android.net.Uri
 import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.method.ScrollingMovementMethod
-import android.view.View
-import android.view.WindowManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.bumptech.glide.Glide
-import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.ActivityCourseInfomationBinding
-import com.example.ktxtravelapplication.mapActivity.InfoFullImageActivity
 import com.example.ktxtravelapplication.mapActivity.LoadingDialog
 import com.example.ktxtravelapplication.temaActivity.temaFragments.courseDescriptionFragment
 import com.example.ktxtravelapplication.temaActivity.temaFragments.courseMapFragment
-import com.example.ktxtravelapplication.temaActivity.temaFragments.festivalDescriptionFragment
-import com.example.ktxtravelapplication.temaActivity.temaFragments.festivalMapFragment
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
 import org.json.JSONObject
-import org.xmlpull.v1.XmlPullParser
-import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.Serializable
-import java.io.StringReader
 import java.net.URL
 
 class courseInfomationActivity : AppCompatActivity() {

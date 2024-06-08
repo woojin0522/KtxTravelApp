@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.ktxtravelapplication.databinding.FragmentTemaCourseBinding
 import com.example.ktxtravelapplication.databinding.TemaLineItemBinding
 import com.example.ktxtravelapplication.temaActivity.temaCourseActivity
-import com.example.ktxtravelapplication.temaActivity.temaFestivalActivitiy
 
 class temaCourseFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {

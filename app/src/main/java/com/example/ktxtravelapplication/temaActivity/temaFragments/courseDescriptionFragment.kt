@@ -1,7 +1,5 @@
 package com.example.ktxtravelapplication.temaActivity.temaFragments
 
-import android.app.ActivityOptions
-import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Paint
@@ -13,23 +11,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import android.view.WindowManager
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import com.bumptech.glide.Glide
 import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.FragmentCourseDescriptionBinding
 import com.example.ktxtravelapplication.mapActivity.InfoFullImageActivity
-import com.example.ktxtravelapplication.mapActivity.LoadingDialog
 import com.example.ktxtravelapplication.temaActivity.courseDatas
-import com.example.ktxtravelapplication.temaActivity.courseInfomationActivity
 import org.json.JSONObject
-import org.xmlpull.v1.XmlPullParser
-import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.Serializable
-import java.io.StringReader
 import java.net.URL
 
 class courseDescriptionFragment : Fragment() {

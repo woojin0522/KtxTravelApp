@@ -1,6 +1,5 @@
 package com.example.ktxtravelapplication.temaActivity.temaFragments
 
-import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Paint
@@ -17,15 +16,9 @@ import com.bumptech.glide.Glide
 import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.FragmentFestivalDescriptionBinding
 import com.example.ktxtravelapplication.mapActivity.InfoFullImageActivity
-import com.example.ktxtravelapplication.mapActivity.InfoLineFragment
-import com.example.ktxtravelapplication.mapActivity.LoadingDialog
-import com.example.ktxtravelapplication.temaActivity.festivalInfomationActivity
 import org.json.JSONObject
-import org.xmlpull.v1.XmlPullParser
-import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.io.StringReader
 import java.net.URL
 
 class festivalDescriptionFragment : Fragment() {

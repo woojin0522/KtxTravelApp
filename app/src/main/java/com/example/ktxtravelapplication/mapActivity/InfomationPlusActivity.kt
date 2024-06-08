@@ -10,7 +10,6 @@ import android.net.Uri
 import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.TextUtils.replace
 import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback

@@ -10,8 +10,6 @@ import android.net.NetworkCapabilities
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.view.MenuItem
 import android.view.View
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
@@ -21,17 +19,14 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.ktxtravelapplication.R
 import com.example.ktxtravelapplication.databinding.ActivityMapBinding
 import com.example.ktxtravelapplication.mapActivity.ktxLinesData.KtxLinesList
 import com.example.ktxtravelapplication.mapActivity.ktxLinesData.StationPositions
 import com.example.ktxtravelapplication.mapActivity.tourData.TourData
-import com.example.ktxtravelapplication.temaActivity.festivalAdapter
 import com.example.ktxtravelapplication.temaActivity.festivalDatas
 import com.example.ktxtravelapplication.temaActivity.festivalInfomationActivity
-import com.example.ktxtravelapplication.temaActivity.stationDatas
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -46,25 +41,16 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
-import com.naver.maps.map.overlay.MultipartPathOverlay
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.overlay.PathOverlay
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.widget.LocationButtonView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
-import org.xmlpull.v1.XmlPullParser
-import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.io.StringReader
 import java.net.URL
 import java.text.SimpleDateFormat
-import kotlin.io.path.Path
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var locationSource: FusedLocationSource
@@ -246,13 +232,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     val stream = URL(url).openStream()
                     val bufReader = BufferedReader(InputStreamReader(stream, "UTF-8"))
                     page = bufReader.readLine()
-                    /*//한줄씩 읽어서 스트링 형태로 바꾼 후 page에 저장
-                    page = ""
-                    var line = bufReader.readLine()
-                    while(line != null){
-                        page += line
-                        line = bufReader.readLine()
-                    }*/
 
                     return null
                 }
@@ -283,105 +262,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                                 "","", tel,0, contentId.toInt(), contentTypeId.toInt(), nearStation))
                         }
                     }
-
-                    /*var tagTitle = false
-                    var tagAddr1 = false
-                    var tagAddr2 = false
-                    var tagImage = false
-                    var tagDist = false
-                    var tagMapY = false
-                    var tagMapX = false
-                    var tagTel = false
-                    var tagContentId = false
-                    var tagContentTypeId = false
-
-                    var firstimage = ""
-                    var title = ""
-                    var addr1 = ""
-                    var addr2 = ""
-                    var dist = 0.0
-                    var mapx = 0.0
-                    var mapy = 0.0
-                    var tel = ""
-                    var infomation = ""
-                    var likeCount = 0
-                    var contentId = 0
-                    var contentTypeId = 0
-
-                    var factory = XmlPullParserFactory.newInstance() // 파서 생성
-                    factory.isNamespaceAware = true // 파서 설정
-                    var xpp = factory.newPullParser() // xml 파서
-
-                    // 파싱하기
-                    xpp.setInput(StringReader(page))
-
-                    // 파싱 진행
-                    var eventType = xpp.eventType
-                    while(eventType != XmlPullParser.END_DOCUMENT) {
-                        if (eventType == XmlPullParser.START_DOCUMENT){}
-                        else if(eventType == XmlPullParser.START_TAG) {
-                            var tagName = xpp.name
-
-                            if(tagName.equals("title")) tagTitle = true
-                            else if(tagName.equals("addr1")) tagAddr1 = true
-                            else if(tagName.equals("addr2")) tagAddr2 = true
-                            else if(tagName.equals("firstimage")) tagImage = true
-                            else if(tagName.equals("dist")) tagDist = true
-                            else if(tagName.equals("mapx")) tagMapX = true
-                            else if(tagName.equals("mapy")) tagMapY = true
-                            else if(tagName.equals("tel")) tagTel = true
-                            else if(tagName.equals("contentid")) tagContentId = true
-                            else if(tagName.equals("contenttypeid")) tagContentTypeId = true
-                        }
-
-                        if(eventType == XmlPullParser.TEXT) {
-                            if(tagImage) {
-                                firstimage = xpp.text
-                                tagImage = false
-                            }
-                            else if(tagTitle) {
-                                title = xpp.text
-                                tagTitle = false
-
-                                tourList.add(TourData(title, addr1, addr2, firstimage, dist, mapy, mapx,infomation,"",tel,likeCount, contentId, contentTypeId, nearStation))
-                            }
-                            else if(tagAddr1) {
-                                addr1 = xpp.text
-                                tagAddr1 = false
-                            }
-                            else if(tagAddr2) {
-                                addr2 = xpp.text
-                                tagAddr2 = false
-                            }
-                            else if(tagDist) {
-                                dist = xpp.text.toDouble()
-                                tagDist = false
-                            }
-                            else if(tagMapX){
-                                mapx = xpp.text.toDouble()
-                                tagMapX = false
-                            }
-                            else if(tagMapY) {
-                                mapy = xpp.text.toDouble()
-                                tagMapY = false
-                            }
-                            else if(tagTel) {
-                                tel = xpp.text
-                                tagTel = false
-                            }
-                            else if(tagContentId) {
-                                contentId = xpp.text.toInt()
-                                tagContentId = false
-                            }
-                            else if(tagContentTypeId) {
-                                contentTypeId = xpp.text.toInt()
-                                tagContentTypeId = false
-                            }
-                        }
-                        if(eventType == XmlPullParser.END_TAG){}
-
-                        eventType = xpp.next()
-                    }*/
 
                     //관광지 데이터를 파이어베이스에 저장
                     var myRef = database.getReference("")
