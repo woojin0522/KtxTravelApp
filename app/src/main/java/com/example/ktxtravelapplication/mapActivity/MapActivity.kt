@@ -749,6 +749,15 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     fun stationMarkerSetting(lineName: String){
         val myRef = database.getReference("ktxLines")
         lineList = mutableListOf<StationPositions>()
+
+        if(tour_markers.isEmpty() == false){
+            for(i in 0..tour_markers.size - 1) {
+                tour_markers[i].map = null
+            }
+            tourList.clear()
+            binding.markerDeleteBtn.text = "■ 표시 마커 없음"
+        }
+
         var lineArray = arrayListOf<StationPositions>()
         // 파이어베이스에서 데이터 호출
         myRef.addListenerForSingleValueEvent(object: ValueEventListener {
