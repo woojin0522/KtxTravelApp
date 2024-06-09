@@ -41,6 +41,7 @@
             android:layout_height="wrap_content"
             android:text="노선 : "
             android:textSize="20dp"
+            android:layout_marginTop="5dp"
             android:gravity="center"/>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/course_recyclerView"

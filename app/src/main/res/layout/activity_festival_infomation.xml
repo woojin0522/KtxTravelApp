@@ -46,7 +46,8 @@
             android:layout_height="wrap_content"
             android:text="상세 페이지입니다."
             android:textSize="20dp"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"/>
         <LinearLayout
             android:id="@+id/festival_info_all_tab"
             android:layout_width="match_parent"

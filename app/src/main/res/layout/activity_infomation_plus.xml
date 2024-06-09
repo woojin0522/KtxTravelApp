@@ -46,7 +46,8 @@
             android:layout_height="wrap_content"
             android:text="상세 페이지입니다."
             android:textSize="20dp"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"/>
         <ImageView
             android:id="@+id/info_image"
             android:src="@drawable/notimage"

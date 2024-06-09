@@ -14,7 +14,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="관광지 추천"
-            android:textSize="25dp"/>
+            android:textSize="25dp"
+            android:layout_marginTop="5dp"/>
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"

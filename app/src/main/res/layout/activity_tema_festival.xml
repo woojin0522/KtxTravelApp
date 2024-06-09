@@ -42,7 +42,8 @@
             android:layout_height="wrap_content"
             android:text="노선 : "
             android:textSize="20dp"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:layout_marginTop="5dp"/>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/festival_recyclerView"
             android:layout_width="match_parent"
