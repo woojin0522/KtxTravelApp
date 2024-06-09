@@ -673,6 +673,26 @@ class InfomationPlusActivity : AppCompatActivity() {
             binding.infoPlusDescription.text = description
             binding.infoPlusHomepage.paintFlags = Paint.UNDERLINE_TEXT_FLAG
             fetchInfoIntroXML(contentId, contentTypeId, "관광지")
+
+            // glide 라이브러리를 이용한 url 이미지 불러오기
+            Glide.with(this)
+                .load(infoImage) // 불러올 이미지 url
+                .placeholder(getDrawable(R.drawable.loading)) // 이미지 로딩 시작하기 전 표시할 이미지
+                .error(getDrawable(R.drawable.notimage)) // 로딩 에러 발생 시 표시할 이미지
+                .fallback(getDrawable(R.drawable.notimage)) // 로드할 때 url이 비어있을 경우 표시할 이미지
+                .into(binding.infoImage) // 이미지를 넣을 뷰
+
+            // 이미지 클릭시 확대
+            binding.infoImage.setOnClickListener {
+                val intent = Intent(this, InfoFullImageActivity::class.java)
+                intent.putExtra("imageUrl", infoImage)
+                val opt = ActivityOptions.makeSceneTransitionAnimation(this, it, "imgTrans")
+                startActivity(intent, opt.toBundle())
+            }
+
+            binding.infoBackBtn.setOnClickListener {
+                finish()
+            }
         }
         else if(infoTitle == "관광지 상세정보"){
             infoSetting()

@@ -439,7 +439,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             // 네비게이션에서 관광지표시 항목 클릭시
             else if(it.itemId == com.example.ktxtravelapplication.R.id.menu_item2) {
-                if(tour_line.isEmpty()){
+                if(lineList.isEmpty()){
                     Toast.makeText(this, "노선을 먼저 선택해주세요.", Toast.LENGTH_SHORT).show()
                 }
                 else {
@@ -458,7 +458,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             // 축제/공연/행사
             else if(it.itemId == com.example.ktxtravelapplication.R.id.menu_item3){
-                if(tour_line.isEmpty()){
+                if(lineList.isEmpty()){
                     Toast.makeText(this, "노선을 먼저 선택해주세요.", Toast.LENGTH_SHORT).show()
                 }
                 else{
@@ -479,7 +479,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             // 숙박
             else if(it.itemId == com.example.ktxtravelapplication.R.id.menu_item4){
-                if(tour_line.isEmpty()){
+                if(lineList.isEmpty()){
                     Toast.makeText(this, "노선을 먼저 선택해주세요.", Toast.LENGTH_SHORT).show()
                 }
                 else{
@@ -499,7 +499,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             // 음식점
             else if(it.itemId == com.example.ktxtravelapplication.R.id.menu_item5){
-                if(tour_line.isEmpty()){
+                if(lineList.isEmpty()){
                     Toast.makeText(this, "노선을 먼저 선택해주세요.", Toast.LENGTH_SHORT).show()
                 }
                 else{
@@ -1084,6 +1084,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     tour_markers[i].width = 100
                     tour_markers[i].height = 120
                 }
+
 
                 // 마커 클릭시 정보창 표시
                 naverMap.setOnMapClickListener { pointF, latLng ->
