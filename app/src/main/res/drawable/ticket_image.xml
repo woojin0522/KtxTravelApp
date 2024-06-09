@@ -2,5 +2,5 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@drawable/ticket_image3"
         android:height="72dp"
-        android:width="72dp"></item>
+        android:width="70dp"></item>
 </layer-list>
