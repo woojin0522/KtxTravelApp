@@ -46,6 +46,10 @@ import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.overlay.PathOverlay
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.widget.LocationButtonView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -553,7 +557,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 if(maxDist == 0){
                     binding.markerDeleteBtn.text = "■ 표시 마커 없음"
                 }
-                //if(infoType == "festivalDatas") festivalMarkerSetting(maxDist) else
+                /*if(infoType == "festivalDatas") festivalMarkerSetting(maxDist) else*/
                 infoMarkerSetting(maxDist)
             }
         })
@@ -1167,8 +1171,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     // 네이버 지도 객체 준비
     @UiThread
     override fun onMapReady(naverMap: NaverMap) {
-        val dialog = LoadingDialog(this@MapActivity)
-        dialog.show()
+        /*CoroutineScope(Main).launch {
+            val dialog = LoadingDialog(this@MapActivity)
+            dialog.show()
+            delay(1500)
+            dialog.dismiss()
+        }*/
 
         this.naverMap = naverMap
         naverMap.locationSource = locationSource
@@ -1227,8 +1235,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             "foodshopDatas" -> currentInfoType = "■ 음식점마커 삭제하기"
         }
         binding.markerDeleteBtn.text = currentInfoType
-
-        dialog.dismiss()
     }
 
     companion object {
