@@ -81,7 +81,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     // 네이버 지도
-    implementation("com.naver.maps:map-sdk:3.17.0")
+    implementation("com.naver.maps:map-sdk:3.20.0")
 
     implementation("com.github.bumptech.glide:glide:4.16.0")
 }

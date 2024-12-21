@@ -1,5 +1,6 @@
 package com.example.ktxtravelapplication.mapActivity
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
@@ -46,10 +47,6 @@ import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.overlay.PathOverlay
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.widget.LocationButtonView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -87,7 +84,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // 네트워크 접속 확인
         fun isNetworkAvailable() : Boolean {
-            val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val connectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 val nw = connectivityManager.activeNetwork ?: return false
                 val actNw = connectivityManager.getNetworkCapabilities(nw) ?: return false
@@ -116,7 +113,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             returnIntent.putExtra("ktxLine", line) // 선택된 ktx노선 값을 넘김
             returnIntent.putExtra("infoType", infoType) // 선택된 정보타입 값을 넘김
             returnIntent.putExtra("maxDist", maxDist)
-            setResult(Activity.RESULT_OK, returnIntent)
+            setResult(RESULT_OK, returnIntent)
             finish()
         }
 
@@ -369,7 +366,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         // 네비게이션 항목 선택시
         binding.mapNavView.setNavigationItemSelectedListener {
             // 네비게이션에서 ktx노선 항목 클릭시
-            if(it.itemId == com.example.ktxtravelapplication.R.id.menu_item1){
+            if(it.itemId == R.id.menu_item1){
                 AlertDialog.Builder(this).run {
                     setTitle("ktx 노선 선택")
                     // 라디오 선택 상자
@@ -442,7 +439,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
             // 네비게이션에서 관광지표시 항목 클릭시
-            else if(it.itemId == com.example.ktxtravelapplication.R.id.menu_item2) {
+            else if(it.itemId == R.id.menu_item2) {
                 if(lineList.isEmpty()){
                     Toast.makeText(this, "노선을 먼저 선택해주세요.", Toast.LENGTH_SHORT).show()
                 }
@@ -461,7 +458,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
             // 축제/공연/행사
-            else if(it.itemId == com.example.ktxtravelapplication.R.id.menu_item3){
+            else if(it.itemId == R.id.menu_item3){
                 if(lineList.isEmpty()){
                     Toast.makeText(this, "노선을 먼저 선택해주세요.", Toast.LENGTH_SHORT).show()
                 }
@@ -482,7 +479,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
             // 숙박
-            else if(it.itemId == com.example.ktxtravelapplication.R.id.menu_item4){
+            else if(it.itemId == R.id.menu_item4){
                 if(lineList.isEmpty()){
                     Toast.makeText(this, "노선을 먼저 선택해주세요.", Toast.LENGTH_SHORT).show()
                 }
@@ -502,7 +499,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
             // 음식점
-            else if(it.itemId == com.example.ktxtravelapplication.R.id.menu_item5){
+            else if(it.itemId == R.id.menu_item5){
                 if(lineList.isEmpty()){
                     Toast.makeText(this, "노선을 먼저 선택해주세요.", Toast.LENGTH_SHORT).show()
                 }
@@ -563,16 +560,17 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         })
 
         // 권한 가져오기
-        var permissions = arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION,
-            android.Manifest.permission.ACCESS_COARSE_LOCATION)
+        var permissions = arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION)
 
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
         // mapFragment 설정
         val fm = supportFragmentManager
-        val mapFragment = fm.findFragmentById(com.example.ktxtravelapplication.R.id.map_fragment) as MapFragment?
+        val mapFragment = fm.findFragmentById(R.id.map_fragment) as MapFragment?
             ?: MapFragment.newInstance().also {
-                fm.beginTransaction().add(com.example.ktxtravelapplication.R.id.map_fragment, it).commit()
+                fm.beginTransaction().add(R.id.map_fragment, it).commit()
             }
 
         // 네이버 객체 얻기
@@ -844,7 +842,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     binding.infoWindowLogoview.visibility = View.INVISIBLE
                 }
                 // 마커 클릭 이벤트 리스너입니다요~
-                val listener = Overlay.OnClickListener {overlay ->
+                val listener = Overlay.OnClickListener { overlay ->
                     val marker = overlay as Marker
 
                     for(i in 0..lineList.size - 1){
@@ -978,7 +976,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                         binding.infoWindowLogoview.visibility = View.INVISIBLE
                     }
                     // 마커 클릭 이벤트 리스너
-                    val listener = Overlay.OnClickListener {overlay ->
+                    val listener = Overlay.OnClickListener { overlay ->
                         val marker = overlay as Marker
 
                         for(i in 0..festivalList.size - 1) {
@@ -1105,7 +1103,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     binding.infoWindowLogoview.visibility = View.INVISIBLE
                 }
                 // 마커 클릭 이벤트 리스너
-                val listener = Overlay.OnClickListener {overlay ->
+                val listener = Overlay.OnClickListener { overlay ->
                     val marker = overlay as Marker
 
                     for(i in 0..infoList.size - 1) {
