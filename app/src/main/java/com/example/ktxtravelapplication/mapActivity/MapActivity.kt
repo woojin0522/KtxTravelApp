@@ -221,7 +221,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         firebaseInsert(KtxLinesList().donghaeLine)*/
         //---------------------------api 파싱 후 파이어베이스로 데이터 전달-----------------------
         // 관광지 정보 저장
-        fun fetchXML(url: String, contentNumber: Int, nearStation: String) {
+        /*fun fetchXML(url: String, contentNumber: Int, nearStation: String) {
             lateinit var page : String // url 주소 통해 전달받은 내용 저장할 변수
             //xml 데이터 가져와서 파싱
             // 외부에서 데이터 가져올 때 화면 계속 동작하도록 AsyncTask 이용
@@ -308,9 +308,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             Toast.makeText(this@MapActivity, "데이터베이스 저장완료", Toast.LENGTH_SHORT).show()
             getDangerGrade().execute()
-        }
+        }*/
 
-        fun tourMarkerSetting(contentNumber: Int){
+        /*fun tourMarkerSetting(contentNumber: Int){
             val num_of_rows = 20
             val page_no = 1
             val mobile_os = "AND"
@@ -348,7 +348,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 fetchXML(requestUrl, contentNumber, stationName)
             }
-        }
+        }*/
 
         //----------------------------------------------------------------------------------
 
