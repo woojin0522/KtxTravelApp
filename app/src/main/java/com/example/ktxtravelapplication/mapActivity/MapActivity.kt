@@ -175,8 +175,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         tour_markers = mutableListOf()
         tourList = mutableListOf()
 
-
-
         //----------------------------------------------------------------------------------
 
         fun drawClose(){
@@ -376,6 +374,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 if(maxDist == 0){
                     binding.markerDeleteBtn.text = "■ 표시 마커 없음"
                 }
+                /*if(infoType == "festivalDatas") festivalMarkerSetting(maxDist) else*/
                 infoMarkerSetting(maxDist)
             }
         })
