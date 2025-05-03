@@ -175,180 +175,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         tour_markers = mutableListOf()
         tourList = mutableListOf()
 
-        // ----------------------------------파이어스토어 사용시..--------------------------------
-        database = FirebaseDatabase.getInstance()
-        /* ktx노선 정보를 파이어베이스에 쓰기
-        val myRef = database.getReference("ktxLines")
 
-        fun firebaseInsert(ktxLinesList: MutableList<StationPositions>) {
-            var lineName = ""
-            if(ktxLinesList == KtxLinesList().gyeongbuLine) lineName = "gyeongbuLine"
-            else if(ktxLinesList == KtxLinesList().donghaeLine) lineName = "donghaeLine"
-            else if(ktxLinesList == KtxLinesList().gangneungLine) lineName = "gangneungLine"
-            else if(ktxLinesList == KtxLinesList().jungangLine) lineName = "jungangLine"
-            else if(ktxLinesList == KtxLinesList().jeollaLine) lineName = "jeollaLine"
-            else if(ktxLinesList == KtxLinesList().gyeongjeonLine) lineName = "gyeongjeonLine"
-            else if(ktxLinesList == KtxLinesList().honamLine) lineName = "honamLine"
-            else if(ktxLinesList == KtxLinesList().jungbuNaeryukLine) lineName = "jungbuNaeryukLine"
-
-            for(i in 0..ktxLinesList.size - 1) {
-                val stationNum = ktxLinesList[i].stationNum
-                val stationName = ktxLinesList[i].stationName
-                val stationEngName = ktxLinesList[i].stationEngName
-                val stationAddress = ktxLinesList[i].stationAddress
-                val latitude = ktxLinesList[i].latitude
-                val longitude = ktxLinesList[i].longitude
-                val stationInfomation = ktxLinesList[i].stationInfomation
-                val likeCount = ktxLinesList[i].likeCount
-
-                myRef.child(lineName).child(stationEngName).child("stationNum").setValue(stationNum)
-                myRef.child(lineName).child(stationEngName).child("stationName").setValue(stationName)
-                myRef.child(lineName).child(stationEngName).child("stationEngName").setValue(stationEngName)
-                myRef.child(lineName).child(stationEngName).child("stationAddress").setValue(stationAddress)
-                myRef.child(lineName).child(stationEngName).child("latitude").setValue(latitude)
-                myRef.child(lineName).child(stationEngName).child("longitude").setValue(longitude)
-                myRef.child(lineName).child(stationEngName).child("stationInfomation").setValue(stationInfomation)
-                myRef.child(lineName).child(stationEngName).child("likeCount").setValue(likeCount)
-            }
-        }
-        firebaseInsert(KtxLinesList().gyeongbuLine)
-        firebaseInsert(KtxLinesList().jeollaLine)
-        firebaseInsert(KtxLinesList().gangneungLine)
-        firebaseInsert(KtxLinesList().gyeongjeonLine)
-        firebaseInsert(KtxLinesList().honamLine)
-        firebaseInsert(KtxLinesList().jungangLine)
-        firebaseInsert(KtxLinesList().jungbuNaeryukLine)
-        firebaseInsert(KtxLinesList().donghaeLine)*/
-        //---------------------------api 파싱 후 파이어베이스로 데이터 전달-----------------------
-        // 관광지 정보 저장
-        /*fun fetchXML(url: String, contentNumber: Int, nearStation: String) {
-            lateinit var page : String // url 주소 통해 전달받은 내용 저장할 변수
-            //xml 데이터 가져와서 파싱
-            // 외부에서 데이터 가져올 때 화면 계속 동작하도록 AsyncTask 이용
-
-            class getDangerGrade: AsyncTask<Void, Void, Void>() {
-                //url이용해서 xml 읽어오기
-                override fun doInBackground(vararg p0: Void?): Void? {
-                    // 데이터 스트림 형태로 가져오기
-                    val stream = URL(url).openStream()
-                    val bufReader = BufferedReader(InputStreamReader(stream, "UTF-8"))
-                    page = bufReader.readLine()
-
-                    return null
-                }
-
-                // 읽어온 xml 파싱하기
-                override fun onPostExecute(result: Void?) {
-                    super.onPostExecute(result)
-
-                    val json = JSONObject(page).getJSONObject("response")
-                        .getJSONObject("body")
-                    if(json.get("items").toString() == ""){}
-                    else {
-                        val jsonArray = json.getJSONObject("items").getJSONArray("item")
-                        for (j in 0..jsonArray.length() - 1) {
-                            val jsonObject = jsonArray.getJSONObject(j)
-                            var firstimage = jsonObject.getString("firstimage")
-                            var title = jsonObject.getString("title")
-                            var addr1 = jsonObject.getString("addr1")
-                            var addr2 = jsonObject.getString("addr2")
-                            var dist = jsonObject.getString("dist")
-                            var mapx = jsonObject.getString("mapx")
-                            var mapy = jsonObject.getString("mapy")
-                            var tel = jsonObject.getString("tel")
-                            var contentId = jsonObject.getString("contentid")
-                            var contentTypeId = jsonObject.getString("contenttypeid")
-
-                            tourList.add(TourData(title, addr1, addr2, firstimage, dist.toDouble(), mapy.toDouble(), mapx.toDouble(),
-                                "","", tel,0, contentId.toInt(), contentTypeId.toInt(), nearStation))
-                        }
-                    }
-
-                    //관광지 데이터를 파이어베이스에 저장
-                    var myRef = database.getReference("")
-                    if(contentNumber == 12) {myRef = database.getReference("tourDatas")}
-                    else if(contentNumber == 15) {myRef = database.getReference("festivalDatas")} // 행사
-                    else if(contentNumber == 32) {myRef = database.getReference("accommodationDatas")} // 숙박
-                    else if(contentNumber == 39) {myRef = database.getReference("foodshopDatas")} // 음식점
-
-                    var lineName = line
-
-                    for(i in 0..tourList.size - 1) {
-                        val title = tourList[i].title.replace("[", "(").replace("]", ")").replace(".", "/")
-                        val addr1 = tourList[i].addr1.replace("[", "(").replace("]", ")").replace(".", "/")
-                        val addr2 = tourList[i].addr2?.replace("[", "(")?.replace("]", ")")?.replace(".", "/")
-                        val imageUri = tourList[i].imageUri?.replace("[", "(")?.replace("]", ")")
-                        val dist = tourList[i].dist
-                        val latitude = tourList[i].latitude
-                        val longitude = tourList[i].longitude
-                        val infomation = tourList[i].infomation
-                        val tel = tourList[i].tel
-                        val likeCount = tourList[i].likeCount
-                        val homepage = tourList[i].homepageUrl
-                        val contentId = tourList[i].contentId
-                        val contentTypeId = tourList[i].contentTypeId
-                        val nearStationName = tourList[i].nearStation
-
-                        myRef.child(lineName).child(i.toString()).child("title").setValue(title)
-                        myRef.child(lineName).child(i.toString()).child("addr1").setValue(addr1)
-                        myRef.child(lineName).child(i.toString()).child("addr2").setValue(addr2)
-                        myRef.child(lineName).child(i.toString()).child("imageUri").setValue(imageUri)
-                        myRef.child(lineName).child(i.toString()).child("dist").setValue(dist)
-                        myRef.child(lineName).child(i.toString()).child("latitude").setValue(latitude)
-                        myRef.child(lineName).child(i.toString()).child("longitude").setValue(longitude)
-                        myRef.child(lineName).child(i.toString()).child("infomation").setValue(infomation)
-                        myRef.child(lineName).child(i.toString()).child("tel").setValue(tel)
-                        myRef.child(lineName).child(i.toString()).child("likeCount").setValue(likeCount)
-                        myRef.child(lineName).child(i.toString()).child("contentId").setValue(contentId)
-                        myRef.child(lineName).child(i.toString()).child("contentTypeId").setValue(contentTypeId)
-                        myRef.child(lineName).child(i.toString()).child("homepage").setValue(homepage)
-                        myRef.child(lineName).child(i.toString()).child("nearStation").setValue(nearStationName)
-                    }
-                }
-            }
-            Toast.makeText(this@MapActivity, "데이터베이스 저장완료", Toast.LENGTH_SHORT).show()
-            getDangerGrade().execute()
-        }*/
-
-        /*fun tourMarkerSetting(contentNumber: Int){
-            val num_of_rows = 20
-            val page_no = 1
-            val mobile_os = "AND"
-            val mobile_app = "AppTest"
-            val type = "json"
-            val list_yn = "Y"
-            var arrange = "D"
-            val radius = "3000"
-            val contentTypeId = contentNumber.toString()
-            val serviceKey = "e46t%2FAlWggwGsJUF83Wf0XJ3VQijD7S8SNd%2Fs7TcbccStSNHqy1aQfXBRwMkttdlcNu7Aob3cDOGLa11VzRf7Q%3D%3D"
-            val serviceUrl = "https://apis.data.go.kr/B551011/KorService1/locationBasedList1"
-
-            if(tourList.isEmpty() == false) {
-                tourList.clear()
-            }
-
-            for(i in 0..tour_line.size - 1) {
-                val mapx = tour_line[i].longitude.toString()
-                val mapy = tour_line[i].latitude.toString()
-                val stationName = tour_line[i].stationName
-
-                val requestUrl = serviceUrl +
-                        "?numOfRows=" + num_of_rows +
-                        "&pageNo=" + page_no +
-                        "&MobileOS=" + mobile_os +
-                        "&MobileApp=" + mobile_app +
-                        "&_type=" + type +
-                        "&listYN=" + list_yn +
-                        "&arrange=" + arrange +
-                        "&mapX=" + mapx +
-                        "&mapY=" + mapy +
-                        "&radius=" + radius +
-                        "&contentTypeId=" + contentTypeId +
-                        "&serviceKey=" + serviceKey
-
-                fetchXML(requestUrl, contentNumber, stationName)
-            }
-        }*/
 
         //----------------------------------------------------------------------------------
 
@@ -452,7 +279,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     drawClose()
                     infoType="tourDatas"
 
-                    //tourMarkerSetting(12)
                     infoMarkerSetting(maxDist)
                     binding.markerDeleteBtn.text = "■ 관광지마커 삭제하기"
                 }
@@ -472,9 +298,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     infoType="festivalDatas"
 
-                    //tourMarkerSetting(15)
                     infoMarkerSetting(maxDist)
-                    //festivalMarkerSetting(maxDist)
                     binding.markerDeleteBtn.text = "■ 축제마커 삭제하기"
                 }
             }
@@ -493,7 +317,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     infoType="accommodationDatas"
 
-                    //tourMarkerSetting(32)
                     infoMarkerSetting(maxDist)
                     binding.markerDeleteBtn.text = "■ 숙박마커 삭제하기"
                 }
@@ -513,7 +336,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     infoType="foodshopDatas"
 
-                    //tourMarkerSetting(39)
                     infoMarkerSetting(maxDist)
                     binding.markerDeleteBtn.text = "■ 음식점마커 삭제하기"
                 }
@@ -554,7 +376,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 if(maxDist == 0){
                     binding.markerDeleteBtn.text = "■ 표시 마커 없음"
                 }
-                /*if(infoType == "festivalDatas") festivalMarkerSetting(maxDist) else*/
                 infoMarkerSetting(maxDist)
             }
         })
