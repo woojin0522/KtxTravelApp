@@ -175,6 +175,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         tour_markers = mutableListOf()
         tourList = mutableListOf()
 
+        // ----------------------------------파이어스토어 사용시..--------------------------------
+        database = FirebaseDatabase.getInstance()
+
         //----------------------------------------------------------------------------------
 
         fun drawClose(){
@@ -277,6 +280,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     drawClose()
                     infoType="tourDatas"
 
+                    //tourMarkerSetting(12)
                     infoMarkerSetting(maxDist)
                     binding.markerDeleteBtn.text = "■ 관광지마커 삭제하기"
                 }
@@ -296,7 +300,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     infoType="festivalDatas"
 
+                    //tourMarkerSetting(15)
                     infoMarkerSetting(maxDist)
+                    //festivalMarkerSetting(maxDist)
                     binding.markerDeleteBtn.text = "■ 축제마커 삭제하기"
                 }
             }
@@ -315,6 +321,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     infoType="accommodationDatas"
 
+                    //tourMarkerSetting(32)
                     infoMarkerSetting(maxDist)
                     binding.markerDeleteBtn.text = "■ 숙박마커 삭제하기"
                 }
@@ -334,6 +341,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     infoType="foodshopDatas"
 
+                    //tourMarkerSetting(39)
                     infoMarkerSetting(maxDist)
                     binding.markerDeleteBtn.text = "■ 음식점마커 삭제하기"
                 }
